@@ -1,6 +1,6 @@
 #include "vectoria/engine.hpp"
 #include "vectoria/kernels.hpp"
-#include "vectoria/kernel_abi.hpp" // For ASM declarations
+#include "vectoria/kernel_abi.hpp"
 #include <algorithm>
 #include <set>
 #include <stdexcept>
@@ -50,6 +50,8 @@ void* Engine::get_buffer(size_t node_idx) const {
 }
 
 void Engine::compile() {
+    tracer_.log(trace::EventType::GraphCompilation, -1, "Start");
+
     if (!validate()) {
         throw std::runtime_error("Graph validation failed");
     }
@@ -83,15 +85,19 @@ void Engine::compile() {
 
         size_t size = calculate_size_bytes(shape, dtype);
         node_buffers_[i] = arena_.allocate(size, 64);
+        tracer_.log(trace::EventType::MemoryAllocation, i, std::to_string(size) + " bytes");
     }
 
     compiled_ = true;
+    tracer_.log(trace::EventType::GraphCompilation, -1, "End");
 }
 
 void Engine::execute() {
     if (!compiled_) {
         throw std::runtime_error("Engine must be compiled before execution");
     }
+
+    tracer_.clear();
 
     auto get_shape = [&](size_t idx) -> ir::TensorShape {
         const auto& n = graph_.nodes[idx];
@@ -103,6 +109,7 @@ void Engine::execute() {
 
     for (size_t node_idx : schedule_) {
         const auto& node = graph_.nodes[node_idx];
+        tracer_.log(trace::EventType::NodeExecutionStart, node_idx);
         
         if (auto* op = std::get_if<ir::OpNode>(&node.data)) {
             if (op->op == ir::OpType::MatMul) {
@@ -155,7 +162,6 @@ void Engine::execute() {
                 }
 
                 if (!executed) {
-                    // Fallback to Reference
                     kernels::reference::gemm_f32(
                         a_ptr, b_ptr, c_ptr,
                         m, n, k,
@@ -163,8 +169,11 @@ void Engine::execute() {
                         1.0f, 0.0f
                     );
                 }
+                
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, executed ? "SIMD" : "Reference");
             }
         }
+        tracer_.log(trace::EventType::NodeExecutionEnd, node_idx);
     }
 }
 

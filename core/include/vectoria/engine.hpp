@@ -3,6 +3,7 @@
 #include "vectoria/ir.hpp"
 #include "vectoria/memory.hpp"
 #include "vectoria/kernel_policy.hpp"
+#include "vectoria/trace.hpp"
 #include <vector>
 
 namespace vectoria {
@@ -43,6 +44,11 @@ public:
      */
     void* get_buffer(size_t node_idx) const;
 
+    /**
+     * Access the execution trace.
+     */
+    const trace::Tracer& get_tracer() const { return tracer_; }
+
 private:
     const ir::Graph& graph_;
     EngineConfig config_;
@@ -52,6 +58,9 @@ private:
     // Memory management
     memory::Arena arena_;
     std::vector<void*> node_buffers_;
+    
+    // Observability
+    trace::Tracer tracer_;
 
     // Helper to calculate byte size of a node's output
     size_t calculate_size_bytes(const ir::TensorShape& shape, ir::DataType dtype) const;
