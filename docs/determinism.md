@@ -32,11 +32,18 @@ Vectoria does **NOT** use Kahan summation or compensated algorithms in the defau
 - Large matrix multiplications may suffer from standard accumulation error.
 - However, this error is *deterministic* (always the same wrong value).
 
-### 3. Concurrency
+## Concurrency
 VECTORIA currently executes **sequentially** on a single thread. 
 - If threading is introduced in Phase 3, strict rules will be applied to maintain determinism (e.g., deterministic work stealing or static partitioning).
+
+## Stress Testing
+The suite includes `core/tests/test_determinism_stress.cpp`, which performs repeated executions of complex multi-op graphs.
+- **Goal**: Detect non-deterministic state leaks or transient failures.
+- **Requirement**: Outputs must be bitwise identical across all runs.
+- **Trace Consistency**: The number and type of trace events must remain constant.
 
 ## Checklist for Contributors
 - [ ] Do not use `std::unordered_map` for anything affecting execution order.
 - [ ] Do not use thread-local storage for state that affects results.
 - [ ] Do not use `rand()` or `time()` inside kernels.
+
