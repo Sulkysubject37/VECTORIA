@@ -17,6 +17,9 @@ VECTORIA is **infrastructure**, not a playground. We value:
 - **Code with Docs**: New features must include updating the relevant `docs/*.md` file.
 - **Why, Not What**: Comments should explain *why* a decision was made, not just describe the code.
 
+### Optimization Policy
+See [Optimization Governance](docs/optimization_policy.md) for strict rules on adding SIMD kernels.
+
 ### Testing
 - **determinism**: Tests must verify that results are identical across runs.
 - **Valgrind/ASAN**: Memory safety is paramount. Run checks before submitting.
