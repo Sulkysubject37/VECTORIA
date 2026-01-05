@@ -1,5 +1,6 @@
 #include "vectoria/engine.hpp"
 #include "vectoria/kernels.hpp"
+#include "vectoria/kernel_abi.hpp" // For ASM declarations
 #include <algorithm>
 #include <set>
 #include <stdexcept>
@@ -7,19 +8,16 @@
 
 namespace vectoria {
 
-Engine::Engine(const ir::Graph& graph) : graph_(graph) {}
+Engine::Engine(const ir::Graph& graph, EngineConfig config) 
+    : graph_(graph), config_(config) {}
 
 bool Engine::validate() const {
-    // Basic validation: ensure all OpNode inputs refer to existing nodes
-    // and that there are no obvious cycles (though topo-sort will catch them too).
     for (const auto& node : graph_.nodes) {
         if (auto* op = std::get_if<ir::OpNode>(&node.data)) {
             for (const auto& input_id : op->inputs) {
                 if (input_id.index >= graph_.nodes.size()) {
                     return false;
                 }
-                // In a strictly ordered DAG, inputs must have lower indices 
-                // if we assume construction order.
                 if (input_id.index >= node.id.index) {
                     return false;
                 }
@@ -57,12 +55,10 @@ void Engine::compile() {
     }
 
     schedule_.clear();
-    // For now, we assume the IR construction order is a valid topological sort.
     for (size_t i = 0; i < graph_.nodes.size(); ++i) {
         schedule_.push_back(i);
     }
     
-    // Allocate memory
     arena_.reset();
     node_buffers_.resize(graph_.nodes.size());
 
@@ -82,13 +78,10 @@ void Engine::compile() {
             shape = op->output_shape;
             dtype = op->output_dtype;
         } else {
-             // Should not happen if variant is exhaustive
              continue; 
         }
 
         size_t size = calculate_size_bytes(shape, dtype);
-        // Align to 64 bytes for AVX-512 future proofing
-        // 64 byte alignment is safe for all standard types
         node_buffers_[i] = arena_.allocate(size, 64);
     }
 
@@ -100,7 +93,6 @@ void Engine::execute() {
         throw std::runtime_error("Engine must be compiled before execution");
     }
 
-    // Helper to get shape from node
     auto get_shape = [&](size_t idx) -> ir::TensorShape {
         const auto& n = graph_.nodes[idx];
         if (auto* i = std::get_if<ir::InputNode>(&n.data)) return i->shape;
@@ -125,9 +117,7 @@ void Engine::execute() {
 
                 ir::TensorShape shape_a = get_shape(input_a_idx);
                 ir::TensorShape shape_b = get_shape(input_b_idx);
-                // ir::TensorShape shape_c = op->output_shape; // Unused for now
 
-                // Assume 2D shapes for now
                 if (shape_a.dims.size() != 2 || shape_b.dims.size() != 2) {
                      throw std::runtime_error("MatMul supports only 2D tensors for now");
                 }
@@ -136,46 +126,44 @@ void Engine::execute() {
                 size_t k = shape_a.dims[1];
                 size_t n = shape_b.dims[1];
                 
-                // Validate K match
                 if (shape_b.dims[0] != static_cast<int64_t>(k)) {
                      throw std::runtime_error("MatMul dimension mismatch");
                 }
 
+                bool executed = false;
+
+                if (config_.policy == KernelPolicy::SIMD) {
 #ifdef VECTORIA_USE_ASM
     #if defined(__aarch64__)
-                kernels::reference::gemm_f32(
-                    a_ptr, b_ptr, c_ptr,
-                    m, n, k,
-                    k, n, n,
-                    1.0f, 0.0f
-                );
-                // In a real scenario, we would call gemm_f32_neon here.
-                // However, the current neon stub does nothing (return 0).
-                // So calling it would result in empty output.
-                // For this task "Integrate ... behind flag", we will call it but maybe fallback or just call it.
-                // Task says "Disabled by default".
-                
-                // Let's call the stub to prove linkage, but since it's a stub, the test would fail if we relied on it.
-                // But the Requirement is "Assembly path must be opt-in".
-                
-                gemm_f32_neon(a_ptr, b_ptr, c_ptr, m, n, k, k, n, n, 1.0f, 0.0f);
+                    VectoriaStatus status = gemm_f32_neon(
+                        a_ptr, b_ptr, c_ptr, m, n, k, k, n, n, 1.0f, 0.0f
+                    );
+                    if (status != VECTORIA_SUCCESS) throw std::runtime_error("ASM kernel failed");
+                    executed = true;
     #elif defined(__x86_64__)
-                gemm_f32_avx2(a_ptr, b_ptr, c_ptr, m, n, k, k, n, n, 1.0f, 0.0f);
+                    VectoriaStatus status = gemm_f32_avx2(
+                        a_ptr, b_ptr, c_ptr, m, n, k, k, n, n, 1.0f, 0.0f
+                    );
+                    if (status != VECTORIA_SUCCESS) throw std::runtime_error("ASM kernel failed");
+                    executed = true;
     #else
-                // Fallback or error if ASM requested but not available
-                kernels::reference::gemm_f32(a_ptr, b_ptr, c_ptr, m, n, k, k, n, n, 1.0f, 0.0f);
+                    throw std::runtime_error("SIMD policy requested but architecture not supported");
     #endif
 #else
-                // Explicitly dispatch to Reference Kernel
-                kernels::reference::gemm_f32(
-                    a_ptr, b_ptr, c_ptr,
-                    m, n, k,
-                    k, n, n, // lda=K, ldb=N, ldc=N (Row Major)
-                    1.0f, 0.0f
-                );
+                    throw std::runtime_error("SIMD policy requested but VECTORIA_USE_ASM not defined");
 #endif
+                }
+
+                if (!executed) {
+                    // Fallback to Reference
+                    kernels::reference::gemm_f32(
+                        a_ptr, b_ptr, c_ptr,
+                        m, n, k,
+                        k, n, n,
+                        1.0f, 0.0f
+                    );
+                }
             }
-            // Add other ops (Relu, etc.) later
         }
     }
 }

@@ -2,6 +2,7 @@
 
 #include "vectoria/ir.hpp"
 #include "vectoria/memory.hpp"
+#include "vectoria/kernel_policy.hpp"
 #include <vector>
 
 namespace vectoria {
@@ -12,7 +13,7 @@ namespace vectoria {
  */
 class Engine {
 public:
-    explicit Engine(const ir::Graph& graph);
+    explicit Engine(const ir::Graph& graph, EngineConfig config = {});
 
     /**
      * Validates graph invariants (no cycles, valid node references).
@@ -44,6 +45,7 @@ public:
 
 private:
     const ir::Graph& graph_;
+    EngineConfig config_;
     std::vector<size_t> schedule_;
     bool compiled_ = false;
 
