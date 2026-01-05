@@ -26,6 +26,10 @@ It is designed to be the robust "engine room" for higher-level applications that
 - [Intermediate Representation (IR)](docs/ir.md)
 - [Memory Model](docs/memory_model.md)
 - [Architecture & ABI](docs/architecture.md)
+- [Kernels](docs/kernels.md)
+- [Determinism Audit](docs/determinism.md)
+- [Python API](docs/python_api.md)
+- [Testing Philosophy](docs/testing.md)
 
 ## License
 MIT License. See [LICENSE](LICENSE) for details.
