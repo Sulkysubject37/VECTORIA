@@ -169,7 +169,14 @@ void Engine::execute() {
                     );
                 }
                 
-                tracer_.log(trace::EventType::KernelDispatch, node_idx, executed ? "SIMD" : "Reference");
+                std::string mode = executed ? "SIMD" : "Reference";
+                #if defined(__aarch64__)
+                    if (executed) mode += " [ARM64]";
+                #elif defined(__x86_64__)
+                    if (executed) mode += " [x86_64]";
+                #endif
+                
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, mode);
             }
         }
         tracer_.log(trace::EventType::NodeExecutionEnd, node_idx);
