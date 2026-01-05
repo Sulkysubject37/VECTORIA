@@ -23,3 +23,6 @@ Unit tests target specific components (e.g., `Arena` logic, `IR` validation) in 
 - **Methodology**: It runs both kernels on the exact same input data (generated deterministically).
 - **Tolerance**: Comparison allows for small floating-point associativity differences (typically `1e-4` or `1e-5`).
 - **Activation**: This test only validates SIMD paths if compiled with `-DVECTORIA_USE_ASM`.
+
+## Graph Equivalence
+`core/tests/test_graph_equivalence.cpp` verifies that complex, multi-op graphs produce identical results regardless of the execution policy (Reference vs SIMD).
