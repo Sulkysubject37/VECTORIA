@@ -30,6 +30,11 @@ It is designed to be the robust "engine room" for higher-level applications that
 - [Determinism Audit](docs/determinism.md)
 - [Python API](docs/python_api.md)
 - [Testing Philosophy](docs/testing.md)
+- [Release Policy](docs/release_policy.md)
 
 ## License
 MIT License. See [LICENSE](LICENSE) for details.
+
+## Citation
+MD. Arshad, (c) Sulkysubject37, 2026
+
