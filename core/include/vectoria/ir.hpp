@@ -21,6 +21,7 @@ struct TensorShape {
 
 enum class OpType : uint16_t {
     Add,
+    BiasAdd,
     MatMul,
     Relu,
     Softmax

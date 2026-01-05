@@ -178,6 +178,39 @@ void Engine::execute() {
                 
                 tracer_.log(trace::EventType::KernelDispatch, node_idx, mode);
             }
+            else if (op->op == ir::OpType::BiasAdd) {
+                if (op->inputs.size() != 2) throw std::runtime_error("BiasAdd requires 2 inputs");
+                size_t input_idx = op->inputs[0].index;
+                size_t bias_idx = op->inputs[1].index;
+                
+                const float* in_ptr = static_cast<const float*>(node_buffers_[input_idx]);
+                const float* bias_ptr = static_cast<const float*>(node_buffers_[bias_idx]);
+                float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
+                
+                ir::TensorShape shape_in = get_shape(input_idx);
+                // Assume 2D [M, N]
+                size_t m = shape_in.dims[0];
+                size_t n = shape_in.dims[1];
+                
+                // Dispatch (Reference only for now)
+                kernels::reference::bias_add_f32(in_ptr, bias_ptr, out_ptr, m, n);
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference");
+            }
+            else if (op->op == ir::OpType::Relu) {
+                if (op->inputs.size() != 1) throw std::runtime_error("Relu requires 1 input");
+                size_t input_idx = op->inputs[0].index;
+                
+                const float* in_ptr = static_cast<const float*>(node_buffers_[input_idx]);
+                float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
+                
+                ir::TensorShape shape_in = get_shape(input_idx);
+                size_t count = 1;
+                for(auto d : shape_in.dims) count *= d;
+                
+                // Dispatch
+                kernels::reference::relu_f32(in_ptr, out_ptr, count);
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference");
+            }
         }
         tracer_.log(trace::EventType::NodeExecutionEnd, node_idx);
     }
