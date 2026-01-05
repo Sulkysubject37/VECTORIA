@@ -1,12 +1,29 @@
 #include "vectoria/engine.hpp"
 #include "vectoria/ir.hpp"
 #include "vectoria/memory.hpp"
+#include "vectoria/kernel_policy.hpp"
 #include <iostream>
 #include <vector>
 #include <chrono>
 #include <iomanip>
 
 using namespace vectoria;
+
+double measure_engine(Engine& engine, int iterations) {
+    // Warmup
+    for (int i = 0; i < 5; ++i) {
+        engine.execute();
+    }
+
+    auto start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < iterations; ++i) {
+        engine.execute();
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double, std::milli> duration = end - start;
+    return duration.count();
+}
 
 void run_bench(size_t size, int iterations) {
     std::cout << "Benchmarking GEMM " << size << "x" << size << " (" << iterations << " iterations)..." << std::endl;
@@ -24,32 +41,42 @@ void run_bench(size_t size, int iterations) {
     
     graph.outputs = {{2}};
 
-    // 2. Engine
-    Engine engine(graph);
-    engine.compile();
+    double flops = 2.0 * size * size * size * iterations;
 
-    // 3. Warmup
-    for (int i = 0; i < 5; ++i) {
-        engine.execute();
+    // Reference Benchmark
+    EngineConfig ref_config;
+    ref_config.policy = KernelPolicy::Reference;
+    Engine ref_engine(graph, ref_config);
+    ref_engine.compile(); // Allocates memory
+
+    double ref_ms = measure_engine(ref_engine, iterations);
+    double ref_gflops = flops / (ref_ms / 1000.0) / 1e9;
+
+    std::cout << "  [Ref ] Time: " << std::fixed << std::setprecision(2) << ref_ms << " ms | " 
+              << ref_gflops << " GFLOPS" << std::endl;
+
+    // SIMD Benchmark (if available)
+#ifdef VECTORIA_USE_ASM
+    EngineConfig simd_config;
+    simd_config.policy = KernelPolicy::SIMD;
+    Engine simd_engine(graph, simd_config);
+    simd_engine.compile();
+
+    try {
+        double simd_ms = measure_engine(simd_engine, iterations);
+        double simd_gflops = flops / (simd_ms / 1000.0) / 1e9;
+
+        std::cout << "  [SIMD] Time: " << std::fixed << std::setprecision(2) << simd_ms << " ms | " 
+                  << simd_gflops << " GFLOPS" << std::endl;
+        
+        std::cout << "  Speedup: " << std::fixed << std::setprecision(2) << (ref_ms / simd_ms) << "x" << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << "  [SIMD] Skipped (Error: " << e.what() << ")" << std::endl;
     }
+#else
+    std::cout << "  [SIMD] Skipped (Build flag disabled)" << std::endl;
+#endif
 
-    // 4. Measure
-    auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < iterations; ++i) {
-        engine.execute();
-    }
-    auto end = std::chrono::high_resolution_clock::now();
-
-    // 5. Report
-    std::chrono::duration<double, std::milli> duration = end - start;
-    double avg_ms = duration.count() / iterations;
-    
-    // GFLOPS = 2 * M * N * K / (time_sec * 1e9)
-    double flops = 2.0 * size * size * size;
-    double gflops = (flops * iterations) / (duration.count() / 1000.0) / 1e9;
-
-    std::cout << "  Avg Time: " << avg_ms << " ms" << std::endl;
-    std::cout << "  Throughput: " << gflops << " GFLOPS (Reference Impl)" << std::endl;
     std::cout << "----------------------------------------" << std::endl;
 }
 
