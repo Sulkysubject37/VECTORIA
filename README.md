@@ -3,13 +3,15 @@
 **Deterministic, Inspectable, High-Performance Computational Kernels**
 
 ![ARM64 NEON](https://img.shields.io/badge/ARM64_NEON-Validated-success)
-![x86_64 AVX2](https://img.shields.io/badge/x86__64_AVX2-Unvalidated-yellow)
+![x86_64 AVX2](https://img.shields.io/badge/x86__64_AVX2-Validated-success)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey)
 
 VECTORIA is a deterministic, cross-platform computational kernel framework designed as the robust "engine room" for higher-level applications requiring absolute control over numerical execution and memory layout.
 
 It prioritizes **correctness over peak throughput** and **inspectability over magic**.
+
+Current Version: **v1.0.0-beta**
 
 ## 🚀 Key Features
 
@@ -33,7 +35,7 @@ VECTORIA is built in strict layers:
 | Architecture | Implementation | CI Validation | Reproducibility |
 |--------------|----------------|---------------|-----------------|
 | **ARM64 (NEON)** | Active | **Full** (macos-latest) | Bitwise (Intra-platform) |
-| **x86_64 (AVX2)** | Active | **None** (Build only) | Bitwise (Intra-platform) |
+| **x86_64 (AVX2)** | Active | **Full** (ubuntu-latest) | Bitwise (Intra-platform) |
 | **Reference** | Active | **Full** | **Bitwise (Cross-platform)** |
 
 *Note: SIMD results may drift cross-platform due to hardware FMA differences. Use the `Reference` policy for absolute cross-arch bitwise identity.*
@@ -59,6 +61,9 @@ g++ -std=c++17 -shared -fPIC -Icore/include \
     -o libvectoria.dylib
 
 # Build with SIMD Optimizations (ARM64/AVX2)
+# Ensure correct assembly file for your architecture
+# ARM64: asm/arm64/gemm_neon.S
+# x86_64: asm/x86_64/gemm_avx2.S
 g++ -std=c++17 -shared -fPIC -DVECTORIA_USE_ASM -Icore/include \
     core/src/*.cpp core/src/kernels/*.cpp asm/arm64/gemm_neon.S \
     -o libvectoria.dylib
@@ -99,6 +104,7 @@ for event in rt.get_trace():
 - [Python API](docs/python_api.md)
 - [Swift Parity](docs/swift_parity.md)
 - [Release Policy](docs/release_policy.md)
+- [CI & Validation](docs/ci.md)
 
 ## ⚠️ Philosophy (What this is NOT)
 - **Not an ML Framework**: No auto-grad, no optimizers.

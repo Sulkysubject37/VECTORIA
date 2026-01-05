@@ -8,11 +8,13 @@ on:
 
 jobs:
   validate-x86_64:
+    name: Validate x86_64 (Linux)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Check CPU Capabilities
+        id: cpu-check
         run: |
           if grep -q avx2 /proc/cpuinfo; then
             echo "AVX2_SUPPORTED=true" >> $GITHUB_ENV
@@ -28,11 +30,10 @@ jobs:
           g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
             core/src/*.cpp core/src/kernels/*.cpp asm/x86_64/gemm_avx2.S \
             core/tests/test_gemm_simd.cpp -o test_gemm_simd
-          ./test_gemm_simd
+          ./test_gemm_simd > validation_simd.log
 
       - name: Build and Run Multi-Op Tests
         run: |
-          # Use ASM if supported, else reference
           OPTS=""
           ASM_FILE=""
           if [ "${{ env.AVX2_SUPPORTED }}" = "true" ]; then
@@ -43,7 +44,7 @@ jobs:
           g++ -std=c++17 -O3 $OPTS -Icore/include \
             core/src/*.cpp core/src/kernels/*.cpp $ASM_FILE \
             core/tests/test_multi_op.cpp -o test_multi_op
-          ./test_multi_op
+          ./test_multi_op > validation_multi_op.log
 
       - name: Build and Run Graph Equivalence Tests
         if: env.AVX2_SUPPORTED == 'true'
@@ -51,7 +52,7 @@ jobs:
           g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
             core/src/*.cpp core/src/kernels/*.cpp asm/x86_64/gemm_avx2.S \
             core/tests/test_graph_equivalence.cpp -o test_graph_equivalence
-          ./test_graph_equivalence
+          ./test_graph_equivalence > validation_equivalence.log
 
       - name: Build and Run Determinism Stress Tests
         run: |
@@ -65,4 +66,10 @@ jobs:
           g++ -std=c++17 -O3 $OPTS -Icore/include \
             core/src/*.cpp core/src/kernels/*.cpp $ASM_FILE \
             core/tests/test_determinism_stress.cpp -o test_determinism_stress
-          ./test_determinism_stress
+          ./test_determinism_stress > validation_determinism.log
+
+      - name: Upload Validation Logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: x86_64-validation-logs
+          path: "*.log"
