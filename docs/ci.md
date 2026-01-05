@@ -20,6 +20,7 @@ CI is split into architecture-specific workflows to reflect the reality of hardw
 - **Runner**: `ubuntu-latest`
 - **Scope**: Reference implementation and build integrity.
 - **Note**: AVX2 kernels are compiled but **NOT** executed/validated due to lack of supported hardware on standard public runners.
+- **Explicit Warning**: CI logs for x86_64 will explicitly state "AVX2 kernels not validated on CI hardware".
 - **Status**: Results in this environment are considered **Unverified** for SIMD.
 
 ## Validation Logs

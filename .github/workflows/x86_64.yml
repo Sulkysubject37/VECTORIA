@@ -1,0 +1,32 @@
+name: x86_64 Reference Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-x86_64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and Run Tests (Reference Path)
+        run: |
+          echo "NOTICE: AVX2 kernels not validated on CI hardware. Running Reference path only."
+          g++ -std=c++17 -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp \
+            core/tests/test_multi_op.cpp -o test_multi_op
+          ./test_multi_op
+          
+          g++ -std=c++17 -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp \
+            core/tests/test_graph_equivalence.cpp -o test_graph_equivalence
+          ./test_graph_equivalence
+          
+          g++ -std=c++17 -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp \
+            core/tests/test_determinism_stress.cpp -o test_determinism_stress
+          ./test_determinism_stress
+
