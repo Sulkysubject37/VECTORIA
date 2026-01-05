@@ -4,7 +4,7 @@ This directory contains architecture-specific SIMD kernels.
 
 ## Status: ACTIVE
 - **ARM64 (NEON)**: Implemented and Validated. Standard Dot-Product GEMM.
-- **x86_64 (AVX2)**: Stub only.
+- **x86_64 (AVX2)**: Implemented (Pending Validation on x86 Hardware).
 
 ## Structure
 - `x86_64/`: AVX2/AVX-512 kernels.
