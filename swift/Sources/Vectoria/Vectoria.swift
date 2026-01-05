@@ -1,9 +1,8 @@
 import Foundation
 
-/// A handle to the C++ Graph object (opaque pointer)
 public typealias GraphHandle = OpaquePointer
+public typealias EngineHandle = OpaquePointer
 
-/// Supported data types mirroring the C++ enum
 public enum DataType: Int {
     case float32 = 0
     case float16 = 1
@@ -11,33 +10,48 @@ public enum DataType: Int {
     case int8 = 3
 }
 
-/// Main entry point for Vectoria Swift bindings
+public enum KernelPolicy {
+    case reference
+    case simd
+}
+
+public struct TraceEvent {
+    public let type: Int
+    public let timestamp: UInt64
+    public let nodeId: Int64
+    public let details: String
+}
+
 public class VectoriaGraph {
     private var handle: GraphHandle?
     private var frozen: Bool = false
     
     public init() {
-        // In a real implementation, this would call vectoria_graph_create()
-        // handle = vectoria_graph_create()
         print("VectoriaGraph initialized (stub)")
     }
     
-    deinit {
-        // vectoria_graph_destroy(handle)
-    }
+    deinit {}
     
     public func addInput(name: String, shape: [Int], dtype: DataType) throws -> Int {
-        guard !frozen else {
-            throw VectoriaError.graphFrozen
-        }
-        // vectoria_graph_add_input(...)
-        return 0 // Stub ID
+        return 0 
     }
     
     public func compile() {
         frozen = true
-        // vectoria_graph_compile(handle)
-        print("VectoriaGraph compiled (stub)")
+    }
+}
+
+public class VectoriaEngine {
+    private var handle: EngineHandle?
+    
+    public init(graph: VectoriaGraph, policy: KernelPolicy = .reference) {
+        print("VectoriaEngine initialized (stub) with policy \(policy)")
+    }
+    
+    public func execute() {}
+    
+    public func getTrace() -> [TraceEvent] {
+        return [] // Stub
     }
 }
 
