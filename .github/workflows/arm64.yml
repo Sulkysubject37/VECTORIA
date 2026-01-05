@@ -1,0 +1,48 @@
+name: ARM64 NEON Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-arm64:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and Run SIMD Correctness Harness
+        run: |
+          g++ -std=c++17 -DVECTORIA_USE_ASM -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp asm/arm64/gemm_neon.S \
+            core/tests/test_gemm_simd.cpp -o test_gemm_simd
+          ./test_gemm_simd > validation_simd.log
+        
+      - name: Build and Run Multi-Op Tests
+        run: |
+          g++ -std=c++17 -DVECTORIA_USE_ASM -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp asm/arm64/gemm_neon.S \
+            core/tests/test_multi_op.cpp -o test_multi_op
+          ./test_multi_op > validation_multi_op.log
+
+      - name: Build and Run Graph Equivalence Tests
+        run: |
+          g++ -std=c++17 -DVECTORIA_USE_ASM -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp asm/arm64/gemm_neon.S \
+            core/tests/test_graph_equivalence.cpp -o test_graph_equivalence
+          ./test_graph_equivalence > validation_equivalence.log
+
+      - name: Build and Run Determinism Stress Tests
+        run: |
+          g++ -std=c++17 -DVECTORIA_USE_ASM -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp asm/arm64/gemm_neon.S \
+            core/tests/test_determinism_stress.cpp -o test_determinism_stress
+          ./test_determinism_stress > validation_determinism.log
+
+      - name: Upload Validation Logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: arm64-validation-logs
+          path: "*.log"
+
