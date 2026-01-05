@@ -26,3 +26,8 @@ Unit tests target specific components (e.g., `Arena` logic, `IR` validation) in 
 
 ## Graph Equivalence
 `core/tests/test_graph_equivalence.cpp` verifies that complex, multi-op graphs produce identical results regardless of the execution policy (Reference vs SIMD).
+
+## Cross-Architecture Equivalence
+`core/tests/test_cross_arch_equivalence.cpp` computes a checksum (Sum of Values) for a large matrix operation.
+- **Purpose**: Ensure that ARM64 and x86_64 SIMD implementations do not drift significantly from the Reference.
+- **Limit**: Due to different FMA implementations (and lack of Kahan summation), bitwise cross-arch identity is NOT guaranteed for large matrices. However, result magnitude and sign must match.
