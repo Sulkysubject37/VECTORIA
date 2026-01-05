@@ -78,6 +78,50 @@ int vectoria_graph_add_op_matmul(vectoria_graph_t g, int input_a, int input_b) {
     return static_cast<int>(id);
 }
 
+int vectoria_graph_add_op_bias_add(vectoria_graph_t g, int input, int bias) {
+    auto* graph = static_cast<ir::Graph*>(g);
+    ir::OpNode node;
+    node.op = ir::OpType::BiasAdd;
+    node.inputs = { {static_cast<size_t>(input)}, {static_cast<size_t>(bias)} };
+    
+    auto get_shape = [&](size_t idx) -> ir::TensorShape {
+        const auto& n = graph->nodes[idx];
+        if (auto* i = std::get_if<ir::InputNode>(&n.data)) return i->shape;
+        if (auto* p = std::get_if<ir::ParameterNode>(&n.data)) return p->shape;
+        if (auto* o = std::get_if<ir::OpNode>(&n.data)) return o->output_shape;
+        return {};
+    };
+
+    node.output_shape = get_shape(input);
+    node.output_dtype = ir::DataType::Float32;
+
+    size_t id = graph->nodes.size();
+    graph->nodes.push_back({ {id}, node });
+    return static_cast<int>(id);
+}
+
+int vectoria_graph_add_op_relu(vectoria_graph_t g, int input) {
+    auto* graph = static_cast<ir::Graph*>(g);
+    ir::OpNode node;
+    node.op = ir::OpType::Relu;
+    node.inputs = { {static_cast<size_t>(input)} };
+    
+    auto get_shape = [&](size_t idx) -> ir::TensorShape {
+        const auto& n = graph->nodes[idx];
+        if (auto* i = std::get_if<ir::InputNode>(&n.data)) return i->shape;
+        if (auto* p = std::get_if<ir::ParameterNode>(&n.data)) return p->shape;
+        if (auto* o = std::get_if<ir::OpNode>(&n.data)) return o->output_shape;
+        return {};
+    };
+
+    node.output_shape = get_shape(input);
+    node.output_dtype = ir::DataType::Float32;
+
+    size_t id = graph->nodes.size();
+    graph->nodes.push_back({ {id}, node });
+    return static_cast<int>(id);
+}
+
 void vectoria_graph_set_output(vectoria_graph_t g, int node_id) {
     auto* graph = static_cast<ir::Graph*>(g);
     graph->outputs.push_back({static_cast<size_t>(node_id)});
@@ -86,6 +130,13 @@ void vectoria_graph_set_output(vectoria_graph_t g, int node_id) {
 vectoria_engine_t vectoria_engine_create(vectoria_graph_t g) {
     auto* graph = static_cast<ir::Graph*>(g);
     return new Engine(*graph);
+}
+
+vectoria_engine_t vectoria_engine_create_with_policy(vectoria_graph_t g, int policy) {
+    auto* graph = static_cast<ir::Graph*>(g);
+    EngineConfig cfg;
+    cfg.policy = static_cast<KernelPolicy>(policy);
+    return new Engine(*graph, cfg);
 }
 
 void vectoria_engine_destroy(vectoria_engine_t e) {

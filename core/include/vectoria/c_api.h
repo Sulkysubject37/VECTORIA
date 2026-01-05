@@ -17,11 +17,14 @@ void vectoria_graph_destroy(vectoria_graph_t g);
 int vectoria_graph_add_input(vectoria_graph_t g, const char* name, const int64_t* shape, int rank, int dtype);
 int vectoria_graph_add_parameter(vectoria_graph_t g, const char* name, const int64_t* shape, int rank, int dtype);
 int vectoria_graph_add_op_matmul(vectoria_graph_t g, int input_a, int input_b);
+int vectoria_graph_add_op_bias_add(vectoria_graph_t g, int input, int bias);
+int vectoria_graph_add_op_relu(vectoria_graph_t g, int input);
 
 void vectoria_graph_set_output(vectoria_graph_t g, int node_id);
 
 // --- Engine Execution ---
 vectoria_engine_t vectoria_engine_create(vectoria_graph_t g);
+vectoria_engine_t vectoria_engine_create_with_policy(vectoria_graph_t g, int policy);
 void vectoria_engine_destroy(vectoria_engine_t e);
 
 void vectoria_engine_compile(vectoria_engine_t e);

@@ -1,28 +1,32 @@
 # Swift Parity Plan
 
-**Status**: Planning
+**Status**: Minimal Execution Parity Reached
 
-To make VECTORIA a viable backend for Apple platforms, the Swift binding must reach parity with the Python frontend.
+To make VECTORIA a viable backend for Apple platforms, the Swift binding now supports native execution through the C API.
 
-## Goals
-1. **Full Graph Construction**: Support all IR nodes.
-2. **Trace Exposure**: Swift `struct TraceEvent` mirroring C++.
-3. **Execution Control**: `EngineConfig` exposed to Swift.
+## Implemented Goals
+1. **Graph Construction**: Basic support for Inputs and MatMul.
+2. **Native Execution**: Swift can now drive the C++ engine via `dlopen`/`dlsym`.
+3. **Trace Exposure**: Swift `struct TraceEvent` mirrors C++ and events are retrievable.
+4. **Execution Control**: `KernelPolicy` selection is exposed to Swift.
 
 ## Traceability
-Swift will access traces via a C-API wrapper similar to Python.
+Swift accesses traces via the C-API wrapper:
 - `vectoria_engine_get_trace_size`
 - `vectoria_engine_get_trace_event`
 
-## Kernel Selection
-Swift will NOT have direct access to kernel pointers. It will control selection via:
+## Example Usage
 ```swift
-public enum KernelPolicy {
-    case reference
-    case simd
-}
+let runtime = try VectoriaRuntime()
+let graph = runtime.createGraph()
+let x = graph.addInput(name: "X", shape: [1, 4], dtype: .float32)
+// ... construct more ...
+let engine = runtime.createEngine(graph: graph, policy: .simd)
+engine.compile()
+engine.execute()
+let trace = engine.getTrace()
 ```
 
 ## Anti-Goals
-- **Swift-side Execution**: Swift will NEVER execute kernels directly. It only drives the C++ engine.
-- **CoreML Export**: Deferred to Phase 5.
+- **Swift-side Scheduling**: Scheduling remains strictly in C++.
+- **CoreML Export**: Next Phase.
