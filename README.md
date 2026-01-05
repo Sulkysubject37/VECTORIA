@@ -2,7 +2,8 @@
 
 **Deterministic, Inspectable, High-Performance Computational Kernels**
 
-![Status](https://img.shields.io/badge/status-active-success)
+![ARM64 NEON](https://img.shields.io/badge/ARM64_NEON-Validated-success)
+![x86_64 AVX2](https://img.shields.io/badge/x86__64_AVX2-Unvalidated-yellow)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey)
 
