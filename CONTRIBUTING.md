@@ -20,6 +20,9 @@ VECTORIA is **infrastructure**, not a playground. We value:
 ### Optimization Policy
 See [Optimization Governance](docs/optimization_policy.md) for strict rules on adding SIMD kernels.
 
+### CI & Merge Policy
+See [CI Failure Policy](docs/ci_policy.md) for rules on regression and unvalidated code.
+
 ### Testing
 - **determinism**: Tests must verify that results are identical across runs.
 - **Valgrind/ASAN**: Memory safety is paramount. Run checks before submitting.
