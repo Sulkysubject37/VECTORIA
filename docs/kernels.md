@@ -1,0 +1,22 @@
+# VECTORIA Reference Kernels
+
+The reference kernels serve as the "Ground Truth" for VECTORIA's computation.
+
+## Design Philosophy
+
+1. **Correctness First**: Algorithms are implemented using their simplest, most readable mathematical definition (e.g., triple-loop GEMM).
+2. **No Optimization**: No loop unrolling, no blocking, no SIMD intrinsics.
+3. **Determinism**: By avoiding complex reduction trees or parallel accumulation, we ensure bitwise reproducible floating-point results.
+
+## Usage
+
+These kernels are used in two scenarios:
+1. **Validation**: Optimized Assembly kernels are fuzz-tested against these reference implementations.
+2. **Fallback**: If an optimized kernel is unavailable for a specific architecture or shape, the engine falls back to the reference kernel.
+
+## Implementations
+
+### GEMM (Scalar)
+- **File**: `core/src/kernels/gemm_ref.cpp`
+- **Algorithm**: Standard $O(M \cdot N \cdot K)$ triple loop.
+- **Precision**: FP32 (accumulators match output type).
