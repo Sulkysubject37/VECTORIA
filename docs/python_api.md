@@ -18,6 +18,15 @@ The `Runtime` class loads `libvectoria.dylib` and mirrors the C++ Engine's lifec
 4. `execute()`: Runs kernels.
 5. `get_output(id)`: Reads data back.
 
+## Observability
+You can inspect the execution trace after `execute()`:
+
+```python
+trace = runtime.get_trace()
+for event in trace:
+    print(event)
+```
+
 ## Limitations
 - **No NumPy**: We avoid strict dependencies for now.
 - **Op Support**: Currently only `MatMul` is bridged.

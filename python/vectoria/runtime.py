@@ -43,6 +43,17 @@ if _lib:
     _lib.vectoria_engine_get_buffer.argtypes = [c_engine_t, ctypes.c_int]
     _lib.vectoria_engine_get_buffer.restype = ctypes.c_void_p
 
+    _lib.vectoria_engine_get_trace_size.argtypes = [c_engine_t]
+    _lib.vectoria_engine_get_trace_size.restype = ctypes.c_size_t
+
+    _lib.vectoria_engine_get_trace_event.argtypes = [
+        c_engine_t, ctypes.c_size_t, 
+        ctypes.POINTER(ctypes.c_int), 
+        ctypes.POINTER(ctypes.c_uint64), 
+        ctypes.POINTER(ctypes.c_int64), 
+        ctypes.c_char_p, ctypes.c_size_t
+    ]
+
 class Runtime:
     def __init__(self):
         if not _lib:
@@ -133,3 +144,47 @@ class Runtime:
             
         c_float_p = ctypes.cast(ptr, ctypes.POINTER(ctypes.c_float))
         return [c_float_p[i] for i in range(size)]
+
+    def get_trace(self) -> List['TraceEvent']:
+        from .trace import TraceEvent, EventType
+        if not self._engine_handle:
+            return []
+            
+        count = _lib.vectoria_engine_get_trace_size(self._engine_handle)
+        events = []
+        
+        c_type = ctypes.c_int()
+        c_ts = ctypes.c_uint64()
+        c_nid = ctypes.c_int64()
+        c_buf = ctypes.create_string_buffer(256)
+        
+        for i in range(count):
+            _lib.vectoria_engine_get_trace_event(
+                self._engine_handle, i, 
+                ctypes.byref(c_type), 
+                ctypes.byref(c_ts), 
+                ctypes.byref(c_nid), 
+                c_buf, 256
+            )
+            
+            # Map C ID back to Python ID
+            # This is tricky because we only stored Python->C map.
+            # We need a reverse lookup.
+            c_id_val = c_nid.value
+            py_id = -1
+            if c_id_val != -1:
+                # O(N) lookup for now
+                for k, v in self._node_map.items():
+                    if v == c_id_val:
+                        py_id = k
+                        break
+            
+            events.append(TraceEvent(
+                EventType(c_type.value), 
+                c_ts.value, 
+                py_id, 
+                c_buf.value.decode('utf-8')
+            ))
+            
+        return events
+

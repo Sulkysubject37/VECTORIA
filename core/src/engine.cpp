@@ -50,6 +50,7 @@ void* Engine::get_buffer(size_t node_idx) const {
 }
 
 void Engine::compile() {
+    tracer_.clear();
     tracer_.log(trace::EventType::GraphCompilation, -1, "Start");
 
     if (!validate()) {
@@ -96,8 +97,6 @@ void Engine::execute() {
     if (!compiled_) {
         throw std::runtime_error("Engine must be compiled before execution");
     }
-
-    tracer_.clear();
 
     auto get_shape = [&](size_t idx) -> ir::TensorShape {
         const auto& n = graph_.nodes[idx];

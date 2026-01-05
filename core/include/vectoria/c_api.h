@@ -30,6 +30,22 @@ void vectoria_engine_execute(vectoria_engine_t e);
 // Returns pointer to raw buffer, or NULL if invalid
 void* vectoria_engine_get_buffer(vectoria_engine_t e, int node_id);
 
+// --- Observability ---
+size_t vectoria_engine_get_trace_size(vectoria_engine_t e);
+
+// Populates struct fields. Caller must handle strings? 
+// Simplification: Copy data to fixed struct or individual getters.
+// Let's use individual getters for safety and simplicity across FFI boundaries.
+void vectoria_engine_get_trace_event(
+    vectoria_engine_t e, 
+    size_t index, 
+    int* type, 
+    uint64_t* timestamp_ns, 
+    int64_t* node_id, // -1 if none
+    char* details_buffer, 
+    size_t buffer_len
+);
+
 #ifdef __cplusplus
 }
 #endif

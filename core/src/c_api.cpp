@@ -104,4 +104,31 @@ void* vectoria_engine_get_buffer(vectoria_engine_t e, int node_id) {
     return static_cast<Engine*>(e)->get_buffer(static_cast<size_t>(node_id));
 }
 
+size_t vectoria_engine_get_trace_size(vectoria_engine_t e) {
+    return static_cast<Engine*>(e)->get_tracer().get_events().size();
+}
+
+void vectoria_engine_get_trace_event(
+    vectoria_engine_t e, 
+    size_t index, 
+    int* type, 
+    uint64_t* timestamp_ns, 
+    int64_t* node_id, 
+    char* details_buffer, 
+    size_t buffer_len
+) {
+    const auto& events = static_cast<Engine*>(e)->get_tracer().get_events();
+    if (index >= events.size()) return;
+
+    const auto& evt = events[index];
+    if (type) *type = static_cast<int>(evt.type);
+    if (timestamp_ns) *timestamp_ns = evt.timestamp_ns;
+    if (node_id) *node_id = (evt.node_id == static_cast<size_t>(-1)) ? -1 : static_cast<int64_t>(evt.node_id);
+    
+    if (details_buffer && buffer_len > 0) {
+        strncpy(details_buffer, evt.details.c_str(), buffer_len - 1);
+        details_buffer[buffer_len - 1] = '\0';
+    }
+}
+
 } // extern "C"
