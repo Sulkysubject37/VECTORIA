@@ -1,28 +1,24 @@
 # VECTORIA Benchmarks
 
-This directory contains reproducible benchmark harnesses.
+This directory contains reproducible benchmark harnesses for measuring kernel performance and detecting regression.
 
 ## Purpose
-These benchmarks exist to **detect regression**, not to generate marketing numbers. 
-It measures both Reference (Scalar) and SIMD (if enabled) performance.
+Benchmarks in VECTORIA exist to:
+1. Ensure that optimizations provide a tangible benefit over the reference kernels.
+2. Detect performance regressions in core dispatch and memory management.
 
-## Running
+## Available Benchmarks
+- `gemm_bench.cpp`: Measures matrix multiplication throughput (GFLOPS).
+
+## Running Benchmarks
 ```bash
+# Build the benchmark
 g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -I../core/include \
-    ../core/src/engine.cpp \
-    ../core/src/memory.cpp \
-    ../core/src/kernels/gemm_ref.cpp \
-    ../core/src/trace.cpp \
-    ../asm/arm64/gemm_neon.S \
+    ../core/src/*.cpp ../core/src/kernels/*.cpp ../asm/arm64/gemm_neon.S \
     gemm_bench.cpp -o gemm_bench
 
+# Run
 ./gemm_bench
 ```
 
-## Methodology
-- **Warmup**: 5 iterations are discarded.
-- **Timing**: `std::chrono::high_resolution_clock` around the execution loop.
-- **Metric**: Average ms and GFLOPS.
-- **Comparison**: Internal speedup ratio.
-
-```
+For more details on our performance philosophy, see [Benchmarking Policy](../docs/benchmarks.md).

@@ -1,17 +1,13 @@
 # VECTORIA Assembly Kernels
 
-This directory contains architecture-specific SIMD kernels.
+This directory contains architecture-specific SIMD kernels used by the Core Engine.
 
-## Status: ACTIVE
-- **ARM64 (NEON)**: Implemented and Validated. Standard Dot-Product GEMM.
-- **x86_64 (AVX2)**: Implemented (Pending Validation on x86 Hardware).
+## Status
+- **ARM64 (NEON)**: Verified and Active.
+- **x86_64 (AVX2)**: Implemented (Pending hardware validation).
 
 ## Structure
-- `x86_64/`: AVX2/AVX-512 kernels.
-- `arm64/`: NEON kernels.
+- `arm64/`: NEON implementations (Apple Silicon, etc).
+- `x86_64/`: AVX2 implementations (Intel/AMD).
 
-## Conventions
-All kernels must adhere to the ABI defined in `core/include/vectoria/kernel_abi.hpp`.
-- No memory allocation.
-- No system calls.
-- Return `VECTORIA_SUCCESS` (0) on success.
+See [Kernels Documentation](../docs/kernels.md) for ABI details.
