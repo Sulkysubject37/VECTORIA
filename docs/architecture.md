@@ -7,18 +7,21 @@ VECTORIA is structured as a series of strict computational layers designed for d
 1. **Graph Construction (Python/Swift)**: Users define computation using high-level bindings.
 2. **IR Freezing**: The graph is serialized into the C++ Intermediate Representation (IR).
 3. **Validation**: The C++ `Engine` validates graph invariants (no cycles, shape consistency).
-4. **Memory Planning**: The `MemoryModel` uses the static IR to pre-allocate an `Arena`.
-5. **Static Scheduling**: The `Engine` produces a deterministic execution order (topological sort).
-6. **Kernel Dispatch**: The `Engine` traverses the schedule and calls optimized Assembly kernels via the Kernel ABI.
+4. **Memory Planning**: The `MemoryModel` (via `Arena`) pre-allocates contiguous memory for all nodes.
+5. **Static Scheduling**: The `Engine` produces a deterministic execution order.
+6. **Kernel Dispatch**: The `Engine` iterates through the schedule. For each `OpNode`, it retrieves the pre-allocated buffers and calls the appropriate kernel.
+
+## Kernel Dispatching
+Currently, kernel dispatch is **explicit and static**. The engine checks the operation type (e.g., `MatMul`) and calls the corresponding kernel function directly. 
+
+There is **no dynamic heuristic** (e.g., "choose AVX if matrix is large"). This ensures that execution is predictable. If optimization is needed, it will be enabled via compile-time flags or explicit engine configuration, not runtime magic.
 
 ## Layers
 
 - **Assembly**: SIMD-optimized kernels (GEMM, activations) for specific architectures (ARM64 Neon, x86 AVX).
 - **C++ (Core)**: The backbone of the framework. Manages IR, Memory, and the Execution Engine.
-- **Python**: Frontend for graph construction, inspection, and visualization.
-- **Swift**: Safe, high-level bindings for integration into Apple ecosystem. 
-    - **Why Swift?**: To provide direct, high-performance integration with iOS/macOS apps and a native path to export models to CoreML.
-    - **Current Status**: The Swift bindings are currently a skeleton wrapper around the C ABI. No CoreML export is implemented yet.
+- **Python**: Frontend for graph construction.
+- **Swift**: Safe bindings.
 
 ## Kernel ABI Contract (C++ ↔ Assembly)
 
