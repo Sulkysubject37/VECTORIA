@@ -15,14 +15,10 @@ VECTORIA is structured as a series of strict computational layers designed for d
 
 - **Assembly**: SIMD-optimized kernels (GEMM, activations) for specific architectures (ARM64 Neon, x86 AVX).
 - **C++ (Core)**: The backbone of the framework. Manages IR, Memory, and the Execution Engine.
-- **Python**: Frontend for graph construction, inspection, and visualization. It generates a declarative graph structure (JSON/Protobuf) which is then consumed by the C++ engine.
-- **Swift**: Safe, high-level bindings for integration into Apple ecosystem and CoreML export.
-
-## Python Frontend
-The Python `vectoria.graph` module provides a builder API to construct DAGs. It enforces:
-- Explicit typing (`DType`).
-- Static shapes.
-- Graph immutability after `compile()`.
+- **Python**: Frontend for graph construction, inspection, and visualization.
+- **Swift**: Safe, high-level bindings for integration into Apple ecosystem. 
+    - **Why Swift?**: To provide direct, high-performance integration with iOS/macOS apps and a native path to export models to CoreML.
+    - **Current Status**: The Swift bindings are currently a skeleton wrapper around the C ABI. No CoreML export is implemented yet.
 
 ## Kernel ABI Contract (C++ ↔ Assembly)
 
