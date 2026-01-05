@@ -1,0 +1,135 @@
+import ctypes
+import os
+import sys
+from typing import List
+from .graph import Graph, DType
+
+# Load Library
+_lib_path = os.path.abspath("libvectoria.dylib")
+try:
+    _lib = ctypes.CDLL(_lib_path)
+except OSError:
+    # Fallback for when running from a different directory or if not built yet
+    _lib = None
+    print("Warning: libvectoria.dylib not found. Runtime execution disabled.")
+
+if _lib:
+    # Types
+    c_graph_t = ctypes.c_void_p
+    c_engine_t = ctypes.c_void_p
+
+    # Signatures
+    _lib.vectoria_graph_create.restype = c_graph_t
+    _lib.vectoria_graph_destroy.argtypes = [c_graph_t]
+
+    _lib.vectoria_graph_add_input.argtypes = [c_graph_t, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int64), ctypes.c_int, ctypes.c_int]
+    _lib.vectoria_graph_add_input.restype = ctypes.c_int
+
+    _lib.vectoria_graph_add_parameter.argtypes = [c_graph_t, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int64), ctypes.c_int, ctypes.c_int]
+    _lib.vectoria_graph_add_parameter.restype = ctypes.c_int
+
+    _lib.vectoria_graph_add_op_matmul.argtypes = [c_graph_t, ctypes.c_int, ctypes.c_int]
+    _lib.vectoria_graph_add_op_matmul.restype = ctypes.c_int
+
+    _lib.vectoria_graph_set_output.argtypes = [c_graph_t, ctypes.c_int]
+
+    _lib.vectoria_engine_create.argtypes = [c_graph_t]
+    _lib.vectoria_engine_create.restype = c_engine_t
+    _lib.vectoria_engine_destroy.argtypes = [c_engine_t]
+
+    _lib.vectoria_engine_compile.argtypes = [c_engine_t]
+    _lib.vectoria_engine_execute.argtypes = [c_engine_t]
+    
+    _lib.vectoria_engine_get_buffer.argtypes = [c_engine_t, ctypes.c_int]
+    _lib.vectoria_engine_get_buffer.restype = ctypes.c_void_p
+
+class Runtime:
+    def __init__(self):
+        if not _lib:
+            raise RuntimeError("Vectoria native library not loaded.")
+        self._graph_handle = _lib.vectoria_graph_create()
+        self._engine_handle = None
+        self._node_map = {} # Python Node ID -> C API ID
+
+    def __del__(self):
+        if self._engine_handle:
+            _lib.vectoria_engine_destroy(self._engine_handle)
+        if self._graph_handle:
+            _lib.vectoria_graph_destroy(self._graph_handle)
+
+    def load_graph(self, graph: Graph):
+        """
+        Reconstructs the Python graph in the C++ backend.
+        """
+        # Iterate over nodes in order
+        for node in graph.nodes:
+            nid = node['id']
+            ntype = node['type']
+            
+            # Map DataType string to enum int
+            # IR: Float32=0, Float16=1, Int32=2, Int8=3
+            dtype_map = {"Float32": 0, "Float16": 1, "Int32": 2, "Int8": 3}
+            
+            cid = -1
+            if ntype == "Input":
+                shape = (ctypes.c_int64 * len(node['shape']))(*node['shape'])
+                dtype = dtype_map[node['dtype']]
+                name = node['name'].encode('utf-8')
+                cid = _lib.vectoria_graph_add_input(self._graph_handle, name, shape, len(node['shape']), dtype)
+                
+            elif ntype == "Parameter":
+                shape = (ctypes.c_int64 * len(node['shape']))(*node['shape'])
+                dtype = dtype_map[node['dtype']]
+                name = node['name'].encode('utf-8')
+                cid = _lib.vectoria_graph_add_parameter(self._graph_handle, name, shape, len(node['shape']), dtype)
+                
+            elif ntype == "Op":
+                op_type = node['op']
+                if op_type == "MatMul":
+                    inp0 = self._node_map[node['inputs'][0]]
+                    inp1 = self._node_map[node['inputs'][1]]
+                    cid = _lib.vectoria_graph_add_op_matmul(self._graph_handle, inp0, inp1)
+                else:
+                    raise ValueError(f"Unsupported Op: {op_type}")
+            
+            if cid != -1:
+                self._node_map[nid] = cid
+
+        for out_id in graph.outputs:
+            _lib.vectoria_graph_set_output(self._graph_handle, self._node_map[out_id])
+
+        self._engine_handle = _lib.vectoria_engine_create(self._graph_handle)
+        _lib.vectoria_engine_compile(self._engine_handle)
+
+    def execute(self):
+        if not self._engine_handle:
+            raise RuntimeError("Graph not loaded.")
+        _lib.vectoria_engine_execute(self._engine_handle)
+
+    def get_buffer(self, node_id: int):
+        """
+        Returns a ctypes pointer to the buffer.
+        """
+        if not self._engine_handle:
+            raise RuntimeError("Graph not loaded.")
+        cid = self._node_map[node_id]
+        ptr = _lib.vectoria_engine_get_buffer(self._engine_handle, cid)
+        return ptr
+
+    def set_input(self, node_id: int, data: List[float]):
+        ptr = self.get_buffer(node_id)
+        if not ptr:
+            raise ValueError("Invalid node ID or no buffer allocated")
+        
+        # Assume Float32
+        c_float_p = ctypes.cast(ptr, ctypes.POINTER(ctypes.c_float))
+        for i, val in enumerate(data):
+            c_float_p[i] = val
+
+    def get_output(self, node_id: int, size: int) -> List[float]:
+        ptr = self.get_buffer(node_id)
+        if not ptr:
+            raise ValueError("Invalid node ID or no buffer allocated")
+            
+        c_float_p = ctypes.cast(ptr, ctypes.POINTER(ctypes.c_float))
+        return [c_float_p[i] for i in range(size)]
