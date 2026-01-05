@@ -6,6 +6,7 @@ VECTORIA provides built-in tracing to inspect execution behavior.
 - **Debugging**: Verify execution order and memory allocation.
 - **Auditing**: Confirm which kernels (Reference vs SIMD) were actually executed.
 - **Optimization**: Analyze timestamps (though this is not a full profiler).
+- **Provenance**: Traces provide evidence of exactly how a result was calculated.
 
 ## Trace Events
 
@@ -14,7 +15,7 @@ VECTORIA provides built-in tracing to inspect execution behavior.
 | `GraphCompilation` | Engine compilation phase | "Start" / "End" |
 | `MemoryAllocation` | Buffer allocation for a node | Size in bytes |
 | `NodeExecutionStart` | Execution begins for a node | - |
-| `KernelDispatch` | Kernel selection | "Reference" or "SIMD [ARM64]" / "SIMD [x86_64]" |
+| `KernelDispatch` | Kernel selection & deps | "Reference" or "SIMD [Arch]" | Inputs: [id, id] |
 | `NodeExecutionEnd` | Execution finishes | - |
 
 ## Scientific Provenance

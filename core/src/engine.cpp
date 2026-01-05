@@ -175,6 +175,7 @@ void Engine::execute() {
                 #elif defined(__x86_64__)
                     if (executed) mode += " [x86_64]";
                 #endif
+                mode += " | Inputs: [" + std::to_string(input_a_idx) + ", " + std::to_string(input_b_idx) + "]";
                 
                 tracer_.log(trace::EventType::KernelDispatch, node_idx, mode);
             }
@@ -194,7 +195,9 @@ void Engine::execute() {
                 
                 // Dispatch (Reference only for now)
                 kernels::reference::bias_add_f32(in_ptr, bias_ptr, out_ptr, m, n);
-                tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference");
+                
+                std::string mode = "Reference | Inputs: [" + std::to_string(input_idx) + ", " + std::to_string(bias_idx) + "]";
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, mode);
             }
             else if (op->op == ir::OpType::Relu) {
                 if (op->inputs.size() != 1) throw std::runtime_error("Relu requires 1 input");
@@ -209,7 +212,9 @@ void Engine::execute() {
                 
                 // Dispatch
                 kernels::reference::relu_f32(in_ptr, out_ptr, count);
-                tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference");
+                
+                std::string mode = "Reference | Inputs: [" + std::to_string(input_idx) + "]";
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, mode);
             }
         }
         tracer_.log(trace::EventType::NodeExecutionEnd, node_idx);
