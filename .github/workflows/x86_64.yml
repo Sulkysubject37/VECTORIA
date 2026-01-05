@@ -1,4 +1,4 @@
-name: x86_64 Reference Validation
+name: x86_64 SIMD Validation
 
 on:
   push:
@@ -12,21 +12,57 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build and Run Tests (Reference Path)
+      - name: Check CPU Capabilities
         run: |
-          echo "NOTICE: AVX2 kernels not validated on CI hardware. Running Reference path only."
-          g++ -std=c++17 -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp \
+          if grep -q avx2 /proc/cpuinfo; then
+            echo "AVX2_SUPPORTED=true" >> $GITHUB_ENV
+            echo "Confirmed: AVX2 is available on this runner."
+          else
+            echo "AVX2_SUPPORTED=false" >> $GITHUB_ENV
+            echo "Warning: AVX2 NOT available on this runner. Falling back to Reference-only."
+          fi
+
+      - name: Build and Run SIMD Correctness Harness
+        if: env.AVX2_SUPPORTED == 'true'
+        run: |
+          g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp asm/x86_64/gemm_avx2.S \
+            core/tests/test_gemm_simd.cpp -o test_gemm_simd
+          ./test_gemm_simd
+
+      - name: Build and Run Multi-Op Tests
+        run: |
+          # Use ASM if supported, else reference
+          OPTS=""
+          ASM_FILE=""
+          if [ "${{ env.AVX2_SUPPORTED }}" = "true" ]; then
+            OPTS="-DVECTORIA_USE_ASM"
+            ASM_FILE="asm/x86_64/gemm_avx2.S"
+          fi
+          
+          g++ -std=c++17 -O3 $OPTS -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp $ASM_FILE \
             core/tests/test_multi_op.cpp -o test_multi_op
           ./test_multi_op
-          
-          g++ -std=c++17 -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp \
+
+      - name: Build and Run Graph Equivalence Tests
+        if: env.AVX2_SUPPORTED == 'true'
+        run: |
+          g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp asm/x86_64/gemm_avx2.S \
             core/tests/test_graph_equivalence.cpp -o test_graph_equivalence
           ./test_graph_equivalence
+
+      - name: Build and Run Determinism Stress Tests
+        run: |
+          OPTS=""
+          ASM_FILE=""
+          if [ "${{ env.AVX2_SUPPORTED }}" = "true" ]; then
+            OPTS="-DVECTORIA_USE_ASM"
+            ASM_FILE="asm/x86_64/gemm_avx2.S"
+          fi
           
-          g++ -std=c++17 -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp \
+          g++ -std=c++17 -O3 $OPTS -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp $ASM_FILE \
             core/tests/test_determinism_stress.cpp -o test_determinism_stress
           ./test_determinism_stress
-

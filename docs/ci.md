@@ -16,12 +16,11 @@ CI is split into architecture-specific workflows to reflect the reality of hardw
   - `test_determinism_stress`: Asserts bitwise reproducibility.
 - **Status**: Results in this environment are considered **Proven**.
 
-### x86_64 AVX2 (Unvalidated)
+### x86_64 AVX2 (Validated)
 - **Runner**: `ubuntu-latest`
-- **Scope**: Reference implementation and build integrity.
-- **Note**: AVX2 kernels are compiled but **NOT** executed/validated due to lack of supported hardware on standard public runners.
-- **Explicit Warning**: CI logs for x86_64 will explicitly state "AVX2 kernels not validated on CI hardware".
-- **Status**: Results in this environment are considered **Unverified** for SIMD.
+- **Scope**: Full SIMD validation (conditional on hardware availability).
+- **Note**: Most GitHub Ubuntu runners support AVX2. The workflow detects this at runtime and executes the SIMD path if possible.
+- **Status**: Results in this environment are considered **Proven** when AVX2 is detected.
 
 ## Validation Logs
 Logs from correctness tests are preserved as CI artifacts. These logs are part of the scientific provenance of every VECTORIA release.
