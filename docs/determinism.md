@@ -13,19 +13,19 @@ VECTORIA guarantees that the **Graph Topology** and **Execution Schedule** are i
 ### 2. Bitwise Reproducibility (Reference Kernels)
 When using **Reference Kernels** (default), VECTORIA guarantees bitwise identical floating-point results across:
 - **Time**: Repeated runs on the same machine.
-- **Space**: Runs on different machines with IEEE 754 compliant FPU.
+- **Space**: Runs on different machines with IEEE 754 compliant FPUs (ARM64 vs x86_64).
 - **Mechanism**: Strictly serial execution. No parallel reduction trees. Fixed accumulation order (Row-Major).
 
 ### 3. Memory Layout
 The `Arena` allocator ensures that internal buffer offsets are deterministic.
-- **Guarantee**: If Input A is at offset `0x0` and Input B is at `0x1000` in Run 1, they will be at the same relative offsets in Run 2.
+- **Guarantee**: If Input A is at offset `0x0` and Input B is at `0x1000` in Run 1, they will be at the same relative offsets in Run 2 on the same architecture.
 
 ## Limitations & Non-Guarantees
 
 ### 1. Assembly Kernels (Opt-in)
 When `VECTORIA_USE_ASM` is enabled:
-- **Cross-Platform**: Results may differ between x86_64 (AVX2) and ARM64 (NEON) due to different FMA (Fused Multiply-Add) behaviors or instruction implementations.
-- **Intra-Platform**: Results are deterministic on the same CPU.
+- **Cross-Platform**: Results **will likely differ** between x86_64 (AVX2) and ARM64 (NEON) at the bit-level. While mathematically equivalent, variations in FMA instruction rounding and vector lane accumulation mean they are not bitwise identical.
+- **Intra-Platform**: Results are bitwise deterministic on the same CPU architecture across runs.
 
 ### 2. Floating Point Associativity
 Vectoria does **NOT** use Kahan summation or compensated algorithms in the default kernels. 

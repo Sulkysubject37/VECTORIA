@@ -43,3 +43,19 @@ VECTORIA provides an explicit API to query the capabilities of the current execu
 - **SIMD Host Support**: Verifies if the host CPU supports the required SIMD instructions.
 
 This information is available in C++, Python, and Swift, allowing applications to make informed decisions about kernel policies.
+
+## Cross-Platform Support
+VECTORIA is designed for portability but makes a strict distinction between **Code Portability** and **Numerical Reproducibility**.
+
+### 1. Code Portability (Guaranteed)
+- The Core Engine and Reference Kernels are written in standard C++17.
+- The framework is verified to build and run on:
+  - **macOS** (Clang, Apple Silicon)
+  - **Linux** (GCC, x86_64)
+- Python and Swift bindings are portable across their respective supported OS environments.
+
+### 2. Numerical Reproducibility (Conditional)
+- **Within the same platform**: Bitwise identical results are guaranteed.
+- **Between different platforms (Reference Path)**: Guaranteed identical results (IEEE 754 compliance).
+- **Between different platforms (SIMD Path)**: **NOT guaranteed**. Floating-point associativity differences and hardware-specific FMA (Fused Multiply-Add) behavior may cause tiny bitwise drifts between ARM64 and x86_64 implementations. 
+- **Policy**: If cross-platform bitwise identity is required, users MUST select the `Reference` kernel policy.
