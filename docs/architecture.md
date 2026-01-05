@@ -35,3 +35,11 @@ VECTORIA enforces explicit kernel selection via `EngineConfig`. No implicit "aut
 
 ## Determinism
 By ensuring the graph is immutable and the execution schedule is derived through a fixed algorithm, VECTORIA guarantees that for a given input and set of parameters, the execution path and memory layout remain constant across runs on the same hardware.
+
+## Capability Introspection
+VECTORIA provides an explicit API to query the capabilities of the current execution environment.
+- **Architecture**: Identifies the host CPU architecture (x86_64, ARM64).
+- **SIMD Compilation**: Confirms if SIMD kernels were enabled at build time.
+- **SIMD Host Support**: Verifies if the host CPU supports the required SIMD instructions.
+
+This information is available in C++, Python, and Swift, allowing applications to make informed decisions about kernel policies.

@@ -1,12 +1,31 @@
 #include "vectoria/c_api.h"
 #include "vectoria/ir.hpp"
 #include "vectoria/engine.hpp"
+#include "vectoria/capabilities.hpp"
 #include <vector>
 #include <cstring>
 
 using namespace vectoria;
 
 extern "C" {
+
+void vectoria_get_capabilities(
+    int* arch, 
+    int* simd_compiled, 
+    int* simd_supported,
+    char* arch_name_buffer,
+    size_t arch_name_len
+) {
+    auto caps = capabilities::get_system_capabilities();
+    if (arch) *arch = static_cast<int>(caps.arch);
+    if (simd_compiled) *simd_compiled = caps.simd_compiled ? 1 : 0;
+    if (simd_supported) *simd_supported = caps.simd_supported_on_host ? 1 : 0;
+    
+    if (arch_name_buffer && arch_name_len > 0) {
+        strncpy(arch_name_buffer, caps.arch_name.c_str(), arch_name_len - 1);
+        arch_name_buffer[arch_name_len - 1] = '\0';
+    }
+}
 
 vectoria_graph_t vectoria_graph_create() {
     return new ir::Graph();

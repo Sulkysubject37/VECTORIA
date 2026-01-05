@@ -44,9 +44,18 @@ void vectoria_engine_get_trace_event(
     size_t index, 
     int* type, 
     uint64_t* timestamp_ns, 
-    int64_t* node_id, // -1 if none
+    int64_t* node_id, 
     char* details_buffer, 
     size_t buffer_len
+);
+
+// --- Capabilities ---
+void vectoria_get_capabilities(
+    int* arch, // 0=Unk, 1=x86, 2=ARM
+    int* simd_compiled, 
+    int* simd_supported,
+    char* arch_name_buffer,
+    size_t arch_name_len
 );
 
 #ifdef __cplusplus
