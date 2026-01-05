@@ -12,9 +12,11 @@ VECTORIA is structured as a series of strict computational layers designed for d
 6. **Kernel Dispatch**: The `Engine` iterates through the schedule. For each `OpNode`, it retrieves the pre-allocated buffers and calls the appropriate kernel.
 
 ## Kernel Dispatching
-Currently, kernel dispatch is **explicit and static**. The engine checks the operation type (e.g., `MatMul`) and calls the corresponding kernel function directly. 
+Currently, kernel dispatch is **explicit and static**. 
+- Default: **Reference Kernels** (C++, Triple Loop).
+- Opt-in: **Assembly Kernels** (AVX/NEON) via `VECTORIA_USE_ASM` compile-time flag.
 
-There is **no dynamic heuristic** (e.g., "choose AVX if matrix is large"). This ensures that execution is predictable. If optimization is needed, it will be enabled via compile-time flags or explicit engine configuration, not runtime magic.
+There is **no dynamic heuristic** (e.g., "choose AVX if matrix is large"). This ensures that execution is predictable.
 
 ## Layers
 

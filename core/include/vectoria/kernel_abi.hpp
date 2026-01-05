@@ -53,4 +53,24 @@ typedef VectoriaStatus (*binary_f32_t)(
     size_t count
 );
 
+// --- ASM Symbol Declarations ---
+// These are defined in asm/
+#if defined(__x86_64__)
+    VectoriaStatus gemm_f32_avx2(
+        const float* a, const float* b, float* c,
+        size_t m, size_t n, size_t k,
+        size_t lda, size_t ldb, size_t ldc,
+        float alpha, float beta
+    );
+#endif
+
+#if defined(__aarch64__)
+    VectoriaStatus gemm_f32_neon(
+        const float* a, const float* b, float* c,
+        size_t m, size_t n, size_t k,
+        size_t lda, size_t ldb, size_t ldc,
+        float alpha, float beta
+    );
+#endif
+
 } // extern "C"
