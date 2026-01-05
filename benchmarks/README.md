@@ -3,9 +3,11 @@
 This directory contains reproducible benchmark harnesses for measuring kernel performance and detecting regression.
 
 ## Purpose
-Benchmarks in VECTORIA exist to:
+Benchmarks in VECTORIA exist solely to:
 1. Ensure that optimizations provide a tangible benefit over the reference kernels.
 2. Detect performance regressions in core dispatch and memory management.
+
+**Measurements are intended for internal validation only.** Results are non-portable and depend on specific CPU microarchitecture, compiler versions, and build flags.
 
 ## Available Benchmarks
 - `gemm_bench.cpp`: Measures matrix multiplication throughput (GFLOPS).

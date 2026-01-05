@@ -14,10 +14,10 @@ It prioritizes **correctness over peak throughput** and **inspectability over ma
 ## 🚀 Key Features
 
 - **Strict Determinism**: Bitwise identical results across repeated runs on the same hardware.
+- **Cross-Platform Portability**: Verified execution on macOS (Apple Silicon) and Linux (x86_64).
 - **Explicit Memory Model**: Arena-based allocation with predictable lifetimes and no garbage collection.
 - **Auditable Execution**: Full tracing of every kernel dispatch, memory allocation, and graph operation.
-- **Platform Parity**: Verified semantic equivalence between C++ Reference, ARM64 NEON, and x86_64 AVX2 kernels.
-- **Multi-Language Bindings**: First-class support for C++, Python, and Swift.
+- **Semantic Truth**: All SIMD kernels are validated against bit-exact C++ reference implementations.
 
 ## 🛠 Architecture
 
@@ -28,6 +28,16 @@ VECTORIA is built in strict layers:
 | **Frontend** | Graph construction, inspection | Python, Swift |
 | **Core** | IR, Scheduling, Memory, Validation | C++17 |
 | **Kernels** | SIMD computation (GEMM, etc.) | Assembly (AVX2, NEON) |
+
+### Platform Parity & Validation
+| Architecture | Implementation | CI Validation | Reproducibility |
+|--------------|----------------|---------------|-----------------|
+| **ARM64 (NEON)** | Active | **Full** (macos-latest) | Bitwise (Intra-platform) |
+| **x86_64 (AVX2)** | Active | **None** (Build only) | Bitwise (Intra-platform) |
+| **Reference** | Active | **Full** | **Bitwise (Cross-platform)** |
+
+*Note: SIMD results may drift cross-platform due to hardware FMA differences. Use the `Reference` policy for absolute cross-arch bitwise identity.*
+
 
 ### Supported Operations
 - `MatMul`: Matrix Multiplication (FP32)
