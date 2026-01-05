@@ -34,6 +34,29 @@ VectoriaStatus gemm_f32(
     float alpha, float beta
 );
 
+/**
+ * Bias Add: Out = In + Bias (Broadcast)
+ * In: [M, N]
+ * Bias: [1, N]
+ * Out: [M, N]
+ */
+VectoriaStatus bias_add_f32(
+    const float* input,
+    const float* bias,
+    float* output,
+    size_t m, size_t n
+);
+
+/**
+ * ReLU: Out = max(0, In)
+ * Element-wise.
+ */
+VectoriaStatus relu_f32(
+    const float* input,
+    float* output,
+    size_t count
+);
+
 } // namespace reference
 } // namespace kernels
 } // namespace vectoria

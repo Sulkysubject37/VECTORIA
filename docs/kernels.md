@@ -20,3 +20,11 @@ These kernels are used in two scenarios:
 - **File**: `core/src/kernels/gemm_ref.cpp`
 - **Algorithm**: Standard $O(M \cdot N \cdot K)$ triple loop.
 - **Precision**: FP32 (accumulators match output type).
+
+### BiasAdd (Scalar)
+- **File**: `core/src/kernels/bias_add_ref.cpp`
+- **Algorithm**: Broadcast add. `Out[i, j] = In[i, j] + Bias[j]`.
+
+### ReLU (Scalar)
+- **File**: `core/src/kernels/relu_ref.cpp`
+- **Algorithm**: `max(0, x)`.
