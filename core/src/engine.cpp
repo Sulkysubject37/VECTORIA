@@ -216,6 +216,55 @@ void Engine::execute() {
                 std::string mode = "Reference | Inputs: [" + std::to_string(input_idx) + "]";
                 tracer_.log(trace::EventType::KernelDispatch, node_idx, mode);
             }
+            else if (op->op == ir::OpType::Add) {
+                if (op->inputs.size() != 2) throw std::runtime_error("Add requires 2 inputs");
+                size_t idx_a = op->inputs[0].index;
+                size_t idx_b = op->inputs[1].index;
+                
+                const float* a_ptr = static_cast<const float*>(node_buffers_[idx_a]);
+                const float* b_ptr = static_cast<const float*>(node_buffers_[idx_b]);
+                float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
+                
+                ir::TensorShape s = get_shape(idx_a);
+                size_t count = 1;
+                for(auto d : s.dims) count *= d;
+                
+                kernels::reference::add_f32(a_ptr, b_ptr, out_ptr, count);
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference | Inputs: [" + std::to_string(idx_a) + ", " + std::to_string(idx_b) + "]");
+            }
+            else if (op->op == ir::OpType::Mul) {
+                if (op->inputs.size() != 2) throw std::runtime_error("Mul requires 2 inputs");
+                size_t idx_a = op->inputs[0].index;
+                size_t idx_b = op->inputs[1].index;
+                
+                const float* a_ptr = static_cast<const float*>(node_buffers_[idx_a]);
+                const float* b_ptr = static_cast<const float*>(node_buffers_[idx_b]);
+                float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
+                
+                ir::TensorShape s = get_shape(idx_a);
+                size_t count = 1;
+                for(auto d : s.dims) count *= d;
+                
+                kernels::reference::mul_f32(a_ptr, b_ptr, out_ptr, count);
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference | Inputs: [" + std::to_string(idx_a) + ", " + std::to_string(idx_b) + "]");
+            }
+            else if (op->op == ir::OpType::ReduceSum) {
+                if (op->inputs.size() != 1) throw std::runtime_error("ReduceSum requires 1 input");
+                size_t idx_in = op->inputs[0].index;
+                
+                const float* in_ptr = static_cast<const float*>(node_buffers_[idx_in]);
+                float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
+                
+                ir::TensorShape s = get_shape(idx_in);
+                if (s.dims.empty()) throw std::runtime_error("ReduceSum input must have at least 1 dim");
+                
+                size_t inner = s.dims.back();
+                size_t outer = 1;
+                for(size_t i=0; i<s.dims.size()-1; ++i) outer *= s.dims[i];
+                
+                kernels::reference::reduce_sum_f32(in_ptr, out_ptr, outer, inner);
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference | Inputs: [" + std::to_string(idx_in) + "]");
+            }
         }
         tracer_.log(trace::EventType::NodeExecutionEnd, node_idx);
     }

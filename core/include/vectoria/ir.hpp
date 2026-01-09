@@ -24,7 +24,9 @@ enum class OpType : uint16_t {
     BiasAdd,
     MatMul,
     Relu,
-    Softmax
+    Softmax,
+    Mul,
+    ReduceSum
 };
 
 struct NodeId {

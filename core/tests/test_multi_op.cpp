@@ -69,7 +69,79 @@ void test_gemm_bias_relu() {
     std::cout << "PASSED" << std::endl;
 }
 
+void test_elementwise_and_reduction() {
+    std::cout << "Testing Add -> Mul -> ReduceSum..." << std::endl;
+    
+    // Graph:
+    // A [2, 3] = [[1, 2, 3], [4, 5, 6]]
+    // B [2, 3] = [[1, 1, 1], [2, 2, 2]]
+    // C = Add(A, B) -> [[2, 3, 4], [6, 7, 8]]
+    // D [2, 3] = [[2, 2, 2], [0.5, 0.5, 0.5]]
+    // E = Mul(C, D) -> [[4, 6, 8], [3, 3.5, 4]]
+    // F = ReduceSum(E) -> [18, 10.5]
+    
+    ir::Graph graph;
+    
+    // Nodes
+    auto add_in = [&](const char* name, std::vector<int64_t> shape) {
+        size_t id = graph.nodes.size();
+        graph.nodes.push_back({ {id}, ir::InputNode{name, {shape}, ir::DataType::Float32} });
+        return id;
+    };
+    
+    auto add_op = [&](ir::OpType type, std::vector<size_t> inputs, std::vector<int64_t> out_shape) {
+        size_t id = graph.nodes.size();
+        std::vector<ir::NodeId> ins;
+        for(auto i : inputs) ins.push_back({i});
+        graph.nodes.push_back({ {id}, ir::OpNode{type, ins, {out_shape}, ir::DataType::Float32} });
+        return id;
+    };
+    
+    size_t a = add_in("A", {2, 3});
+    size_t b = add_in("B", {2, 3});
+    size_t d = add_in("D", {2, 3});
+    
+    size_t c = add_op(ir::OpType::Add, {a, b}, {2, 3});
+    size_t e = add_op(ir::OpType::Mul, {c, d}, {2, 3});
+    size_t f = add_op(ir::OpType::ReduceSum, {e}, {2});
+    
+    graph.outputs = {{f}};
+    
+    Engine engine(graph);
+    engine.compile();
+    
+    float* a_ptr = (float*)engine.get_buffer(a);
+    float* b_ptr = (float*)engine.get_buffer(b);
+    float* d_ptr = (float*)engine.get_buffer(d);
+    
+    // Init data
+    a_ptr[0]=1; a_ptr[1]=2; a_ptr[2]=3;
+    a_ptr[3]=4; a_ptr[4]=5; a_ptr[5]=6;
+    
+    b_ptr[0]=1; b_ptr[1]=1; b_ptr[2]=1;
+    b_ptr[3]=2; b_ptr[4]=2; b_ptr[5]=2;
+    
+    d_ptr[0]=2; d_ptr[1]=2; d_ptr[2]=2;
+    d_ptr[3]=0.5; d_ptr[4]=0.5; d_ptr[5]=0.5;
+    
+    engine.execute();
+    
+    float* out_ptr = (float*)engine.get_buffer(f);
+    
+    if (std::abs(out_ptr[0] - 18.0f) > 1e-5f) {
+        std::cerr << "Mismatch at 0: " << out_ptr[0] << " != 18.0" << std::endl;
+        exit(1);
+    }
+    if (std::abs(out_ptr[1] - 10.5f) > 1e-5f) {
+        std::cerr << "Mismatch at 1: " << out_ptr[1] << " != 10.5" << std::endl;
+        exit(1);
+    }
+    
+    std::cout << "PASSED" << std::endl;
+}
+
 int main() {
     test_gemm_bias_relu();
+    test_elementwise_and_reduction();
     return 0;
 }
