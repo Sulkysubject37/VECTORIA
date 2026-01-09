@@ -1,4 +1,5 @@
 #include "vectoria/trace.hpp"
+#include <iostream>
 
 namespace vectoria {
 namespace trace {

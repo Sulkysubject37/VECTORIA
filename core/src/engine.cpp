@@ -71,7 +71,8 @@ void* Engine::get_buffer(size_t node_idx) const {
 
 void Engine::compile() {
     tracer_.clear();
-    tracer_.log(trace::EventType::GraphCompilation, -1, "Start");
+    std::string mode_str = (config_.mode == ExecutionMode::Deployment) ? "Deployment" : "Research";
+    tracer_.log(trace::EventType::GraphCompilation, -1, "Start | Mode: " + mode_str);
 
     if (!validate()) {
         throw std::runtime_error("Graph validation failed");
