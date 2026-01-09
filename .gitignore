@@ -3,3 +3,6 @@ build/
 *.pyc
 __pycache__/
 .DS_Store
+libvectoria.dylib
+swift/libvectoria.dylib
+swift/.build/
