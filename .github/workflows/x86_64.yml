@@ -28,7 +28,7 @@ jobs:
         if: env.AVX2_SUPPORTED == 'true'
         run: |
           g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp asm/x86_64/gemm_avx2.S \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/x86_64/*.S \
             core/tests/test_gemm_simd.cpp -o test_gemm_simd
           ./test_gemm_simd > validation_simd.log
 
@@ -36,7 +36,7 @@ jobs:
         if: env.AVX2_SUPPORTED == 'true'
         run: |
           g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp asm/x86_64/*.S \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/x86_64/*.S \
             core/tests/test_simd_elementwise.cpp -o test_simd_el
           ./test_simd_el >> validation_simd.log
 
@@ -44,21 +44,22 @@ jobs:
         if: env.AVX2_SUPPORTED == 'true'
         run: |
           g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp asm/x86_64/*.S \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/x86_64/*.S \
             core/tests/test_simd_reduction.cpp -o test_simd_red
           ./test_simd_red >> validation_simd.log
 
       - name: Build and Run Multi-Op Tests
         run: |
           OPTS=""
-          ASM_FILE=""
+          SRC_FILES="core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp"
+          ASM_FILES=""
           if [ "${{ env.AVX2_SUPPORTED }}" = "true" ]; then
             OPTS="-DVECTORIA_USE_ASM"
-            ASM_FILE="asm/x86_64/gemm_avx2.S"
+            ASM_FILES="asm/x86_64/*.S"
           fi
           
           g++ -std=c++17 -O3 $OPTS -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp $ASM_FILE \
+            $SRC_FILES $ASM_FILES \
             core/tests/test_multi_op.cpp -o test_multi_op
           ./test_multi_op > validation_multi_op.log
 
@@ -66,21 +67,22 @@ jobs:
         if: env.AVX2_SUPPORTED == 'true'
         run: |
           g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp asm/x86_64/gemm_avx2.S \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/x86_64/*.S \
             core/tests/test_graph_equivalence.cpp -o test_graph_equivalence
           ./test_graph_equivalence > validation_equivalence.log
 
       - name: Build and Run Determinism Stress Tests
         run: |
           OPTS=""
-          ASM_FILE=""
+          SRC_FILES="core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp"
+          ASM_FILES=""
           if [ "${{ env.AVX2_SUPPORTED }}" = "true" ]; then
             OPTS="-DVECTORIA_USE_ASM"
-            ASM_FILE="asm/x86_64/gemm_avx2.S"
+            ASM_FILES="asm/x86_64/*.S"
           fi
           
           g++ -std=c++17 -O3 $OPTS -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp $ASM_FILE \
+            $SRC_FILES $ASM_FILES \
             core/tests/test_determinism_stress.cpp -o test_determinism_stress
           ./test_determinism_stress > validation_determinism.log
 
@@ -101,14 +103,15 @@ jobs:
       - name: Build Shared Library for Python Tests
         run: |
           OPTS=""
-          ASM_FILE=""
+          SRC_FILES="core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp"
+          ASM_FILES=""
           if [ "${{ env.AVX2_SUPPORTED }}" = "true" ]; then
             OPTS="-DVECTORIA_USE_ASM"
-            ASM_FILE="asm/x86_64/gemm_avx2.S"
+            ASM_FILES="asm/x86_64/*.S"
           fi
           # Force .dylib extension to match runtime.py expectation
           g++ -std=c++17 -shared -fPIC $OPTS -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp $ASM_FILE \
+            $SRC_FILES $ASM_FILES \
             -o libvectoria.dylib
 
       - name: Run Python Tests

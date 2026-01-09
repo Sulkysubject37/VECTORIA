@@ -16,49 +16,49 @@ jobs:
       - name: Build and Run CoreML Equivalence Tests
         run: |
           g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/arm64/gemm_neon.S \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/arm64/*.S \
             core/tests/test_coreml_equivalence.cpp -o test_equivalence
           ./test_equivalence > validation_coreml.log
 
       - name: Build and Run SIMD Correctness Harness
         run: |
           g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp asm/arm64/gemm_neon.S \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/arm64/*.S \
             core/tests/test_gemm_simd.cpp -o test_gemm_simd
           ./test_gemm_simd > validation_simd.log
 
       - name: Validate SIMD Elementwise (NEON)
         run: |
           g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp asm/arm64/*.S \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/arm64/*.S \
             core/tests/test_simd_elementwise.cpp -o test_simd_el
           ./test_simd_el >> validation_simd.log
 
       - name: Validate SIMD Reductions (NEON)
         run: |
           g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp asm/arm64/*.S \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/arm64/*.S \
             core/tests/test_simd_reduction.cpp -o test_simd_red
           ./test_simd_red >> validation_simd.log
         
       - name: Build and Run Multi-Op Tests
         run: |
           g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp asm/arm64/gemm_neon.S \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/arm64/*.S \
             core/tests/test_multi_op.cpp -o test_multi_op
           ./test_multi_op > validation_multi_op.log
 
       - name: Build and Run Graph Equivalence Tests
         run: |
           g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp asm/arm64/gemm_neon.S \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/arm64/*.S \
             core/tests/test_graph_equivalence.cpp -o test_graph_equivalence
           ./test_graph_equivalence > validation_equivalence.log
 
       - name: Build and Run Determinism Stress Tests
         run: |
           g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp asm/arm64/gemm_neon.S \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/arm64/*.S \
             core/tests/test_determinism_stress.cpp -o test_determinism_stress
           ./test_determinism_stress > validation_determinism.log
 
@@ -79,7 +79,7 @@ jobs:
       - name: Build Shared Library for Python Tests
         run: |
           g++ -std=c++17 -shared -fPIC -DVECTORIA_USE_ASM -Icore/include \
-            core/src/*.cpp core/src/kernels/*.cpp asm/arm64/gemm_neon.S \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/arm64/*.S \
             -o libvectoria.dylib
 
       - name: Run Python Tests
