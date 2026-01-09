@@ -2,6 +2,7 @@
 #include "vectoria/ir.hpp"
 #include "vectoria/engine.hpp"
 #include "vectoria/capabilities.hpp"
+#include "vectoria/graph_ops.hpp"
 #include <vector>
 #include <cstring>
 
@@ -210,6 +211,12 @@ int vectoria_graph_add_op_reduce_sum(vectoria_graph_t g, int input) {
     size_t id = graph->nodes.size();
     graph->nodes.push_back({ {id}, node });
     return static_cast<int>(id);
+}
+
+int vectoria_graph_add_softmax(vectoria_graph_t g, int input) {
+    auto* graph = static_cast<ir::Graph*>(g);
+    // Use the composed graph op
+    return vectoria::graph::add_softmax_composed(*graph, input);
 }
 
 void vectoria_graph_set_output(vectoria_graph_t g, int node_id) {

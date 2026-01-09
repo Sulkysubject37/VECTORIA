@@ -6,6 +6,26 @@
 #include <stdexcept>
 #include <numeric>
 
+extern "C" {
+#if defined(__aarch64__)
+    VectoriaStatus add_f32_neon(const float* a, const float* b, float* out, size_t count);
+    VectoriaStatus mul_f32_neon(const float* a, const float* b, float* out, size_t count);
+    VectoriaStatus sub_f32_neon(const float* a, const float* b, float* out, size_t count);
+    VectoriaStatus div_f32_neon(const float* a, const float* b, float* out, size_t count);
+    VectoriaStatus relu_f32_neon(const float* in, float* out, size_t count);
+    VectoriaStatus reduce_sum_f32_neon(const float* in, float* out, size_t outer, size_t inner);
+    VectoriaStatus reduce_max_f32_neon(const float* in, float* out, size_t outer, size_t inner);
+#elif defined(__x86_64__)
+    VectoriaStatus add_f32_avx2(const float* a, const float* b, float* out, size_t count);
+    VectoriaStatus mul_f32_avx2(const float* a, const float* b, float* out, size_t count);
+    VectoriaStatus sub_f32_avx2(const float* a, const float* b, float* out, size_t count);
+    VectoriaStatus div_f32_avx2(const float* a, const float* b, float* out, size_t count);
+    VectoriaStatus relu_f32_avx2(const float* in, float* out, size_t count);
+    VectoriaStatus reduce_sum_f32_avx2(const float* in, float* out, size_t outer, size_t inner);
+    VectoriaStatus reduce_max_f32_avx2(const float* in, float* out, size_t outer, size_t inner);
+#endif
+}
+
 namespace vectoria {
 
 Engine::Engine(const ir::Graph& graph, EngineConfig config) 
