@@ -109,6 +109,7 @@ for event in rt.get_trace():
 - [Release Policy](docs/release_policy.md)
 - [CI & Validation](docs/ci.md)
 - [Performance Model](docs/performance_model.md)
+- [Deployment & CoreML](docs/deployment.md)
 
 ## ⚠️ Philosophy (What this is NOT)
 - **Not an ML Framework**: No auto-grad, no optimizers.
