@@ -73,3 +73,29 @@ jobs:
         with:
           name: x86_64-validation-logs
           path: "*.log"
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Python Dependencies
+        run: pip install pytest
+
+      - name: Build Shared Library for Python Tests
+        run: |
+          OPTS=""
+          ASM_FILE=""
+          if [ "${{ env.AVX2_SUPPORTED }}" = "true" ]; then
+            OPTS="-DVECTORIA_USE_ASM"
+            ASM_FILE="asm/x86_64/gemm_avx2.S"
+          fi
+          # Force .dylib extension to match runtime.py expectation
+          g++ -std=c++17 -shared -fPIC $OPTS -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp $ASM_FILE \
+            -o libvectoria.dylib
+
+      - name: Run Python Integration Tests
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/python
+          pytest python/tests/test_integration.py
