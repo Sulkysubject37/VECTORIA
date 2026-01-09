@@ -57,6 +57,38 @@ VectoriaStatus relu_f32(
     size_t count
 );
 
+/**
+ * Element-wise Add: Out = A + B
+ */
+VectoriaStatus add_f32(
+    const float* a,
+    const float* b,
+    float* out,
+    size_t count
+);
+
+/**
+ * Element-wise Mul: Out = A * B
+ */
+VectoriaStatus mul_f32(
+    const float* a,
+    const float* b,
+    float* out,
+    size_t count
+);
+
+/**
+ * Reduce Sum (Last Axis): Out[i] = sum(In[i, :])
+ * In: [Outer, Inner]
+ * Out: [Outer]
+ */
+VectoriaStatus reduce_sum_f32(
+    const float* input,
+    float* output,
+    size_t outer_dim,
+    size_t inner_dim
+);
+
 } // namespace reference
 } // namespace kernels
 } // namespace vectoria
