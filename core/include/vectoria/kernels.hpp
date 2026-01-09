@@ -89,6 +89,49 @@ VectoriaStatus reduce_sum_f32(
     size_t inner_dim
 );
 
+/**
+ * Reduce Max (Last Axis): Out[i] = max(In[i, :])
+ * In: [Outer, Inner]
+ * Out: [Outer]
+ */
+VectoriaStatus reduce_max_f32(
+    const float* input,
+    float* output,
+    size_t outer_dim,
+    size_t inner_dim
+);
+
+/**
+ * Element-wise Exp: Out = exp(A)
+ */
+VectoriaStatus exp_f32(
+    const float* input,
+    float* output,
+    size_t count
+);
+
+/**
+ * Subtract with Broadcast (Col Vector): Out[i, j] = A[i, j] - B[i]
+ */
+VectoriaStatus sub_broadcast_f32(
+    const float* a,
+    const float* b,
+    float* out,
+    size_t outer,
+    size_t inner
+);
+
+/**
+ * Divide with Broadcast (Col Vector): Out[i, j] = A[i, j] / B[i]
+ */
+VectoriaStatus div_broadcast_f32(
+    const float* a,
+    const float* b,
+    float* out,
+    size_t outer,
+    size_t inner
+);
+
 } // namespace reference
 } // namespace kernels
 } // namespace vectoria
