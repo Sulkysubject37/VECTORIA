@@ -27,6 +27,8 @@ typealias GraphCreateFn = @convention(c) () -> GraphHandle?
 typealias GraphDestroyFn = @convention(c) (GraphHandle?) -> Void
 typealias GraphAddInputFn = @convention(c) (GraphHandle?, UnsafePointer<Int8>, UnsafePointer<Int64>, Int32, Int32) -> Int32
 typealias GraphAddOpMatMulFn = @convention(c) (GraphHandle?, Int32, Int32) -> Int32
+typealias GraphAddOpBiasAddFn = @convention(c) (GraphHandle?, Int32, Int32) -> Int32
+typealias GraphAddOpReluFn = @convention(c) (GraphHandle?, Int32) -> Int32
 typealias GraphSetOutputFn = @convention(c) (GraphHandle?, Int32) -> Void
 typealias EngineCreateWithPolicyFn = @convention(c) (GraphHandle?, Int32) -> EngineHandle?
 typealias EngineDestroyFn = @convention(c) (EngineHandle?) -> Void
@@ -43,6 +45,8 @@ public class VectoriaRuntime {
     private let graphDestroy: GraphDestroyFn
     private let graphAddInput: GraphAddInputFn
     private let graphAddOpMatMul: GraphAddOpMatMulFn
+    private let graphAddOpBiasAdd: GraphAddOpBiasAddFn
+    private let graphAddOpRelu: GraphAddOpReluFn
     private let graphSetOutput: GraphSetOutputFn
     private let engineCreateWithPolicy: EngineCreateWithPolicyFn
     private let engineDestroy: EngineDestroyFn
@@ -67,6 +71,8 @@ public class VectoriaRuntime {
         graphDestroy = load("vectoria_graph_destroy")
         graphAddInput = load("vectoria_graph_add_input")
         graphAddOpMatMul = load("vectoria_graph_add_op_matmul")
+        graphAddOpBiasAdd = load("vectoria_graph_add_op_bias_add")
+        graphAddOpRelu = load("vectoria_graph_add_op_relu")
         graphSetOutput = load("vectoria_graph_set_output")
         engineCreateWithPolicy = load("vectoria_engine_create_with_policy")
         engineDestroy = load("vectoria_engine_destroy")
@@ -92,6 +98,14 @@ public class VectoriaRuntime {
     
     internal func addOpMatMul(_ handle: GraphHandle?, inputA: Int32, inputB: Int32) -> Int32 {
         return graphAddOpMatMul(handle, inputA, inputB)
+    }
+
+    internal func addOpBiasAdd(_ handle: GraphHandle?, input: Int32, bias: Int32) -> Int32 {
+        return graphAddOpBiasAdd(handle, input, bias)
+    }
+
+    internal func addOpRelu(_ handle: GraphHandle?, input: Int32) -> Int32 {
+        return graphAddOpRelu(handle, input)
     }
     
     internal func setOutput(_ handle: GraphHandle?, nodeId: Int32) {
@@ -159,6 +173,14 @@ public class VectoriaGraph {
     
     public func addOpMatMul(inputA: Int32, inputB: Int32) -> Int32 {
         return runtime.addOpMatMul(handle, inputA: inputA, inputB: inputB)
+    }
+
+    public func addOpBiasAdd(input: Int32, bias: Int32) -> Int32 {
+        return runtime.addOpBiasAdd(handle, input: input, bias: bias)
+    }
+
+    public func addOpRelu(input: Int32) -> Int32 {
+        return runtime.addOpRelu(handle, input: input)
     }
     
     public func setOutput(nodeId: Int32) {
