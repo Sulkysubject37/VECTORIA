@@ -64,7 +64,7 @@ jobs:
       - name: Run Python Tests
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/python
-          pytest python/tests/
+          pytest -s python/tests/
 
       - name: Run Swift Integration Tests
         run: |

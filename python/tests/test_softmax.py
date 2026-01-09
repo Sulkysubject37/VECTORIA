@@ -26,3 +26,10 @@ def test_softmax_py():
     assert math.isclose(out[0], e1/s, rel_tol=1e-5)
     assert math.isclose(out[1], e2/s, rel_tol=1e-5)
     assert math.isclose(out[2], e3/s, rel_tol=1e-5)
+
+    # Validate Trace
+    events = rt.get_trace()
+    # Expect roughly: Max, Sub, Exp, Sum, Div
+    # We just check we have enough events
+    dispatch_count = sum(1 for e in events if e.type.name == 'KernelDispatch')
+    assert dispatch_count >= 5, f"Expected at least 5 kernels for Softmax expansion, got {dispatch_count}"
