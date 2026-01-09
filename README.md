@@ -10,7 +10,7 @@ VECTORIA is a deterministic, cross-platform computational kernel framework desig
 
 It prioritizes **correctness over peak throughput** and **inspectability over magic**.
 
-Current Version: **v1.0.0-beta (Phase 6 Complete)**
+Current Version: **v.1.1.2-delta (Phase 6 Complete)**
 
 ## 🚀 Key Features
 

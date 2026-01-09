@@ -8,7 +8,7 @@ VECTORIA follows [Semantic Versioning (SemVer)](https://semver.org/).
 - **Minor**: New operations, architectures, or bindings.
 - **Patch**: Bug fixes, performance tweaks (non-semantic).
 
-Current Version: **v1.0.0-beta**
+Current Version: **v.1.1.2-delta**
 
 ## Release Criteria (v0.1.0)
 A release candidate qualifies for v0.1.0 if and only if it meets the following:
