@@ -1,33 +1,22 @@
 # VECTORIA Assembly Kernels
 
-This directory contains architecture-specific SIMD kernels used by the VECTORIA Core Engine.
+This directory contains architecture-specific assembly implementations of core kernels.
 
-## Status
+## Supported Architectures
 
 ### ARM64 (NEON)
-- Fully implemented
-- Correctness validated against reference kernels
-- Continuously tested on Apple Silicon via GitHub Actions
+- `gemm_neon.S`: SGEMM
+- `add_neon.S`: Elementwise Add
+- `mul_neon.S`: Elementwise Mul
+- `sub_neon.S`: Elementwise Sub
+- `div_neon.S`: Elementwise Div
+- `relu_neon.S`: Elementwise ReLU
 
 ### x86_64 (AVX2)
-- Fully implemented
-- Correctness validated against reference kernels
-- Continuously tested on Linux via GitHub Actions
+- `gemm_avx2.S`: SGEMM
 
-## Structure
-
-```
-arm64/
-  NEON implementations (Apple Silicon, AArch64)
-
-x86_64/
-  AVX2 implementations (Intel/AMD)
-```
-
-## Notes
-
-- SIMD kernels are opt-in and never selected implicitly.
-- Reference kernels remain the ground truth.
-- Results are bitwise deterministic on the same architecture.
-
-See [docs/kernels.md](../docs/kernels.md) for ABI and validation details.
+## Conventions
+- **Precision**: FP32 (Single Precision)
+- **Calling Convention**: System V AMD64 ABI (Linux/macOS)
+- **Symbol Names**: `_function_name` (macOS), `function_name` (Linux)
+- **Determinism**: Kernels must produce bitwise identical results to the Reference implementation on the same hardware.

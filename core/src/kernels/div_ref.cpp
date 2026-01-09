@@ -11,6 +11,14 @@ VectoriaStatus div_f32(
     size_t count_a,
     size_t count_b
 ) {
+    if (!a || !b || !out) return VECTORIA_ERROR_INVALID_SHAPE;
+
+    if (count_a == count_b) {
+        for (size_t i = 0; i < count_a; ++i) {
+            out[i] = a[i] / b[i];
+        }
+        return VECTORIA_SUCCESS;
+    }
     return VECTORIA_ERROR_INVALID_SHAPE;
 }
 

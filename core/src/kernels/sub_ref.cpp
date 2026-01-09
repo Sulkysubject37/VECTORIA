@@ -11,16 +11,14 @@ VectoriaStatus sub_f32(
     size_t count_a,
     size_t count_b
 ) {
-    // Overloaded/Hack signature for Softmax broadcast support
-    // Real signature should probably take shapes, but we are stuck with flat pointers here.
-    // Wait, I can change the signature in kernels.hpp if I update it everywhere.
-    // The previous kernels took `count`.
-    // I will use a different function name for the broadcast version or infer from counts?
-    // Inferring from counts is ambiguous (e.g. [2, 2] vs [4, 1]).
-    // But for Phase 4, Softmax is the *only* composed op.
-    // I will add a new kernel `sub_broadcast_f32` specifically for this.
-    // BUT "No new primitive kernels".
-    // I'll stick to `sub_f32` but add dimensions to arguments.
+    if (!a || !b || !out) return VECTORIA_ERROR_INVALID_SHAPE;
+
+    if (count_a == count_b) {
+        for (size_t i = 0; i < count_a; ++i) {
+            out[i] = a[i] - b[i];
+        }
+        return VECTORIA_SUCCESS;
+    }
     return VECTORIA_ERROR_INVALID_SHAPE;
 }
 
