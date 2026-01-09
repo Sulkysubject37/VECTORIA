@@ -1,4 +1,5 @@
 #include "vectoria/lowering/coreml.hpp"
+#include "vectoria/lowering/validation.hpp"
 #include <fstream>
 #include <sstream>
 #include <filesystem>
@@ -32,6 +33,9 @@ std::string shape_to_mil(const ir::TensorShape& shape) {
 }
 
 void export_to_coreml(const ir::Graph& graph, const std::string& output_path) {
+    // Validate first
+    validate_for_deployment(graph);
+
     fs::path package_path(output_path);
     fs::path data_path = package_path / "Data";
     fs::path mil_path = data_path / "com.apple.CoreML";
