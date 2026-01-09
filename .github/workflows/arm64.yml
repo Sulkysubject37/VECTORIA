@@ -13,6 +13,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Build and Run CoreML Equivalence Tests
+        run: |
+          g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/arm64/gemm_neon.S \
+            core/tests/test_coreml_equivalence.cpp -o test_equivalence
+          ./test_equivalence > validation_coreml.log
+
       - name: Build and Run SIMD Correctness Harness
         run: |
           g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
