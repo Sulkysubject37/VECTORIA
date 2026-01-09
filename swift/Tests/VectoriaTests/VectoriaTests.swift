@@ -82,6 +82,78 @@ final class VectoriaTests: XCTestCase {
         XCTAssertEqual(outPtr[2], 1.0)
         XCTAssertEqual(outPtr[3], 2.0)
     }
+
+    func testAdd() throws {
+        let graph = runtime.createGraph()
+        let a = graph.addInput(name: "A", shape: [4], dtype: .float32)
+        let b = graph.addInput(name: "B", shape: [4], dtype: .float32)
+        let op = graph.addOpAdd(inputA: a, inputB: b)
+        graph.setOutput(nodeId: op)
+        
+        let engine = runtime.createEngine(graph: graph, policy: .reference)
+        engine.compile()
+        
+        let aPtr = engine.getBuffer(nodeId: a)!.assumingMemoryBound(to: Float.self)
+        let bPtr = engine.getBuffer(nodeId: b)!.assumingMemoryBound(to: Float.self)
+        
+        for i in 0..<4 { 
+            aPtr[i] = Float(i+1) // 1, 2, 3, 4
+            bPtr[i] = Float((i+1)*10) // 10, 20, 30, 40
+        }
+        
+        engine.execute()
+        
+        let outPtr = engine.getBuffer(nodeId: op)!.assumingMemoryBound(to: Float.self)
+        XCTAssertEqual(outPtr[0], 11.0)
+        XCTAssertEqual(outPtr[1], 22.0)
+        XCTAssertEqual(outPtr[2], 33.0)
+        XCTAssertEqual(outPtr[3], 44.0)
+    }
+
+    func testMul() throws {
+        let graph = runtime.createGraph()
+        let a = graph.addInput(name: "A", shape: [4], dtype: .float32)
+        let b = graph.addInput(name: "B", shape: [4], dtype: .float32)
+        let op = graph.addOpMul(inputA: a, inputB: b)
+        graph.setOutput(nodeId: op)
+        
+        let engine = runtime.createEngine(graph: graph, policy: .reference)
+        engine.compile()
+        
+        let aPtr = engine.getBuffer(nodeId: a)!.assumingMemoryBound(to: Float.self)
+        let bPtr = engine.getBuffer(nodeId: b)!.assumingMemoryBound(to: Float.self)
+        
+        aPtr[0] = 2.0; aPtr[1] = 3.0; aPtr[2] = 4.0; aPtr[3] = 5.0
+        bPtr[0] = 0.5; bPtr[1] = 2.0; bPtr[2] = -1.0; bPtr[3] = 0.0
+        
+        engine.execute()
+        
+        let outPtr = engine.getBuffer(nodeId: op)!.assumingMemoryBound(to: Float.self)
+        XCTAssertEqual(outPtr[0], 1.0)
+        XCTAssertEqual(outPtr[1], 6.0)
+        XCTAssertEqual(outPtr[2], -4.0)
+        XCTAssertEqual(outPtr[3], 0.0)
+    }
+
+    func testReduceSum() throws {
+        let graph = runtime.createGraph()
+        let x = graph.addInput(name: "X", shape: [2, 3], dtype: .float32)
+        let op = graph.addOpReduceSum(input: x)
+        graph.setOutput(nodeId: op)
+        
+        let engine = runtime.createEngine(graph: graph, policy: .reference)
+        engine.compile()
+        
+        let xPtr = engine.getBuffer(nodeId: x)!.assumingMemoryBound(to: Float.self)
+        // [1, 2, 3], [4, 5, 6]
+        for i in 0..<6 { xPtr[i] = Float(i+1) }
+        
+        engine.execute()
+        
+        let outPtr = engine.getBuffer(nodeId: op)!.assumingMemoryBound(to: Float.self)
+        XCTAssertEqual(outPtr[0], 6.0, accuracy: 1e-5)
+        XCTAssertEqual(outPtr[1], 15.0, accuracy: 1e-5)
+    }
     
     func testIntegrationChain() throws {
         let graph = runtime.createGraph()
