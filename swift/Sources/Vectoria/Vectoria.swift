@@ -32,6 +32,7 @@ typealias GraphAddOpReluFn = @convention(c) (GraphHandle?, Int32) -> Int32
 typealias GraphAddOpAddFn = @convention(c) (GraphHandle?, Int32, Int32) -> Int32
 typealias GraphAddOpMulFn = @convention(c) (GraphHandle?, Int32, Int32) -> Int32
 typealias GraphAddOpReduceSumFn = @convention(c) (GraphHandle?, Int32) -> Int32
+typealias GraphAddSoftmaxFn = @convention(c) (GraphHandle?, Int32) -> Int32
 typealias GraphSetOutputFn = @convention(c) (GraphHandle?, Int32) -> Void
 typealias EngineCreateWithPolicyFn = @convention(c) (GraphHandle?, Int32) -> EngineHandle?
 typealias EngineDestroyFn = @convention(c) (EngineHandle?) -> Void
@@ -53,6 +54,7 @@ public class VectoriaRuntime {
     private let graphAddOpAdd: GraphAddOpAddFn
     private let graphAddOpMul: GraphAddOpMulFn
     private let graphAddOpReduceSum: GraphAddOpReduceSumFn
+    private let graphAddSoftmax: GraphAddSoftmaxFn
     private let graphSetOutput: GraphSetOutputFn
     private let engineCreateWithPolicy: EngineCreateWithPolicyFn
     private let engineDestroy: EngineDestroyFn
@@ -82,6 +84,7 @@ public class VectoriaRuntime {
         graphAddOpAdd = load("vectoria_graph_add_op_add")
         graphAddOpMul = load("vectoria_graph_add_op_mul")
         graphAddOpReduceSum = load("vectoria_graph_add_op_reduce_sum")
+        graphAddSoftmax = load("vectoria_graph_add_softmax")
         graphSetOutput = load("vectoria_graph_set_output")
         engineCreateWithPolicy = load("vectoria_engine_create_with_policy")
         engineDestroy = load("vectoria_engine_destroy")
@@ -127,6 +130,10 @@ public class VectoriaRuntime {
 
     internal func addOpReduceSum(_ handle: GraphHandle?, input: Int32) -> Int32 {
         return graphAddOpReduceSum(handle, input)
+    }
+
+    internal func addSoftmax(_ handle: GraphHandle?, input: Int32) -> Int32 {
+        return graphAddSoftmax(handle, input)
     }
     
     internal func setOutput(_ handle: GraphHandle?, nodeId: Int32) {
@@ -214,6 +221,10 @@ public class VectoriaGraph {
 
     public func addOpReduceSum(input: Int32) -> Int32 {
         return runtime.addOpReduceSum(handle, input: input)
+    }
+
+    public func addSoftmax(input: Int32) -> Int32 {
+        return runtime.addSoftmax(handle, input: input)
     }
     
     public func setOutput(nodeId: Int32) {

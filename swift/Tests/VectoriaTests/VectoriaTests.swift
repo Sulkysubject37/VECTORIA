@@ -155,6 +155,32 @@ final class VectoriaTests: XCTestCase {
         XCTAssertEqual(outPtr[1], 15.0, accuracy: 1e-5)
     }
     
+    func testSoftmax() throws {
+        let graph = runtime.createGraph()
+        let x = graph.addInput(name: "X", shape: [3], dtype: .float32)
+        let op = graph.addSoftmax(input: x)
+        graph.setOutput(nodeId: op)
+        
+        let engine = runtime.createEngine(graph: graph, policy: .reference)
+        engine.compile()
+        
+        let xPtr = engine.getBuffer(nodeId: x)!.assumingMemoryBound(to: Float.self)
+        xPtr[0] = 1.0; xPtr[1] = 2.0; xPtr[2] = 3.0
+        
+        engine.execute()
+        
+        let outPtr = engine.getBuffer(nodeId: op)!.assumingMemoryBound(to: Float.self)
+        
+        let e1 = exp(1.0)
+        let e2 = exp(2.0)
+        let e3 = exp(3.0)
+        let sum = e1 + e2 + e3
+        
+        XCTAssertEqual(outPtr[0], Float(e1/sum), accuracy: 1e-5)
+        XCTAssertEqual(outPtr[1], Float(e2/sum), accuracy: 1e-5)
+        XCTAssertEqual(outPtr[2], Float(e3/sum), accuracy: 1e-5)
+    }
+
     func testIntegrationChain() throws {
         let graph = runtime.createGraph()
         let x = graph.addInput(name: "X", shape: [1, 2], dtype: .float32)
