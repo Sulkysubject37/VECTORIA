@@ -93,6 +93,35 @@ class Graph:
         
         return self.add_op("Relu", [input_node], shape, DType(dtype_val))
 
+    def add_add(self, a: Node, b: Node) -> Node:
+        # Naive shape inference: inherit from A
+        idx = a.id
+        node_data = self.nodes[idx]
+        shape = node_data.get('shape') or node_data.get('output_shape')
+        dtype_val = node_data.get('dtype') or node_data.get('output_dtype')
+        return self.add_op("Add", [a, b], shape, DType(dtype_val))
+
+    def add_mul(self, a: Node, b: Node) -> Node:
+        # Naive shape inference: inherit from A
+        idx = a.id
+        node_data = self.nodes[idx]
+        shape = node_data.get('shape') or node_data.get('output_shape')
+        dtype_val = node_data.get('dtype') or node_data.get('output_dtype')
+        return self.add_op("Mul", [a, b], shape, DType(dtype_val))
+
+    def add_reduce_sum(self, input_node: Node) -> Node:
+        # Naive shape inference: remove last dim
+        idx = input_node.id
+        node_data = self.nodes[idx]
+        shape = node_data.get('shape') or node_data.get('output_shape')
+        dtype_val = node_data.get('dtype') or node_data.get('output_dtype')
+        
+        new_shape = list(shape)
+        if new_shape:
+            new_shape.pop()
+            
+        return self.add_op("ReduceSum", [input_node], new_shape, DType(dtype_val))
+
     def set_output(self, node: Node):
         self._check_frozen()
         self.outputs.append(node.id)

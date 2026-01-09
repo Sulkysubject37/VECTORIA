@@ -141,6 +141,77 @@ int vectoria_graph_add_op_relu(vectoria_graph_t g, int input) {
     return static_cast<int>(id);
 }
 
+int vectoria_graph_add_op_add(vectoria_graph_t g, int input_a, int input_b) {
+    auto* graph = static_cast<ir::Graph*>(g);
+    ir::OpNode node;
+    node.op = ir::OpType::Add;
+    node.inputs = { {static_cast<size_t>(input_a)}, {static_cast<size_t>(input_b)} };
+    
+    auto get_shape = [&](size_t idx) -> ir::TensorShape {
+        const auto& n = graph->nodes[idx];
+        if (auto* i = std::get_if<ir::InputNode>(&n.data)) return i->shape;
+        if (auto* p = std::get_if<ir::ParameterNode>(&n.data)) return p->shape;
+        if (auto* o = std::get_if<ir::OpNode>(&n.data)) return o->output_shape;
+        return {};
+    };
+
+    // Auto-infer shape: assume inputs are same shape
+    node.output_shape = get_shape(input_a);
+    node.output_dtype = ir::DataType::Float32;
+
+    size_t id = graph->nodes.size();
+    graph->nodes.push_back({ {id}, node });
+    return static_cast<int>(id);
+}
+
+int vectoria_graph_add_op_mul(vectoria_graph_t g, int input_a, int input_b) {
+    auto* graph = static_cast<ir::Graph*>(g);
+    ir::OpNode node;
+    node.op = ir::OpType::Mul;
+    node.inputs = { {static_cast<size_t>(input_a)}, {static_cast<size_t>(input_b)} };
+    
+    auto get_shape = [&](size_t idx) -> ir::TensorShape {
+        const auto& n = graph->nodes[idx];
+        if (auto* i = std::get_if<ir::InputNode>(&n.data)) return i->shape;
+        if (auto* p = std::get_if<ir::ParameterNode>(&n.data)) return p->shape;
+        if (auto* o = std::get_if<ir::OpNode>(&n.data)) return o->output_shape;
+        return {};
+    };
+
+    node.output_shape = get_shape(input_a);
+    node.output_dtype = ir::DataType::Float32;
+
+    size_t id = graph->nodes.size();
+    graph->nodes.push_back({ {id}, node });
+    return static_cast<int>(id);
+}
+
+int vectoria_graph_add_op_reduce_sum(vectoria_graph_t g, int input) {
+    auto* graph = static_cast<ir::Graph*>(g);
+    ir::OpNode node;
+    node.op = ir::OpType::ReduceSum;
+    node.inputs = { {static_cast<size_t>(input)} };
+    
+    auto get_shape = [&](size_t idx) -> ir::TensorShape {
+        const auto& n = graph->nodes[idx];
+        if (auto* i = std::get_if<ir::InputNode>(&n.data)) return i->shape;
+        if (auto* p = std::get_if<ir::ParameterNode>(&n.data)) return p->shape;
+        if (auto* o = std::get_if<ir::OpNode>(&n.data)) return o->output_shape;
+        return {};
+    };
+
+    ir::TensorShape s = get_shape(input);
+    if (!s.dims.empty()) {
+        s.dims.pop_back(); // Reduce last dim
+        node.output_shape = s;
+    }
+    node.output_dtype = ir::DataType::Float32;
+
+    size_t id = graph->nodes.size();
+    graph->nodes.push_back({ {id}, node });
+    return static_cast<int>(id);
+}
+
 void vectoria_graph_set_output(vectoria_graph_t g, int node_id) {
     auto* graph = static_cast<ir::Graph*>(g);
     graph->outputs.push_back({static_cast<size_t>(node_id)});

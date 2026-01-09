@@ -19,6 +19,9 @@ int vectoria_graph_add_parameter(vectoria_graph_t g, const char* name, const int
 int vectoria_graph_add_op_matmul(vectoria_graph_t g, int input_a, int input_b);
 int vectoria_graph_add_op_bias_add(vectoria_graph_t g, int input, int bias);
 int vectoria_graph_add_op_relu(vectoria_graph_t g, int input);
+int vectoria_graph_add_op_add(vectoria_graph_t g, int input_a, int input_b);
+int vectoria_graph_add_op_mul(vectoria_graph_t g, int input_a, int input_b);
+int vectoria_graph_add_op_reduce_sum(vectoria_graph_t g, int input);
 
 void vectoria_graph_set_output(vectoria_graph_t g, int node_id);
 

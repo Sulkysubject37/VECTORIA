@@ -37,6 +37,15 @@ if _lib:
     _lib.vectoria_graph_add_op_relu.argtypes = [c_graph_t, ctypes.c_int]
     _lib.vectoria_graph_add_op_relu.restype = ctypes.c_int
 
+    _lib.vectoria_graph_add_op_add.argtypes = [c_graph_t, ctypes.c_int, ctypes.c_int]
+    _lib.vectoria_graph_add_op_add.restype = ctypes.c_int
+
+    _lib.vectoria_graph_add_op_mul.argtypes = [c_graph_t, ctypes.c_int, ctypes.c_int]
+    _lib.vectoria_graph_add_op_mul.restype = ctypes.c_int
+
+    _lib.vectoria_graph_add_op_reduce_sum.argtypes = [c_graph_t, ctypes.c_int]
+    _lib.vectoria_graph_add_op_reduce_sum.restype = ctypes.c_int
+
     _lib.vectoria_graph_set_output.argtypes = [c_graph_t, ctypes.c_int]
 
     _lib.vectoria_engine_create.argtypes = [c_graph_t]
@@ -113,6 +122,17 @@ class Runtime:
                 elif op_type == "Relu":
                     inp0 = self._node_map[node['inputs'][0]]
                     cid = _lib.vectoria_graph_add_op_relu(self._graph_handle, inp0)
+                elif op_type == "Add":
+                    inp0 = self._node_map[node['inputs'][0]]
+                    inp1 = self._node_map[node['inputs'][1]]
+                    cid = _lib.vectoria_graph_add_op_add(self._graph_handle, inp0, inp1)
+                elif op_type == "Mul":
+                    inp0 = self._node_map[node['inputs'][0]]
+                    inp1 = self._node_map[node['inputs'][1]]
+                    cid = _lib.vectoria_graph_add_op_mul(self._graph_handle, inp0, inp1)
+                elif op_type == "ReduceSum":
+                    inp0 = self._node_map[node['inputs'][0]]
+                    cid = _lib.vectoria_graph_add_op_reduce_sum(self._graph_handle, inp0)
                 else:
                     raise ValueError(f"Unsupported Op: {op_type}")
             
