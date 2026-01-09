@@ -94,7 +94,10 @@ for event in rt.get_trace():
     print(event)
 ```
 
-## 📚 Documentation
+### Supported Operations (All Bindings)
+- `MatMul`: Matrix Multiplication (FP32)
+- `BiasAdd`: Broadcast vector addition
+- `ReLU`: Rectified Linear Unit
 
 - [Intermediate Representation (IR)](docs/ir.md)
 - [Memory Model](docs/memory_model.md)

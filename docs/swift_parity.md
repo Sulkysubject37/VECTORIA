@@ -1,32 +1,17 @@
-# Swift Parity Plan
+# Swift Parity
 
-**Status**: Minimal Execution Parity Reached
+The Swift bindings provide a high-level, typesafe wrapper around the Core C++ engine.
 
-To make VECTORIA a viable backend for Apple platforms, the Swift binding now supports native execution through the C API.
+## Supported Operations
+- `MatMul` (Matrix Multiplication)
+- `BiasAdd` (Broadcast Addition)
+- `ReLU` (Activation)
 
-## Implemented Goals
-1. **Graph Construction**: Basic support for Inputs and MatMul.
-2. **Native Execution**: Swift can now drive the C++ engine via `dlopen`/`dlsym`.
-3. **Trace Exposure**: Swift `struct TraceEvent` mirrors C++ and events are retrievable.
-4. **Execution Control**: `KernelPolicy` selection is exposed to Swift.
+## Integration
+The Swift package relies on `libvectoria.dylib` being available at runtime.
 
-## Traceability
-Swift accesses traces via the C-API wrapper:
-- `vectoria_engine_get_trace_size`
-- `vectoria_engine_get_trace_event`
-
-## Example Usage
 ```swift
-let runtime = try VectoriaRuntime()
+let runtime = try VectoriaRuntime(libraryPath: "path/to/libvectoria.dylib")
 let graph = runtime.createGraph()
-let x = graph.addInput(name: "X", shape: [1, 4], dtype: .float32)
-// ... construct more ...
-let engine = runtime.createEngine(graph: graph, policy: .simd)
-engine.compile()
-engine.execute()
-let trace = engine.getTrace()
+// ... build graph ...
 ```
-
-## Anti-Goals
-- **Swift-side Scheduling**: Scheduling remains strictly in C++.
-- **CoreML Export**: Next Phase.

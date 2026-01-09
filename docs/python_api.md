@@ -29,5 +29,5 @@ for event in trace:
 
 ## Limitations
 - **No NumPy**: We avoid strict dependencies for now.
-- **Op Support**: Currently only `MatMul` is bridged.
-- **Manual Mapping**: The bridge manually reconstructs the graph, which is redundant but simple for this phase.
+- **Op Support**: `MatMul`, `BiasAdd`, and `ReLU` are supported.
+- **Manual Mapping**: The bridge manually reconstructs the graph.
