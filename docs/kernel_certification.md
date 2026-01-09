@@ -54,3 +54,5 @@ To promote a kernel from Reference to Validated SIMD:
 | **ReduceSum** | ✅ | ✅ | ✅ |
 | **ReduceMax** | ✅ | ✅ | ✅ |
 | **Exp** | ✅ | ❌ | ❌ |
+
+*Note: SIMD coverage reflects Validated [Production] tier. Reference kernels are always available as bit-exact fallbacks.*

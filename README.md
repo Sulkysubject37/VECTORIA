@@ -4,21 +4,21 @@
 
 ![ARM64 NEON](https://img.shields.io/badge/ARM64_NEON-Validated-success)
 ![x86_64 AVX2](https://img.shields.io/badge/x86__64_AVX2-Validated-success)
-![License](https://img.shields.io/badge/license-MIT-blue)
-![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey)
+![CoreML Export](https://img.shields.io/badge/CoreML_Export-Active-blue)
 
 VECTORIA is a deterministic, cross-platform computational kernel framework designed as the robust "engine room" for higher-level applications requiring absolute control over numerical execution and memory layout.
 
 It prioritizes **correctness over peak throughput** and **inspectability over magic**.
 
-Current Version: **v1.0.0-beta**
+Current Version: **v1.0.0-beta (Phase 6 Complete)**
 
 ## 🚀 Key Features
 
 - **Strict Determinism**: Bitwise identical results across repeated runs on the same hardware.
 - **Cross-Platform Portability**: Verified execution on macOS (Apple Silicon) and Linux (x86_64).
+- **CoreML Lowering**: Export semantic graphs to `.mlpackage` while maintaining mathematical equivalence.
 - **Explicit Memory Model**: Arena-based allocation with predictable lifetimes and no garbage collection.
-- **Auditable Execution**: Full tracing of every kernel dispatch, memory allocation, and graph operation.
+- **Auditable Execution**: Full tracing of every kernel dispatch, memory allocation, and deployment decision.
 - **Semantic Truth**: All SIMD kernels are validated against bit-exact C++ reference implementations.
 
 ## 🛠 Architecture
@@ -29,7 +29,8 @@ VECTORIA is built in strict layers:
 |-------|----------------|-----------|
 | **Frontend** | Graph construction, inspection | Python, Swift |
 | **Core** | IR, Scheduling, Memory, Validation | C++17 |
-| **Kernels** | SIMD computation (GEMM, etc.) | Assembly (AVX2, NEON) |
+| **Lowering** | CoreML/MIL Export | C++17 |
+| **Kernels** | SIMD computation (SGEMM, etc.) | Assembly (AVX2, NEON) |
 
 ### Platform Parity & Validation
 | Architecture | Implementation | CI Validation | Reproducibility |
@@ -41,10 +42,12 @@ VECTORIA is built in strict layers:
 *Note: SIMD results may drift cross-platform due to hardware FMA differences. Use the `Reference` policy for absolute cross-arch bitwise identity.*
 
 
-### Supported Operations
+### Supported Operations (All Bindings)
 - `MatMul`: Matrix Multiplication (FP32)
-- `BiasAdd`: Broadcast vector addition
+- `Add`, `Sub`, `Mul`, `Div`: Elementwise & Vector Broadcast
 - `ReLU`: Rectified Linear Unit
+- `ReduceSum`, `ReduceMax`: Last-axis reductions
+- `Softmax`: High-stability composed implementation
 
 ## 📦 Installation & Usage
 
