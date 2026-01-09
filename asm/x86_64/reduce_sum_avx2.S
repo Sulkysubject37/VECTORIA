@@ -36,15 +36,15 @@ reduce_sum_f32_avx2:
 
 .L_vector_reduction:
     // Horizontal reduction of ymm0 [y7..y0]
-    // Step 1: Extract high 128 into xmm1
     vextractf128 $1, %ymm0, %xmm1
     vaddps %xmm1, %xmm0, %xmm0
-    // Now we have 4 sums in xmm0
-    vshufps $0xb1, %xmm0, %xmm0, %xmm1 // Move high 2 to low 2
-    vaddps %xmm1, %xmm0, %xmm0
-    vshufps $0x1, %xmm0, %xmm0, %xmm1 // Move 2nd float to 1st
-    vaddss %xmm1, %xmm0, %xmm0
-    // xmm0[0] holds sum
+    // Now we have 4 sums in xmm0: [z3, z2, z1, z0]
+    vshufps $0xb1, %xmm0, %xmm0, %xmm1 // [z2, z3, z0, z1]
+    vaddps %xmm1, %xmm0, %xmm0         // [z3+z2, z2+z3, z1+z0, z0+z1]
+    // Move high 64-bit (z3+z2) to low 64-bit
+    vunpckhpd %xmm0, %xmm0, %xmm1     // Lane 0 of xmm1 is now lane 1 of xmm0 (z3+z2)
+    vaddss %xmm1, %xmm0, %xmm0         // (z1+z0) + (z3+z2)
+    // xmm0[0] holds final sum
 
     movq %r9, %r10 // tail_cnt
     testq %r10, %r10
@@ -72,4 +72,8 @@ reduce_sum_f32_avx2:
     xorl %eax, %eax
     ret
 
+#endif
+
+#if defined(__linux__) && defined(__ELF__)
+.section .note.GNU-stack,"",@progbits
 #endif

@@ -41,9 +41,10 @@ reduce_max_f32_avx2:
 .L_vector_reduction:
     vextractf128 $1, %ymm0, %xmm1
     vmaxps %xmm1, %xmm0, %xmm0
-    vshufps $0xb1, %xmm0, %xmm0, %xmm1
-    vmaxps %xmm1, %xmm0, %xmm0
-    vshufps $0x1, %xmm0, %xmm0, %xmm1
+    // [z3, z2, z1, z0]
+    vshufps $0xb1, %xmm0, %xmm0, %xmm1 // [z2, z3, z0, z1]
+    vmaxps %xmm1, %xmm0, %xmm0         // [max(z3,z2), max(z2,z3), max(z1,z0), max(z0,z1)]
+    vunpckhpd %xmm0, %xmm0, %xmm1     // Lane 0 of xmm1 is now lane 1 of xmm0 (max(z3,z2))
     vmaxss %xmm1, %xmm0, %xmm0
 
     movq %r9, %r10
@@ -71,4 +72,8 @@ reduce_max_f32_avx2:
     xorl %eax, %eax
     ret
 
+#endif
+
+#if defined(__linux__) && defined(__ELF__)
+.section .note.GNU-stack,"",@progbits
 #endif
