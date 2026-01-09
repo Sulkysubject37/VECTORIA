@@ -3,10 +3,16 @@
 #include "vectoria/ir.hpp"
 #include "vectoria/memory.hpp"
 #include "vectoria/kernel_policy.hpp"
+#include "vectoria/execution_mode.hpp"
 #include "vectoria/trace.hpp"
 #include <vector>
 
 namespace vectoria {
+
+struct EngineConfig {
+    KernelPolicy policy = KernelPolicy::Reference;
+    ExecutionMode mode = ExecutionMode::Research;
+};
 
 /**
  * Execution engine entry point.

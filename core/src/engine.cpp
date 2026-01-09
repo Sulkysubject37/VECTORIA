@@ -77,6 +77,48 @@ void Engine::compile() {
         throw std::runtime_error("Graph validation failed");
     }
 
+    if (config_.mode == ExecutionMode::Deployment) {
+        // Strict check: Only supported ops allowed
+        for (const auto& node : graph_.nodes) {
+            if (auto* op = std::get_if<ir::OpNode>(&node.data)) {
+                // List of supported ops for CoreML lowering
+                bool supported = false;
+                switch (op->op) {
+                    case ir::OpType::MatMul:
+                    case ir::OpType::BiasAdd:
+                    case ir::OpType::Relu:
+                    case ir::OpType::Add:
+                    case ir::OpType::Mul:
+                    case ir::OpType::Sub:
+                    case ir::OpType::Div:
+                    case ir::OpType::ReduceSum:
+                    case ir::OpType::ReduceMax:
+                        supported = true;
+                        break;
+                    case ir::OpType::Exp:
+                        // Exp is supported in CoreML but Phase 6 spec didn't explicitly list it?
+                        // "Supported Op Set: MatMul, Add, Sub, Mul, Div, ReduceSum, ReduceMax, ReLU, Softmax"
+                        // Softmax uses Exp internally.
+                        // If graph has Exp, can we export it?
+                        // Phase 6 spec says "If any other op appears -> export MUST fail".
+                        // BUT Softmax is composed of Exp.
+                        // If Softmax is composed, the IR contains Exp.
+                        // So Exp MUST be supported for Softmax to work.
+                        // I will allow Exp.
+                        supported = true;
+                        break;
+                    default:
+                        supported = false;
+                }
+                
+                if (!supported) {
+                    tracer_.log(trace::EventType::GraphCompilation, node.id.index, "Unsupported Op for Deployment");
+                    throw std::runtime_error("Op not supported in Deployment Mode: " + std::to_string(static_cast<int>(op->op)));
+                }
+            }
+        }
+    }
+
     schedule_.clear();
     for (size_t i = 0; i < graph_.nodes.size(); ++i) {
         schedule_.push_back(i);
