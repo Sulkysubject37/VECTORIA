@@ -108,6 +108,7 @@ for event in rt.get_trace():
 - [Swift Parity](docs/swift_parity.md)
 - [Release Policy](docs/release_policy.md)
 - [CI & Validation](docs/ci.md)
+- [Performance Model](docs/performance_model.md)
 
 ## ⚠️ Philosophy (What this is NOT)
 - **Not an ML Framework**: No auto-grad, no optimizers.
