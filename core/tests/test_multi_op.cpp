@@ -140,8 +140,64 @@ void test_elementwise_and_reduction() {
     std::cout << "PASSED" << std::endl;
 }
 
+void test_reducemax_exp() {
+    std::cout << "Testing ReduceMax -> Exp..." << std::endl;
+    
+    // A [2, 3] = [[1, 2, 3], [4, 6, 5]]
+    // B = ReduceMax(A) -> [3, 6]
+    // C = Exp(B) -> [e^3, e^6] ~= [20.08, 403.42]
+    
+    ir::Graph graph;
+    
+    auto mk_in = [&](const char* name, std::vector<int64_t> s) {
+        size_t id = graph.nodes.size();
+        graph.nodes.push_back({ {id}, ir::InputNode{name, {s}, ir::DataType::Float32} });
+        return id;
+    };
+    
+    auto mk_op = [&](ir::OpType type, std::vector<size_t> inputs, std::vector<int64_t> out_shape) {
+        size_t id = graph.nodes.size();
+        std::vector<ir::NodeId> ins;
+        for(auto i : inputs) ins.push_back({i});
+        graph.nodes.push_back({ {id}, ir::OpNode{type, ins, {out_shape}, ir::DataType::Float32} });
+        return id;
+    };
+    
+    size_t a = mk_in("A", {2, 3});
+    size_t b = mk_op(ir::OpType::ReduceMax, {a}, {2});
+    size_t c = mk_op(ir::OpType::Exp, {b}, {2});
+    
+    graph.outputs = {{c}};
+    
+    Engine engine(graph);
+    engine.compile();
+    
+    float* a_ptr = (float*)engine.get_buffer(a);
+    a_ptr[0]=1; a_ptr[1]=2; a_ptr[2]=3;
+    a_ptr[3]=4; a_ptr[4]=6; a_ptr[5]=5;
+    
+    engine.execute();
+    
+    float* out = (float*)engine.get_buffer(c);
+    
+    float e3 = std::exp(3.0f);
+    float e6 = std::exp(6.0f);
+    
+    if (std::abs(out[0] - e3) > 1e-4f) {
+        std::cerr << "Mismatch 0: " << out[0] << " != " << e3 << std::endl;
+        exit(1);
+    }
+    if (std::abs(out[1] - e6) > 1e-4f) {
+        std::cerr << "Mismatch 1: " << out[1] << " != " << e6 << std::endl;
+        exit(1);
+    }
+    
+    std::cout << "PASSED" << std::endl;
+}
+
 int main() {
     test_gemm_bias_relu();
     test_elementwise_and_reduction();
+    test_reducemax_exp();
     return 0;
 }

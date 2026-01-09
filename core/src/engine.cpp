@@ -265,6 +265,95 @@ void Engine::execute() {
                 kernels::reference::reduce_sum_f32(in_ptr, out_ptr, outer, inner);
                 tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference | Inputs: [" + std::to_string(idx_in) + "]");
             }
+            else if (op->op == ir::OpType::ReduceMax) {
+                if (op->inputs.size() != 1) throw std::runtime_error("ReduceMax requires 1 input");
+                size_t idx_in = op->inputs[0].index;
+                
+                const float* in_ptr = static_cast<const float*>(node_buffers_[idx_in]);
+                float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
+                
+                ir::TensorShape s = get_shape(idx_in);
+                if (s.dims.empty()) throw std::runtime_error("ReduceMax input must have at least 1 dim");
+                
+                size_t inner = s.dims.back();
+                size_t outer = 1;
+                for(size_t i=0; i<s.dims.size()-1; ++i) outer *= s.dims[i];
+                
+                kernels::reference::reduce_max_f32(in_ptr, out_ptr, outer, inner);
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference | Inputs: [" + std::to_string(idx_in) + "]");
+            }
+            else if (op->op == ir::OpType::Exp) {
+                if (op->inputs.size() != 1) throw std::runtime_error("Exp requires 1 input");
+                size_t idx_in = op->inputs[0].index;
+                
+                const float* in_ptr = static_cast<const float*>(node_buffers_[idx_in]);
+                float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
+                
+                ir::TensorShape s = get_shape(idx_in);
+                size_t count = 1;
+                for(auto d : s.dims) count *= d;
+                
+                kernels::reference::exp_f32(in_ptr, out_ptr, count);
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference | Inputs: [" + std::to_string(idx_in) + "]");
+            }
+            else if (op->op == ir::OpType::Sub) {
+                if (op->inputs.size() != 2) throw std::runtime_error("Sub requires 2 inputs");
+                size_t idx_a = op->inputs[0].index;
+                size_t idx_b = op->inputs[1].index;
+                
+                const float* a_ptr = static_cast<const float*>(node_buffers_[idx_a]);
+                const float* b_ptr = static_cast<const float*>(node_buffers_[idx_b]);
+                float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
+                
+                ir::TensorShape shape_a = get_shape(idx_a);
+                ir::TensorShape shape_b = get_shape(idx_b);
+                
+                // Hacky detection of broadcast
+                // If shape_b has 1 less dimension than shape_a, or last dim is 1?
+                // For Softmax: A is [Outer, Inner], B is [Outer] (or [Outer, 1] if kept dims)
+                // We assume A is [Outer, Inner] and B is [Outer] for broadcast
+                // OR simple scalar if count_b == 1
+                
+                size_t count_a = 1; for(auto d : shape_a.dims) count_a *= d;
+                size_t count_b = 1; for(auto d : shape_b.dims) count_b *= d;
+                
+                if (count_a == count_b) {
+                    kernels::reference::sub_f32(a_ptr, b_ptr, out_ptr, count_a, count_b);
+                } else {
+                    // Assume Softmax broadcast [Outer, Inner] - [Outer]
+                    // Outer = count_b
+                    // Inner = count_a / count_b
+                    size_t outer = count_b;
+                    size_t inner = count_a / count_b;
+                    kernels::reference::sub_broadcast_f32(a_ptr, b_ptr, out_ptr, outer, inner);
+                }
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference | Inputs: [" + std::to_string(idx_a) + ", " + std::to_string(idx_b) + "]");
+            }
+            else if (op->op == ir::OpType::Div) {
+                if (op->inputs.size() != 2) throw std::runtime_error("Div requires 2 inputs");
+                size_t idx_a = op->inputs[0].index;
+                size_t idx_b = op->inputs[1].index;
+                
+                const float* a_ptr = static_cast<const float*>(node_buffers_[idx_a]);
+                const float* b_ptr = static_cast<const float*>(node_buffers_[idx_b]);
+                float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
+                
+                ir::TensorShape shape_a = get_shape(idx_a);
+                ir::TensorShape shape_b = get_shape(idx_b);
+                
+                size_t count_a = 1; for(auto d : shape_a.dims) count_a *= d;
+                size_t count_b = 1; for(auto d : shape_b.dims) count_b *= d;
+                
+                if (count_a == count_b) {
+                    kernels::reference::div_f32(a_ptr, b_ptr, out_ptr, count_a, count_b);
+                } else {
+                    // Assume Softmax broadcast
+                    size_t outer = count_b;
+                    size_t inner = count_a / count_b;
+                    kernels::reference::div_broadcast_f32(a_ptr, b_ptr, out_ptr, outer, inner);
+                }
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference | Inputs: [" + std::to_string(idx_a) + ", " + std::to_string(idx_b) + "]");
+            }
         }
         tracer_.log(trace::EventType::NodeExecutionEnd, node_idx);
     }

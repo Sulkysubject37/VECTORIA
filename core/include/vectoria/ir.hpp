@@ -26,7 +26,11 @@ enum class OpType : uint16_t {
     Relu,
     Softmax,
     Mul,
-    ReduceSum
+    ReduceSum,
+    ReduceMax,
+    Exp,
+    Sub,
+    Div
 };
 
 struct NodeId {

@@ -111,6 +111,17 @@ VectoriaStatus exp_f32(
 );
 
 /**
+ * Element-wise Sub: Out = A - B
+ */
+VectoriaStatus sub_f32(
+    const float* a,
+    const float* b,
+    float* out,
+    size_t count_a,
+    size_t count_b
+);
+
+/**
  * Subtract with Broadcast (Col Vector): Out[i, j] = A[i, j] - B[i]
  */
 VectoriaStatus sub_broadcast_f32(
@@ -119,6 +130,17 @@ VectoriaStatus sub_broadcast_f32(
     float* out,
     size_t outer,
     size_t inner
+);
+
+/**
+ * Element-wise Div: Out = A / B
+ */
+VectoriaStatus div_f32(
+    const float* a,
+    const float* b,
+    float* out,
+    size_t count_a,
+    size_t count_b
 );
 
 /**
