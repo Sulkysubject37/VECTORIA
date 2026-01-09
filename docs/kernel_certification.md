@@ -46,7 +46,11 @@ To promote a kernel from Reference to Validated SIMD:
 | :--- | :---: | :---: | :---: |
 | **MatMul** | ✅ | ✅ | ✅ |
 | **BiasAdd** | ✅ | ❌ | ❌ |
-| **ReLU** | ✅ | ❌ | ❌ |
-| **Add** | ✅ | ❌ | ❌ |
-| **Mul** | ✅ | ❌ | ❌ |
-| **ReduceSum** | ✅ | ❌ | ❌ |
+| **ReLU** | ✅ | ✅ | ✅ |
+| **Add** | ✅ | ✅ | ✅ |
+| **Mul** | ✅ | ✅ | ✅ |
+| **Sub** | ✅ | ✅ | ✅ |
+| **Div** | ✅ | ✅ | ✅ |
+| **ReduceSum** | ✅ | ✅ | ✅ |
+| **ReduceMax** | ✅ | ✅ | ✅ |
+| **Exp** | ✅ | ❌ | ❌ |
