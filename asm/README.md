@@ -11,6 +11,8 @@ This directory contains architecture-specific assembly implementations of core k
 - `sub_neon.S`: Elementwise Sub
 - `div_neon.S`: Elementwise Div
 - `relu_neon.S`: Elementwise ReLU
+- `reduce_sum_neon.S`: Last-axis Sum
+- `reduce_max_neon.S`: Last-axis Max
 
 ### x86_64 (AVX2)
 - `gemm_avx2.S`: SGEMM
@@ -19,6 +21,8 @@ This directory contains architecture-specific assembly implementations of core k
 - `sub_avx2.S`: Elementwise Sub
 - `div_avx2.S`: Elementwise Div
 - `relu_avx2.S`: Elementwise ReLU
+- `reduce_sum_avx2.S`: Last-axis Sum
+- `reduce_max_avx2.S`: Last-axis Max
 
 ## Conventions
 - **Precision**: FP32 (Single Precision)

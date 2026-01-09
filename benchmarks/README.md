@@ -11,16 +11,25 @@ Benchmarks in VECTORIA exist solely to:
 
 ## Available Benchmarks
 - `gemm_bench.cpp`: Measures matrix multiplication throughput (GFLOPS).
+- `elementwise_bench.cpp`: Measures `Add`, `Mul`, `Sub`, `Div`, and `ReLU` performance.
+- `reduction_bench.cpp`: Measures `ReduceSum` and `ReduceMax` throughput.
 
 ## Running Benchmarks
-```bash
-# Build the benchmark
-g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -I../core/include \
-    ../core/src/*.cpp ../core/src/kernels/*.cpp ../asm/arm64/gemm_neon.S \
-    gemm_bench.cpp -o gemm_bench
 
-# Run
-./gemm_bench
+### ARM64 (macOS/Linux)
+```bash
+g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -I../core/include \
+    ../core/src/*.cpp ../core/src/kernels/*.cpp ../core/src/graph/*.cpp ../asm/arm64/*.S \
+    elementwise_bench.cpp -o bench_el
+./bench_el
+```
+
+### x86_64 (AVX2)
+```bash
+g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -I../core/include \
+    ../core/src/*.cpp ../core/src/kernels/*.cpp ../core/src/graph/*.cpp ../asm/x86_64/*.S \
+    reduction_bench.cpp -o bench_red
+./bench_red
 ```
 
 For more details on our performance philosophy, see [Benchmarking Policy](../docs/benchmarks.md).
