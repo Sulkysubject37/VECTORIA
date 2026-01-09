@@ -34,3 +34,9 @@ For a detailed status of which kernels are SIMD-accelerated, see the [Kernel Cer
 ### BiasAdd (Scalar)
 - **File**: `core/src/kernels/bias_add_ref.cpp`
 - **Algorithm**: Broadcast add. `Out[i, j] = In[i, j] + Bias[j]`.
+
+## Composed Operations
+
+Some high-level operations are implemented by expanding into subgraphs of the kernels above. See [Graph Semantics](graph_semantics.md) for details.
+
+- **Softmax**: Composed of `ReduceMax`, `Sub`, `Exp`, `ReduceSum`, and `Div`.
