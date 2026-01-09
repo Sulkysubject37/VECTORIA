@@ -65,3 +65,10 @@ jobs:
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/python
           pytest python/tests/test_integration.py
+
+      - name: Run Swift Integration Tests
+        run: |
+          cd swift
+          # Copy dylib so Swift can find it during tests
+          cp ../libvectoria.dylib .
+          swift test

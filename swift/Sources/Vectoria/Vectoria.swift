@@ -39,7 +39,7 @@ typealias EngineGetTraceSizeFn = @convention(c) (EngineHandle?) -> Int
 typealias EngineGetTraceEventFn = @convention(c) (EngineHandle?, Int, UnsafeMutablePointer<Int32>, UnsafeMutablePointer<UInt64>, UnsafeMutablePointer<Int64>, UnsafeMutablePointer<Int8>, Int) -> Void
 
 public class VectoriaRuntime {
-    private let library: UnsafeMutableRawPointer
+    internal let library: UnsafeMutableRawPointer
     
     private let graphCreate: GraphCreateFn
     private let graphDestroy: GraphDestroyFn

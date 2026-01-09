@@ -99,3 +99,7 @@ jobs:
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/python
           pytest python/tests/test_integration.py
+
+      - name: Skip Swift Integration Tests (x86_64 Linux)
+        run: |
+          echo "Skipping Swift tests on x86_64 Linux: Vectoria Swift bindings are targeted at macOS/ARM64 for this phase."
