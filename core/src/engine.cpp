@@ -28,7 +28,7 @@ bool Engine::validate() const {
 }
 
 size_t Engine::calculate_size_bytes(const ir::TensorShape& shape, ir::DataType dtype) const {
-    if (shape.dims.empty()) return 0;
+    // Scalar has empty dims but 1 element
     size_t elements = 1;
     for (auto dim : shape.dims) {
         elements *= dim;

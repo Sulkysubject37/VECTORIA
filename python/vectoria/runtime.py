@@ -46,6 +46,9 @@ if _lib:
     _lib.vectoria_graph_add_op_reduce_sum.argtypes = [c_graph_t, ctypes.c_int]
     _lib.vectoria_graph_add_op_reduce_sum.restype = ctypes.c_int
 
+    _lib.vectoria_graph_add_softmax.argtypes = [c_graph_t, ctypes.c_int]
+    _lib.vectoria_graph_add_softmax.restype = ctypes.c_int
+
     _lib.vectoria_graph_set_output.argtypes = [c_graph_t, ctypes.c_int]
 
     _lib.vectoria_engine_create.argtypes = [c_graph_t]
@@ -133,6 +136,9 @@ class Runtime:
                 elif op_type == "ReduceSum":
                     inp0 = self._node_map[node['inputs'][0]]
                     cid = _lib.vectoria_graph_add_op_reduce_sum(self._graph_handle, inp0)
+                elif op_type == "Softmax":
+                    inp0 = self._node_map[node['inputs'][0]]
+                    cid = _lib.vectoria_graph_add_softmax(self._graph_handle, inp0)
                 else:
                     raise ValueError(f"Unsupported Op: {op_type}")
             

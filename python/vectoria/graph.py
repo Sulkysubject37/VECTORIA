@@ -122,6 +122,14 @@ class Graph:
             
         return self.add_op("ReduceSum", [input_node], new_shape, DType(dtype_val))
 
+    def add_softmax(self, input_node: Node) -> Node:
+        # Shape/DType preserved
+        idx = input_node.id
+        node_data = self.nodes[idx]
+        shape = node_data.get('shape') or node_data.get('output_shape')
+        dtype_val = node_data.get('dtype') or node_data.get('output_dtype')
+        return self.add_op("Softmax", [input_node], shape, DType(dtype_val))
+
     def set_output(self, node: Node):
         self._check_frozen()
         self.outputs.append(node.id)
