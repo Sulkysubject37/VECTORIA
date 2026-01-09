@@ -34,6 +34,7 @@ typealias GraphAddOpMulFn = @convention(c) (GraphHandle?, Int32, Int32) -> Int32
 typealias GraphAddOpReduceSumFn = @convention(c) (GraphHandle?, Int32) -> Int32
 typealias GraphAddSoftmaxFn = @convention(c) (GraphHandle?, Int32) -> Int32
 typealias GraphSetOutputFn = @convention(c) (GraphHandle?, Int32) -> Void
+typealias GraphExportCoreMLFn = @convention(c) (GraphHandle?, UnsafePointer<Int8>) -> Int32
 typealias EngineCreateWithPolicyFn = @convention(c) (GraphHandle?, Int32) -> EngineHandle?
 typealias EngineDestroyFn = @convention(c) (EngineHandle?) -> Void
 typealias EngineCompileFn = @convention(c) (EngineHandle?) -> Void
@@ -56,6 +57,7 @@ public class VectoriaRuntime {
     private let graphAddOpReduceSum: GraphAddOpReduceSumFn
     private let graphAddSoftmax: GraphAddSoftmaxFn
     private let graphSetOutput: GraphSetOutputFn
+    private let graphExportCoreML: GraphExportCoreMLFn
     private let engineCreateWithPolicy: EngineCreateWithPolicyFn
     private let engineDestroy: EngineDestroyFn
     private let engineCompile: EngineCompileFn
@@ -86,6 +88,7 @@ public class VectoriaRuntime {
         graphAddOpReduceSum = load("vectoria_graph_add_op_reduce_sum")
         graphAddSoftmax = load("vectoria_graph_add_softmax")
         graphSetOutput = load("vectoria_graph_set_output")
+        graphExportCoreML = load("vectoria_export_coreml")
         engineCreateWithPolicy = load("vectoria_engine_create_with_policy")
         engineDestroy = load("vectoria_engine_destroy")
         engineCompile = load("vectoria_engine_compile")
@@ -138,6 +141,13 @@ public class VectoriaRuntime {
     
     internal func setOutput(_ handle: GraphHandle?, nodeId: Int32) {
         graphSetOutput(handle, nodeId)
+    }
+
+    internal func exportToCoreML(_ handle: GraphHandle?, path: String) throws {
+        let result = graphExportCoreML(handle, path)
+        if result != 0 {
+            throw VectoriaError.libraryLoadFailed("Export failed") // Reuse error or add new one
+        }
     }
     
     public func createEngine(graph: VectoriaGraph, policy: KernelPolicy = .reference) -> VectoriaEngine {
@@ -229,6 +239,10 @@ public class VectoriaGraph {
     
     public func setOutput(nodeId: Int32) {
         runtime.setOutput(handle, nodeId: nodeId)
+    }
+
+    public func exportToCoreML(path: String) throws {
+        try runtime.exportToCoreML(handle, path: path)
     }
 }
 

@@ -26,6 +26,10 @@ int vectoria_graph_add_softmax(vectoria_graph_t g, int input);
 
 void vectoria_graph_set_output(vectoria_graph_t g, int node_id);
 
+// --- Lowering ---
+// Returns 0 on success, -1 on failure
+int vectoria_export_coreml(vectoria_graph_t g, const char* output_path);
+
 // --- Engine Execution ---
 vectoria_engine_t vectoria_engine_create(vectoria_graph_t g);
 vectoria_engine_t vectoria_engine_create_with_policy(vectoria_graph_t g, int policy);

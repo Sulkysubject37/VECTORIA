@@ -3,12 +3,25 @@
 #include "vectoria/engine.hpp"
 #include "vectoria/capabilities.hpp"
 #include "vectoria/graph_ops.hpp"
+#include "vectoria/lowering/coreml.hpp"
 #include <vector>
 #include <cstring>
+#include <iostream>
 
 using namespace vectoria;
 
 extern "C" {
+
+int vectoria_export_coreml(vectoria_graph_t g, const char* output_path) {
+    try {
+        auto* graph = static_cast<ir::Graph*>(g);
+        lowering::export_to_coreml(*graph, std::string(output_path));
+        return 0;
+    } catch (const std::exception& e) {
+        std::cerr << "CoreML Export Error: " << e.what() << std::endl;
+        return -1;
+    }
+}
 
 void vectoria_get_capabilities(
     int* arch, 
