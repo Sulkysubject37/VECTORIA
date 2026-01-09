@@ -24,11 +24,4 @@ enum class KernelPolicy : uint8_t {
     SIMD = 1
 };
 
-/**
- * Global or Per-Engine Configuration.
- */
-struct EngineConfig {
-    KernelPolicy policy = KernelPolicy::Reference;
-};
-
 } // namespace vectoria

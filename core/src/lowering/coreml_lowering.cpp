@@ -47,8 +47,7 @@ void export_to_coreml(const ir::Graph& graph, const std::string& output_path) {
         throw std::runtime_error("Failed to open model.mil for writing");
     }
 
-    mil_file << "graph main(
-";
+    mil_file << "graph main(\n";
     
     // Inputs
     bool first = true;
@@ -61,8 +60,7 @@ void export_to_coreml(const ir::Graph& graph, const std::string& output_path) {
             first = false;
         }
     }
-    mil_file << ") {
-";
+    mil_file << ") {\n";
     
     // Ops
     for (size_t i = 0; i < graph.nodes.size(); ++i) {
