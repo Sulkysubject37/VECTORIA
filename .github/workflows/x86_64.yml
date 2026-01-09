@@ -95,10 +95,10 @@ jobs:
             core/src/*.cpp core/src/kernels/*.cpp $ASM_FILE \
             -o libvectoria.dylib
 
-      - name: Run Python Integration Tests
+      - name: Run Python Tests
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/python
-          pytest python/tests/test_integration.py
+          pytest python/tests/
 
       - name: Skip Swift Integration Tests (x86_64 Linux)
         run: |

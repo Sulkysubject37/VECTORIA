@@ -61,10 +61,10 @@ jobs:
             core/src/*.cpp core/src/kernels/*.cpp asm/arm64/gemm_neon.S \
             -o libvectoria.dylib
 
-      - name: Run Python Integration Tests
+      - name: Run Python Tests
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/python
-          pytest python/tests/test_integration.py
+          pytest python/tests/
 
       - name: Run Swift Integration Tests
         run: |
