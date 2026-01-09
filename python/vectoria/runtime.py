@@ -31,6 +31,12 @@ if _lib:
     _lib.vectoria_graph_add_op_matmul.argtypes = [c_graph_t, ctypes.c_int, ctypes.c_int]
     _lib.vectoria_graph_add_op_matmul.restype = ctypes.c_int
 
+    _lib.vectoria_graph_add_op_bias_add.argtypes = [c_graph_t, ctypes.c_int, ctypes.c_int]
+    _lib.vectoria_graph_add_op_bias_add.restype = ctypes.c_int
+
+    _lib.vectoria_graph_add_op_relu.argtypes = [c_graph_t, ctypes.c_int]
+    _lib.vectoria_graph_add_op_relu.restype = ctypes.c_int
+
     _lib.vectoria_graph_set_output.argtypes = [c_graph_t, ctypes.c_int]
 
     _lib.vectoria_engine_create.argtypes = [c_graph_t]
@@ -100,6 +106,13 @@ class Runtime:
                     inp0 = self._node_map[node['inputs'][0]]
                     inp1 = self._node_map[node['inputs'][1]]
                     cid = _lib.vectoria_graph_add_op_matmul(self._graph_handle, inp0, inp1)
+                elif op_type == "BiasAdd":
+                    inp0 = self._node_map[node['inputs'][0]]
+                    inp1 = self._node_map[node['inputs'][1]]
+                    cid = _lib.vectoria_graph_add_op_bias_add(self._graph_handle, inp0, inp1)
+                elif op_type == "Relu":
+                    inp0 = self._node_map[node['inputs'][0]]
+                    cid = _lib.vectoria_graph_add_op_relu(self._graph_handle, inp0)
                 else:
                     raise ValueError(f"Unsupported Op: {op_type}")
             

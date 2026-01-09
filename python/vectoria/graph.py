@@ -66,6 +66,33 @@ class Graph:
         self.ops.append(node_data)
         return Node(node_id)
 
+    def add_matmul(self, a: Node, b: Node, output_shape: List[int], dtype: DType) -> Node:
+        return self.add_op("MatMul", [a, b], output_shape, dtype)
+
+    def add_bias_add(self, input_node: Node, bias_node: Node) -> Node:
+        # Auto-infer shape/dtype from input
+        idx = input_node.id
+        if idx >= len(self.nodes):
+            raise ValueError("Invalid input node")
+        node_data = self.nodes[idx]
+        
+        shape = node_data.get('shape') or node_data.get('output_shape')
+        dtype_val = node_data.get('dtype') or node_data.get('output_dtype')
+        
+        return self.add_op("BiasAdd", [input_node, bias_node], shape, DType(dtype_val))
+
+    def add_relu(self, input_node: Node) -> Node:
+        # Auto-infer shape/dtype from input
+        idx = input_node.id
+        if idx >= len(self.nodes):
+            raise ValueError("Invalid input node")
+        node_data = self.nodes[idx]
+        
+        shape = node_data.get('shape') or node_data.get('output_shape')
+        dtype_val = node_data.get('dtype') or node_data.get('output_dtype')
+        
+        return self.add_op("Relu", [input_node], shape, DType(dtype_val))
+
     def set_output(self, node: Node):
         self._check_frozen()
         self.outputs.append(node.id)
