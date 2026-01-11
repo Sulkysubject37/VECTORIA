@@ -1,1 +1,33 @@
 # Tracing and Observability
+
+**Purpose:** Explains the semantic meaning of traces and their use in auditing execution.
+
+Tracing in VECTORIA is not just for debugging; it is a feature for **execution provenance**. It answers the question: *"How exactly was this result computed?"*
+
+## Trace Events
+
+The `Tracer` captures a linear log of events (`trace::EventType`) during execution:
+*   **GraphCompilation:** Validation status and memory allocation sizing.
+*   **NodeExecutionStart/End:** Strict timing boundaries for each node.
+*   **KernelDispatch:** The specific kernel variant used (e.g., `SIMD [ARM64]` vs `Reference`).
+
+## What is Logged
+
+*   **Dispatch Mode:** Explicit confirmation of SIMD usage or fallback.
+*   **Timestamps:** Nanosecond-precision duration (wall clock).
+*   **Inputs:** Node IDs participating in the operation.
+
+## What is NOT Logged
+
+*   **Tensor Values:** To prevent performance degradation and log bloat, actual numerical data is never written to the trace.
+*   **Internal State:** Loop counters or register states are not exposed.
+
+## Execution Modes
+
+*   **Research Mode:** Full tracing enabled.
+*   **Deployment Mode:** Tracing remains active but strict validation is enforced (see Deployment Mode).
+
+## References
+
+*   `core/src/trace.cpp`
+*   [docs/observability.md](../observability.md)
