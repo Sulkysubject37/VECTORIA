@@ -396,17 +396,27 @@ void Engine::execute() {
                         kernels::reference::mul_f32(a_ptr, b_ptr, out_ptr, count_a);
                     } else {
                          // Attempt Broadcast: A [Outer, Inner] * B [Inner]
-                         if (shape_a.dims.empty() || shape_b.dims.empty()) throw std::runtime_error("Mul broadcast requires rank >= 1");
+                         // Also support scalar broadcast if count_b == 1
                          
-                         size_t inner_a = shape_a.dims.back();
+                         bool is_scalar_b = (count_b == 1);
+                         if (!is_scalar_b && (shape_a.dims.empty() || shape_b.dims.empty())) {
+                             throw std::runtime_error("Mul broadcast requires rank >= 1 (unless scalar)");
+                         }
+                         
+                         size_t inner_a = shape_a.dims.empty() ? 1 : shape_a.dims.back();
                          size_t outer_a = count_a / inner_a;
                          
                          // We support B being [Inner] (rank 1) or [1, Inner] (rank 2) but effectively matching last dim
                          // Check total elements of B equals inner dimension of A
                          if (count_b == inner_a) {
                              kernels::reference::mul_broadcast_f32(a_ptr, b_ptr, out_ptr, outer_a, inner_a);
+                         } else if (is_scalar_b) {
+                             // Scalar broadcast: treat as [count_a, 1] * [1]
+                             // mul_broadcast_f32 logic: out[i*1 + 0] = a[i] * b[0]
+                             // This iterates i from 0 to count_a
+                             kernels::reference::mul_broadcast_f32(a_ptr, b_ptr, out_ptr, count_a, 1);
                          } else {
-                             throw std::runtime_error("Mul broadcast shape mismatch: Expected B size " + std::to_string(inner_a) + " but got " + std::to_string(count_b));
+                             throw std::runtime_error("Mul broadcast shape mismatch: Expected B size " + std::to_string(inner_a) + " or 1, but got " + std::to_string(count_b));
                          }
                     }
                 }
