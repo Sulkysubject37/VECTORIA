@@ -69,6 +69,13 @@ jobs:
             core/tests/test_layernorm.cpp -o test_layernorm
           ./test_layernorm
 
+      - name: Build and Run LogSoftmax Tests
+        run: |
+          g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/arm64/*.S \
+            core/tests/test_logsoftmax.cpp -o test_logsoftmax
+          ./test_logsoftmax
+
       - name: Upload Validation Logs
         uses: actions/upload-artifact@v4
         with:
