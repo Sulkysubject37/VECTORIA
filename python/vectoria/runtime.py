@@ -49,6 +49,9 @@ if _lib:
     _lib.vectoria_graph_add_softmax.argtypes = [c_graph_t, ctypes.c_int]
     _lib.vectoria_graph_add_softmax.restype = ctypes.c_int
 
+    _lib.vectoria_graph_add_logsoftmax.argtypes = [c_graph_t, ctypes.c_int]
+    _lib.vectoria_graph_add_logsoftmax.restype = ctypes.c_int
+
     _lib.vectoria_graph_add_layernorm.argtypes = [c_graph_t, ctypes.c_int, ctypes.c_int, ctypes.c_int]
     _lib.vectoria_graph_add_layernorm.restype = ctypes.c_int
 
@@ -142,6 +145,9 @@ class Runtime:
                 elif op_type == "Softmax":
                     inp0 = self._node_map[node['inputs'][0]]
                     cid = _lib.vectoria_graph_add_softmax(self._graph_handle, inp0)
+                elif op_type == "LogSoftmax":
+                    inp0 = self._node_map[node['inputs'][0]]
+                    cid = _lib.vectoria_graph_add_logsoftmax(self._graph_handle, inp0)
                 elif op_type == "LayerNorm":
                     inp0 = self._node_map[node['inputs'][0]]
                     gamma = self._node_map[node['inputs'][1]]
