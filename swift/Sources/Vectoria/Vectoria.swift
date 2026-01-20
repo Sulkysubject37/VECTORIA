@@ -35,6 +35,7 @@ typealias GraphAddOpReduceSumFn = @convention(c) (GraphHandle?, Int32) -> Int32
 typealias GraphAddSoftmaxFn = @convention(c) (GraphHandle?, Int32) -> Int32
 typealias GraphAddSoftmaxStableFn = @convention(c) (GraphHandle?, Int32) -> Int32
 typealias GraphAddLogSoftmaxFn = @convention(c) (GraphHandle?, Int32) -> Int32
+typealias GraphAddCrossEntropyFn = @convention(c) (GraphHandle?, Int32, Int32) -> Int32
 typealias GraphAddLayerNormFn = @convention(c) (GraphHandle?, Int32, Int32, Int32) -> Int32
 typealias GraphSetOutputFn = @convention(c) (GraphHandle?, Int32) -> Void
 typealias GraphExportCoreMLFn = @convention(c) (GraphHandle?, UnsafePointer<Int8>) -> Int32
@@ -61,6 +62,7 @@ public class VectoriaRuntime {
     private let graphAddSoftmax: GraphAddSoftmaxFn
     private let graphAddSoftmaxStable: GraphAddSoftmaxStableFn
     private let graphAddLogSoftmax: GraphAddLogSoftmaxFn
+    private let graphAddCrossEntropy: GraphAddCrossEntropyFn
     private let graphAddLayerNorm: GraphAddLayerNormFn
     private let graphSetOutput: GraphSetOutputFn
     private let graphExportCoreML: GraphExportCoreMLFn
@@ -95,6 +97,7 @@ public class VectoriaRuntime {
         graphAddSoftmax = load("vectoria_graph_add_softmax")
         graphAddSoftmaxStable = load("vectoria_graph_add_softmax_stable")
         graphAddLogSoftmax = load("vectoria_graph_add_logsoftmax")
+        graphAddCrossEntropy = load("vectoria_graph_add_crossentropy")
         graphAddLayerNorm = load("vectoria_graph_add_layernorm")
         graphSetOutput = load("vectoria_graph_set_output")
         graphExportCoreML = load("vectoria_export_coreml")
@@ -154,6 +157,10 @@ public class VectoriaRuntime {
 
     internal func addLogSoftmax(_ handle: GraphHandle?, input: Int32) -> Int32 {
         return graphAddLogSoftmax(handle, input)
+    }
+
+    internal func addCrossEntropy(_ handle: GraphHandle?, logits: Int32, target: Int32) -> Int32 {
+        return graphAddCrossEntropy(handle, logits, target)
     }
 
     internal func addLayerNorm(_ handle: GraphHandle?, input: Int32, gamma: Int32, beta: Int32) -> Int32 {
@@ -264,6 +271,10 @@ public class VectoriaGraph {
 
     public func addLogSoftmax(input: Int32) -> Int32 {
         return runtime.addLogSoftmax(handle, input: input)
+    }
+
+    public func addCrossEntropy(logits: Int32, target: Int32) -> Int32 {
+        return runtime.addCrossEntropy(handle, logits: logits, target: target)
     }
 
     public func addLayerNorm(input: Int32, gamma: Int32, beta: Int32) -> Int32 {
