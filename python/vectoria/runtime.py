@@ -46,6 +46,12 @@ if _lib:
     _lib.vectoria_graph_add_op_reduce_sum.argtypes = [c_graph_t, ctypes.c_int]
     _lib.vectoria_graph_add_op_reduce_sum.restype = ctypes.c_int
 
+    _lib.vectoria_graph_add_op_transpose.argtypes = [c_graph_t, ctypes.c_int, ctypes.POINTER(ctypes.c_int64), ctypes.c_int]
+    _lib.vectoria_graph_add_op_transpose.restype = ctypes.c_int
+
+    _lib.vectoria_graph_add_op_reshape.argtypes = [c_graph_t, ctypes.c_int, ctypes.POINTER(ctypes.c_int64), ctypes.c_int]
+    _lib.vectoria_graph_add_op_reshape.restype = ctypes.c_int
+
     _lib.vectoria_graph_add_softmax.argtypes = [c_graph_t, ctypes.c_int]
     _lib.vectoria_graph_add_softmax.restype = ctypes.c_int
 
@@ -148,6 +154,16 @@ class Runtime:
                 elif op_type == "ReduceSum":
                     inp0 = self._node_map[node['inputs'][0]]
                     cid = _lib.vectoria_graph_add_op_reduce_sum(self._graph_handle, inp0)
+                elif op_type == "Transpose":
+                    inp0 = self._node_map[node['inputs'][0]]
+                    perm = node['perm']
+                    c_perm = (ctypes.c_int64 * len(perm))(*perm)
+                    cid = _lib.vectoria_graph_add_op_transpose(self._graph_handle, inp0, c_perm, len(perm))
+                elif op_type == "Reshape":
+                    inp0 = self._node_map[node['inputs'][0]]
+                    shape = node['output_shape']
+                    c_shape = (ctypes.c_int64 * len(shape))(*shape)
+                    cid = _lib.vectoria_graph_add_op_reshape(self._graph_handle, inp0, c_shape, len(shape))
                 elif op_type == "Softmax":
                     inp0 = self._node_map[node['inputs'][0]]
                     cid = _lib.vectoria_graph_add_softmax(self._graph_handle, inp0)

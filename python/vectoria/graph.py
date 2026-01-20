@@ -122,6 +122,53 @@ class Graph:
             
         return self.add_op("ReduceSum", [input_node], new_shape, DType(dtype_val))
 
+    def add_transpose(self, input_node: Node, perm: List[int]) -> Node:
+        idx = input_node.id
+        node_data = self.nodes[idx]
+        shape = node_data.get('shape') or node_data.get('output_shape')
+        dtype_val = node_data.get('dtype') or node_data.get('output_dtype')
+        
+        new_shape = [shape[p] for p in perm]
+        # We need to pass perm as attribute somehow.
+        # Graph class supports arbitrary serialization via add_op?
+        # Current add_op only takes inputs/output_shape.
+        # We need to enhance Graph or just store it in Python and pass to C++ runtime differently.
+        # The runtime `load_graph` iterates nodes. We should store `perm` in the node data.
+        
+        node_id = len(self.nodes)
+        input_ids = [input_node.id]
+        node_data = {
+            "type": "Op",
+            "id": node_id,
+            "op": "Transpose",
+            "inputs": input_ids,
+            "output_shape": new_shape,
+            "output_dtype": dtype_val,
+            "perm": perm
+        }
+        self.nodes.append(node_data)
+        self.ops.append(node_data)
+        return Node(node_id)
+
+    def add_reshape(self, input_node: Node, new_shape: List[int]) -> Node:
+        idx = input_node.id
+        node_data = self.nodes[idx]
+        dtype_val = node_data.get('dtype') or node_data.get('output_dtype')
+        
+        node_id = len(self.nodes)
+        input_ids = [input_node.id]
+        node_data = {
+            "type": "Op",
+            "id": node_id,
+            "op": "Reshape",
+            "inputs": input_ids,
+            "output_shape": new_shape,
+            "output_dtype": dtype_val
+        }
+        self.nodes.append(node_data)
+        self.ops.append(node_data)
+        return Node(node_id)
+
     def add_softmax(self, input_node: Node) -> Node:
         # Shape/DType preserved
         idx = input_node.id
