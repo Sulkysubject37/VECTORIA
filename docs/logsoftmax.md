@@ -12,7 +12,9 @@ Given input tensor $x$ of shape $[..., D]$:
 Let $m = \max(x, \text{axis} = -1)$
 
 Then:
-$$ \text{log\_softmax}(x_i) = x_i - m - \log\left( \sum_{j} \exp(x_j - m) \right) $$
+$$
+\text{log\_softmax}(x_i) = x_i - m - \log\left( \sum_{j} \exp(x_j - m) \right)
+$$
 
 where the summation is over the last axis.
 

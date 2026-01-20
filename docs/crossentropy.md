@@ -14,10 +14,14 @@ Given:
 The operation is defined as:
 
 1.  **LogSoftmax:**
-    $$ \text{log\_probs}(x) = \text{LogSoftmax}(x) $$
+    $$
+    \text{log\_probs}(x) = \text{LogSoftmax}(x)
+    $$
 
 2.  **Cross Entropy:**
-    $$ \text{CrossEntropy}(x, t) = - \sum_{i} (t_i \cdot \text{log\_probs}(x)_i) $$
+    $$
+    \text{CrossEntropy}(x, t) = - \sum_{i} (t_i \cdot \text{log\_probs}(x)_i)
+    $$
 
 Where the summation is over the last axis ($D$). 
 

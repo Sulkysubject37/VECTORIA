@@ -10,11 +10,15 @@ Stable Softmax is defined as the exponentiation of the numerically stable LogSof
 Given input tensor $x$ of shape $[..., D]$:
 
 1.  **LogSoftmax:**
-    $$ \text{log\_softmax}(x_i) = x_i - m - \log\left( \sum_{j} \exp(x_j - m) \right) $$ 
+    $$
+    \text{log\_softmax}(x_i) = x_i - m - \log\left( \sum_{j} \exp(x_j - m) \right)
+    $$
     where $m = \max(x, \text{axis} = -1)$.
 
 2.  **Exponentiation:**
-    $$ \text{softmax}(x_i) = \exp(\text{log\_softmax}(x_i)) $$ 
+    $$
+    \text{softmax}(x_i) = \exp(\text{log\_softmax}(x_i))
+    $$ 
 
 ## Properties
 
