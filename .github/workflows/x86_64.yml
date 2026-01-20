@@ -108,6 +108,13 @@ jobs:
             core/tests/test_logsoftmax.cpp -o test_logsoftmax
           ./test_logsoftmax
 
+      - name: Build and Run Stable Softmax Tests
+        run: |
+          g++ -std=c++17 -O3 -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp \
+            core/tests/test_softmax_stable.cpp -o test_softmax_stable
+          ./test_softmax_stable
+
       - name: Upload Validation Logs
         uses: actions/upload-artifact@v4
         with:
