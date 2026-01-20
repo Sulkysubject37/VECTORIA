@@ -39,10 +39,10 @@ For a detailed status of which kernels are SIMD-accelerated, see the [Kernel Cer
 
 ## Composed Operations
 
-Some high-level operations are implemented by expanding into subgraphs of the kernels above. See [Graph Semantics](graph_semantics.md) for details.
+High-level operations are implemented by expanding into subgraphs of the kernels above. See [Graph Semantics](graph_semantics.md) for details.
 
-- **Softmax**: Composed of `ReduceMax`, `Sub`, `Exp`, `ReduceSum`, and `Div`.
-- **LayerNorm**: Composed of `ReduceSum`, `Sub`, `Mul`, `Add`, `Div`, and `Sqrt`. Reference-only expansion (no fused kernel).
-- **LogSoftmax**: Composed of `ReduceMax`, `Sub`, `Exp`, `ReduceSum`, `Log`, and `Sub`. Stable expansion using max-subtraction. Reference-only.
+- **Softmax (Naïve)**: Composed of `ReduceMax`, `Sub`, `Exp`, `ReduceSum`, and `Div`. Prone to overflow; use `StableSoftmax` instead.
+- **LayerNorm (Stable)**: Composed of `ReduceSum`, `Sub`, `Mul`, `Add`, `Div`, and `Sqrt`. Reference-only expansion (no fused kernel).
+- **LogSoftmax (Stable)**: Composed of `ReduceMax`, `Sub`, `Exp`, `ReduceSum`, `Log`, and `Sub`. Stable expansion using max-subtraction. Reference-only.
 - **StableSoftmax**: `Exp(LogSoftmax(x))`. Recommended over `Softmax` for numerical stability. Reference-only.
-- **CrossEntropy**: `Sum(-Target * LogSoftmax(Logits))`. Inference-only evaluation metric. Reference-only.
+- **CrossEntropy (Inference-Only)**: `Sum(-Target * LogSoftmax(Logits))`. Evaluation metric. Reference-only.
