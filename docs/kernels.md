@@ -25,7 +25,8 @@ For a detailed status of which kernels are SIMD-accelerated, see the [Kernel Cer
 
 ### Element-wise Ops (Scalar)
 - **Add**: `core/src/kernels/add_ref.cpp` - `Out[i] = A[i] + B[i]`
-- **Mul**: `core/src/kernels/mul_ref.cpp` - `Out[i] = A[i] * B[i]`
+- **Mul**: `core/src/kernels/mul_ref.cpp` - `Out[i] = A[i] * B[i]` (supports broadcast)
+- **Sqrt**: `core/src/kernels/sqrt_ref.cpp` - `Out[i] = sqrt(A[i])`
 - **ReLU**: `core/src/kernels/relu_ref.cpp` - `max(0, x)`
 
 ### Reduction (Scalar)
@@ -40,3 +41,4 @@ For a detailed status of which kernels are SIMD-accelerated, see the [Kernel Cer
 Some high-level operations are implemented by expanding into subgraphs of the kernels above. See [Graph Semantics](graph_semantics.md) for details.
 
 - **Softmax**: Composed of `ReduceMax`, `Sub`, `Exp`, `ReduceSum`, and `Div`.
+- **LayerNorm**: Composed of `ReduceSum`, `Sub`, `Mul`, `Add`, `Div`, and `Sqrt`. Reference-only expansion (no fused kernel).

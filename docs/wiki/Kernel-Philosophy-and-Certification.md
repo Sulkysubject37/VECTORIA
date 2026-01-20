@@ -41,8 +41,9 @@ The `Engine` attempts to use the most efficient kernel available. If a SIMD kern
 | Sub | ✅ | ✅ | ✅ |
 | Div | ✅ | ✅ | ✅ |
 | Exp | ✅ | ❌ | ❌ |
+| Sqrt | ✅ | ❌ | ❌ |
 
-*Note: `Exp` and `Softmax` (composed) currently rely on Reference implementations.*
+*Note: `Exp`, `Sqrt`, `Softmax` (composed), and `LayerNorm` (composed) currently rely on Reference implementations.*
 
 ## References
 
