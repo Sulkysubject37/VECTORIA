@@ -45,3 +45,4 @@ Some high-level operations are implemented by expanding into subgraphs of the ke
 - **LayerNorm**: Composed of `ReduceSum`, `Sub`, `Mul`, `Add`, `Div`, and `Sqrt`. Reference-only expansion (no fused kernel).
 - **LogSoftmax**: Composed of `ReduceMax`, `Sub`, `Exp`, `ReduceSum`, `Log`, and `Sub`. Stable expansion using max-subtraction. Reference-only.
 - **StableSoftmax**: `Exp(LogSoftmax(x))`. Recommended over `Softmax` for numerical stability. Reference-only.
+- **CrossEntropy**: `Sum(-Target * LogSoftmax(Logits))`. Inference-only evaluation metric. Reference-only.

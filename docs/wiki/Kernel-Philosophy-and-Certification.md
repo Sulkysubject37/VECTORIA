@@ -44,7 +44,7 @@ The `Engine` attempts to use the most efficient kernel available. If a SIMD kern
 | Sqrt | ✅ | ❌ | ❌ |
 | Log | ✅ | ❌ | ❌ |
 
-*Note: `Exp`, `Sqrt`, `Log`, `Softmax` (composed), `LayerNorm` (composed), `LogSoftmax` (composed), and `StableSoftmax` (composed) currently rely on Reference implementations.*
+*Note: `Exp`, `Sqrt`, `Log`, `Softmax` (composed), `LayerNorm` (composed), `LogSoftmax` (composed), `StableSoftmax` (composed), and `CrossEntropy` (composed) currently rely on Reference implementations.*
 
 ## References
 
