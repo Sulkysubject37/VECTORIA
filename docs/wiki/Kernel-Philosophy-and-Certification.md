@@ -44,6 +44,15 @@ The `Engine` attempts to use the most efficient kernel available. If a SIMD kern
 | Sqrt | ✅ | ❌ | ❌ |
 | Log | ✅ | ❌ | ❌ |
 
+## Composed Semantic Operations (Reference-Only)
+
+Phase 7 introduced a suite of high-level operations built entirely from the reference primitives above. These operations prioritize numerical stability and semantic correctness over fused performance.
+
+*   **LayerNorm**: Broadcast-aware normalization using `Mean` and `Variance` composition.
+*   **LogSoftmax**: Numerically stable implementation using the log-sum-exp trick.
+*   **StableSoftmax**: Defined as `Exp(LogSoftmax(x))` to prevent overflow.
+*   **CrossEntropy**: Inference-only evaluation metric.
+
 *Note: `Exp`, `Sqrt`, `Log`, `Softmax` (composed), `LayerNorm` (composed), `LogSoftmax` (composed), `StableSoftmax` (composed), and `CrossEntropy` (composed) currently rely on Reference implementations.*
 
 ## References
