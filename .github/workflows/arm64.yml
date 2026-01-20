@@ -90,6 +90,13 @@ jobs:
             core/tests/test_crossentropy.cpp -o test_crossentropy
           ./test_crossentropy
 
+      - name: Build and Run Structural Ops Tests
+        run: |
+          g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/arm64/*.S \
+            core/tests/test_structural_ops.cpp -o test_structural_ops
+          ./test_structural_ops
+
       - name: Upload Validation Logs
         uses: actions/upload-artifact@v4
         with:
