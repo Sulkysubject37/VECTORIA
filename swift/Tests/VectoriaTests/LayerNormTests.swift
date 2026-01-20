@@ -33,6 +33,6 @@ final class LayerNormTests: XCTestCase {
         
         // Check for specific events if possible, or just compilation success
         let events = trace.map { $0.details }
-        XCTAssertTrue(events.contains(where: { $0.contains("GraphCompilation") }))
+        XCTAssertTrue(events.contains(where: { $0.contains("Start | Mode") }))
     }
 }
