@@ -2,6 +2,7 @@
 
 #include "vectoria/ir.hpp"
 #include "vectoria/graph/layernorm.hpp"
+#include "vectoria/graph/logsoftmax.hpp"
 
 namespace vectoria {
 namespace graph {
