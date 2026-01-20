@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vectoria/ir.hpp"
+#include "vectoria/graph/layernorm.hpp"
 
 namespace vectoria {
 namespace graph {
