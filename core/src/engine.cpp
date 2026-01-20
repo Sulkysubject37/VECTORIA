@@ -5,6 +5,7 @@
 #include <set>
 #include <stdexcept>
 #include <numeric>
+#include <cstring>
 
 extern "C" {
 #if defined(__aarch64__)
@@ -94,6 +95,7 @@ void Engine::compile() {
                     case ir::OpType::Div:
                     case ir::OpType::ReduceSum:
                     case ir::OpType::ReduceMax:
+                    case ir::OpType::Sqrt:
                         supported = true;
                         break;
                     case ir::OpType::Exp:
@@ -140,6 +142,9 @@ void Engine::compile() {
         } else if (auto* param = std::get_if<ir::ParameterNode>(&node.data)) {
             shape = param->shape;
             dtype = param->dtype;
+        } else if (auto* c = std::get_if<ir::ConstantNode>(&node.data)) {
+            shape = c->shape;
+            dtype = c->dtype;
         } else if (auto* op = std::get_if<ir::OpNode>(&node.data)) {
             shape = op->output_shape;
             dtype = op->output_dtype;
@@ -150,6 +155,16 @@ void Engine::compile() {
         size_t size = calculate_size_bytes(shape, dtype);
         node_buffers_[i] = arena_.allocate(size, 64);
         tracer_.log(trace::EventType::MemoryAllocation, i, std::to_string(size) + " bytes");
+
+        if (auto* c = std::get_if<ir::ConstantNode>(&node.data)) {
+            // Initialize constant memory immediately
+            if (dtype == ir::DataType::Float32 && !c->data_f32.empty()) {
+                // Verify size match (basic check)
+                if (c->data_f32.size() * sizeof(float) <= size) {
+                     std::memcpy(node_buffers_[i], c->data_f32.data(), c->data_f32.size() * sizeof(float));
+                }
+            }
+        }
     }
 
     compiled_ = true;
@@ -165,6 +180,7 @@ void Engine::execute() {
         const auto& n = graph_.nodes[idx];
         if (auto* i = std::get_if<ir::InputNode>(&n.data)) return i->shape;
         if (auto* p = std::get_if<ir::ParameterNode>(&n.data)) return p->shape;
+        if (auto* c = std::get_if<ir::ConstantNode>(&n.data)) return c->shape;
         if (auto* o = std::get_if<ir::OpNode>(&n.data)) return o->output_shape;
         return {};
     };
@@ -348,18 +364,34 @@ void Engine::execute() {
                 for(auto d : s.dims) count *= d;
                 
                 bool executed = false;
-                if (config_.policy == KernelPolicy::SIMD) {
+                if (count_a == count_b && config_.policy == KernelPolicy::SIMD) {
 #ifdef VECTORIA_USE_ASM
     #if defined(__aarch64__)
-                    if (mul_f32_neon(a_ptr, b_ptr, out_ptr, count) == VECTORIA_SUCCESS) executed = true;
+                    if (mul_f32_neon(a_ptr, b_ptr, out_ptr, count_a) == VECTORIA_SUCCESS) executed = true;
     #elif defined(__x86_64__)
-                    if (mul_f32_avx2(a_ptr, b_ptr, out_ptr, count) == VECTORIA_SUCCESS) executed = true;
+                    if (mul_f32_avx2(a_ptr, b_ptr, out_ptr, count_a) == VECTORIA_SUCCESS) executed = true;
     #endif
 #endif
                 }
 
                 if (!executed) {
-                    kernels::reference::mul_f32(a_ptr, b_ptr, out_ptr, count);
+                    if (count_a == count_b) {
+                        kernels::reference::mul_f32(a_ptr, b_ptr, out_ptr, count_a);
+                    } else {
+                         // Attempt Broadcast: A [Outer, Inner] * B [Inner]
+                         if (shape_a.dims.empty() || shape_b.dims.empty()) throw std::runtime_error("Mul broadcast requires rank >= 1");
+                         
+                         size_t inner_a = shape_a.dims.back();
+                         size_t outer_a = count_a / inner_a;
+                         
+                         // We support B being [Inner] (rank 1) or [1, Inner] (rank 2) but effectively matching last dim
+                         // Check total elements of B equals inner dimension of A
+                         if (count_b == inner_a) {
+                             kernels::reference::mul_broadcast_f32(a_ptr, b_ptr, out_ptr, outer_a, inner_a);
+                         } else {
+                             throw std::runtime_error("Mul broadcast shape mismatch: Expected B size " + std::to_string(inner_a) + " but got " + std::to_string(count_b));
+                         }
+                    }
                 }
                 tracer_.log(trace::EventType::KernelDispatch, node_idx, (executed ? "SIMD" : "Reference") + std::string(" | Inputs: [...]"));
             }
@@ -431,6 +463,16 @@ void Engine::execute() {
                 ir::TensorShape s = get_shape(idx_in);
                 size_t count = 1; for(auto d : s.dims) count *= d;
                 kernels::reference::exp_f32(in_ptr, out_ptr, count);
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference | Inputs: [...]");
+            }
+            else if (op->op == ir::OpType::Sqrt) {
+                if (op->inputs.size() != 1) throw std::runtime_error("Sqrt requires 1 input");
+                size_t idx_in = op->inputs[0].index;
+                const float* in_ptr = static_cast<const float*>(node_buffers_[idx_in]);
+                float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
+                ir::TensorShape s = get_shape(idx_in);
+                size_t count = 1; for(auto d : s.dims) count *= d;
+                kernels::reference::sqrt_f32(in_ptr, out_ptr, count);
                 tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference | Inputs: [...]");
             }
             else if (op->op == ir::OpType::Sub) {

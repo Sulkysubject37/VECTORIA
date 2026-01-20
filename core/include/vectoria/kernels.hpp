@@ -78,6 +78,18 @@ VectoriaStatus mul_f32(
 );
 
 /**
+ * Mul with Broadcast (Row Vector): Out[i, j] = A[i, j] * B[j]
+ * A: [M, N]
+ * B: [1, N]
+ */
+VectoriaStatus mul_broadcast_f32(
+    const float* a,
+    const float* b,
+    float* out,
+    size_t m, size_t n
+);
+
+/**
  * Reduce Sum (Last Axis): Out[i] = sum(In[i, :])
  * In: [Outer, Inner]
  * Out: [Outer]
@@ -152,6 +164,15 @@ VectoriaStatus div_broadcast_f32(
     float* out,
     size_t outer,
     size_t inner
+);
+
+/**
+ * Element-wise Sqrt: Out = sqrt(A)
+ */
+VectoriaStatus sqrt_f32(
+    const float* input,
+    float* output,
+    size_t count
 );
 
 } // namespace reference

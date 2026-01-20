@@ -30,7 +30,8 @@ enum class OpType : uint16_t {
     ReduceMax,
     Exp,
     Sub,
-    Div
+    Div,
+    Sqrt
 };
 
 struct NodeId {
@@ -52,6 +53,12 @@ struct ParameterNode {
     uint64_t buffer_id; 
 };
 
+struct ConstantNode {
+    TensorShape shape;
+    DataType dtype;
+    std::vector<float> data_f32;
+};
+
 struct OpNode {
     OpType op;
     std::vector<NodeId> inputs;
@@ -59,7 +66,7 @@ struct OpNode {
     DataType output_dtype;
 };
 
-using NodeData = std::variant<InputNode, ParameterNode, OpNode>;
+using NodeData = std::variant<InputNode, ParameterNode, ConstantNode, OpNode>;
 
 struct Node {
     NodeId id;
