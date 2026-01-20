@@ -25,6 +25,7 @@ int vectoria_graph_add_op_reduce_sum(vectoria_graph_t g, int input);
 int vectoria_graph_add_softmax(vectoria_graph_t g, int input);
 int vectoria_graph_add_softmax_stable(vectoria_graph_t g, int input);
 int vectoria_graph_add_logsoftmax(vectoria_graph_t g, int input);
+int vectoria_graph_add_crossentropy(vectoria_graph_t g, int logits, int target);
 int vectoria_graph_add_layernorm(vectoria_graph_t g, int input, int gamma, int beta);
 
 void vectoria_graph_set_output(vectoria_graph_t g, int node_id);
