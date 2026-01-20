@@ -43,6 +43,8 @@ The `Engine` attempts to use the most efficient kernel available. If a SIMD kern
 | Exp | ✅ | ❌ | ❌ |
 | Sqrt | ✅ | ❌ | ❌ |
 | Log | ✅ | ❌ | ❌ |
+| Transpose | ✅ | ❌ | ❌ |
+| Reshape | ✅ | ❌ | ❌ |
 
 ## Composed Semantic Operations (Reference-Only)
 
@@ -53,7 +55,7 @@ Phase 7 introduced a suite of high-level operations built entirely from the refe
 *   **StableSoftmax**: Defined as `Exp(LogSoftmax(x))` to prevent overflow.
 *   **CrossEntropy**: Inference-only evaluation metric.
 
-*Note: `Exp`, `Sqrt`, `Log`, `Softmax` (composed), `LayerNorm` (composed), `LogSoftmax` (composed), `StableSoftmax` (composed), and `CrossEntropy` (composed) currently rely on Reference implementations.*
+*Note: `Exp`, `Sqrt`, `Log`, `Transpose`, `Reshape`, `Softmax` (composed), `LayerNorm` (composed), `LogSoftmax` (composed), `StableSoftmax` (composed), and `CrossEntropy` (composed) currently rely on Reference implementations.*
 
 ## References
 

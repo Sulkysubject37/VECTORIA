@@ -46,3 +46,10 @@ High-level operations are implemented by expanding into subgraphs of the kernels
 - **LogSoftmax (Stable)**: Composed of `ReduceMax`, `Sub`, `Exp`, `ReduceSum`, `Log`, and `Sub`. Stable expansion using max-subtraction. Reference-only.
 - **StableSoftmax**: `Exp(LogSoftmax(x))`. Recommended over `Softmax` for numerical stability. Reference-only.
 - **CrossEntropy (Inference-Only)**: `Sum(-Target * LogSoftmax(Logits))`. Evaluation metric. Reference-only.
+
+## Structural Operations (Reference-Only)
+
+These operations manipulate tensor shape and layout without performing arithmetic.
+
+- **Transpose**: Reorders axes using a permutation vector. Implemented via deterministic index mapping in the reference backend.
+- **Reshape**: Reinterprets the linear memory buffer with a new shape. Reference implementation performs a strict copy to enforce ownership boundaries.
