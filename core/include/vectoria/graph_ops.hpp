@@ -4,6 +4,7 @@
 #include "vectoria/graph/layernorm.hpp"
 #include "vectoria/graph/logsoftmax.hpp"
 #include "vectoria/graph/stable_softmax.hpp"
+#include "vectoria/graph/crossentropy.hpp"
 
 namespace vectoria {
 namespace graph {
