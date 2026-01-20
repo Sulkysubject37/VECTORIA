@@ -27,6 +27,7 @@ For a detailed status of which kernels are SIMD-accelerated, see the [Kernel Cer
 - **Add**: `core/src/kernels/add_ref.cpp` - `Out[i] = A[i] + B[i]`
 - **Mul**: `core/src/kernels/mul_ref.cpp` - `Out[i] = A[i] * B[i]` (supports broadcast)
 - **Sqrt**: `core/src/kernels/sqrt_ref.cpp` - `Out[i] = sqrt(A[i])`
+- **Log**: `core/src/kernels/log_ref.cpp` - `Out[i] = log(A[i])`
 - **ReLU**: `core/src/kernels/relu_ref.cpp` - `max(0, x)`
 
 ### Reduction (Scalar)
@@ -42,3 +43,4 @@ Some high-level operations are implemented by expanding into subgraphs of the ke
 
 - **Softmax**: Composed of `ReduceMax`, `Sub`, `Exp`, `ReduceSum`, and `Div`.
 - **LayerNorm**: Composed of `ReduceSum`, `Sub`, `Mul`, `Add`, `Div`, and `Sqrt`. Reference-only expansion (no fused kernel).
+- **LogSoftmax**: Composed of `ReduceMax`, `Sub`, `Exp`, `ReduceSum`, `Log`, and `Sub`. Stable expansion using max-subtraction. Reference-only.
