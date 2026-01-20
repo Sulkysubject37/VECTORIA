@@ -323,22 +323,36 @@ void Engine::execute() {
                 float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
                 
                 ir::TensorShape s = get_shape(idx_a);
-                size_t count = 1;
-                for(auto d : s.dims) count *= d;
+                size_t count_a = 1; for(auto d : get_shape(idx_a).dims) count_a *= d;
+                size_t count_b = 1; for(auto d : get_shape(idx_b).dims) count_b *= d;
                 
                 bool executed = false;
-                if (config_.policy == KernelPolicy::SIMD) {
+                if (count_a == count_b && config_.policy == KernelPolicy::SIMD) {
 #ifdef VECTORIA_USE_ASM
     #if defined(__aarch64__)
-                    if (add_f32_neon(a_ptr, b_ptr, out_ptr, count) == VECTORIA_SUCCESS) executed = true;
+                    if (add_f32_neon(a_ptr, b_ptr, out_ptr, count_a) == VECTORIA_SUCCESS) executed = true;
     #elif defined(__x86_64__)
-                    if (add_f32_avx2(a_ptr, b_ptr, out_ptr, count) == VECTORIA_SUCCESS) executed = true;
+                    if (add_f32_avx2(a_ptr, b_ptr, out_ptr, count_a) == VECTORIA_SUCCESS) executed = true;
     #endif
 #endif
                 }
 
                 if (!executed) {
-                    kernels::reference::add_f32(a_ptr, b_ptr, out_ptr, count);
+                    if (count_a == count_b) {
+                        kernels::reference::add_f32(a_ptr, b_ptr, out_ptr, count_a);
+                    } else {
+                        // Broadcast logic matching Sub/Div
+                        // Supports Col-vector broadcast (A[i,j] + B[i])
+                        // Or Scalar broadcast (B[0]) if outer=1
+                        
+                        // Check divisibility
+                        if (count_b == 0) throw std::runtime_error("Add broadcast div by zero");
+                        if (count_a % count_b != 0) throw std::runtime_error("Add broadcast shape mismatch");
+
+                        size_t outer = count_b;
+                        size_t inner = count_a / count_b;
+                        kernels::reference::add_broadcast_f32(a_ptr, b_ptr, out_ptr, outer, inner);
+                    }
                 }
                 
                 std::string mode = executed ? "SIMD" : "Reference";

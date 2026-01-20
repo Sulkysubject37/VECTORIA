@@ -68,6 +68,18 @@ VectoriaStatus add_f32(
 );
 
 /**
+ * Add with Broadcast (Col Vector): Out[i, j] = A[i, j] + B[i]
+ * Or if inner=count_a (outer=1), Out[j] = A[j] + B[0] (Scalar Add)
+ */
+VectoriaStatus add_broadcast_f32(
+    const float* a,
+    const float* b,
+    float* out,
+    size_t outer,
+    size_t inner
+);
+
+/**
  * Element-wise Mul: Out = A * B
  */
 VectoriaStatus mul_f32(
