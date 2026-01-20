@@ -214,6 +214,7 @@ int vectoria_graph_add_op_reduce_sum(vectoria_graph_t g, int input) {
         const auto& n = graph->nodes[idx];
         if (auto* i = std::get_if<ir::InputNode>(&n.data)) return i->shape;
         if (auto* p = std::get_if<ir::ParameterNode>(&n.data)) return p->shape;
+        if (auto* c = std::get_if<ir::ConstantNode>(&n.data)) return c->shape;
         if (auto* o = std::get_if<ir::OpNode>(&n.data)) return o->output_shape;
         return {};
     };
@@ -228,6 +229,18 @@ int vectoria_graph_add_op_reduce_sum(vectoria_graph_t g, int input) {
     size_t id = graph->nodes.size();
     graph->nodes.push_back({ {id}, node });
     return static_cast<int>(id);
+}
+
+int vectoria_graph_add_op_transpose(vectoria_graph_t g, int input, const int64_t* perm, int rank) {
+    auto* graph = static_cast<ir::Graph*>(g);
+    std::vector<int64_t> p(perm, perm + rank);
+    return vectoria::graph::add_transpose(*graph, input, p);
+}
+
+int vectoria_graph_add_op_reshape(vectoria_graph_t g, int input, const int64_t* new_shape, int rank) {
+    auto* graph = static_cast<ir::Graph*>(g);
+    std::vector<int64_t> s(new_shape, new_shape + rank);
+    return vectoria::graph::add_reshape(*graph, input, s);
 }
 
 int vectoria_graph_add_softmax(vectoria_graph_t g, int input) {
