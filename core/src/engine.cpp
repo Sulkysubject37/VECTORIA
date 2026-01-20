@@ -359,9 +359,11 @@ void Engine::execute() {
                 const float* b_ptr = static_cast<const float*>(node_buffers_[idx_b]);
                 float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
                 
-                ir::TensorShape s = get_shape(idx_a);
-                size_t count = 1;
-                for(auto d : s.dims) count *= d;
+                ir::TensorShape shape_a = get_shape(idx_a);
+                ir::TensorShape shape_b = get_shape(idx_b);
+                
+                size_t count_a = 1; for(auto d : shape_a.dims) count_a *= d;
+                size_t count_b = 1; for(auto d : shape_b.dims) count_b *= d;
                 
                 bool executed = false;
                 if (count_a == count_b && config_.policy == KernelPolicy::SIMD) {
