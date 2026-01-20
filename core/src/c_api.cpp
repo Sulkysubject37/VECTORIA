@@ -234,6 +234,11 @@ int vectoria_graph_add_softmax(vectoria_graph_t g, int input) {
     return vectoria::graph::add_softmax_composed(*graph, input);
 }
 
+int vectoria_graph_add_softmax_stable(vectoria_graph_t g, int input) {
+    auto* graph = static_cast<ir::Graph*>(g);
+    return vectoria::graph::add_softmax_stable_composed(*graph, input);
+}
+
 int vectoria_graph_add_logsoftmax(vectoria_graph_t g, int input) {
     auto* graph = static_cast<ir::Graph*>(g);
     return vectoria::graph::add_logsoftmax_composed(*graph, input);
