@@ -10,7 +10,7 @@ VECTORIA is a deterministic, cross-platform computational kernel framework desig
 
 It prioritizes **correctness over peak throughput** and **inspectability over magic**.
 
-Current Version: **v.1.1.2-delta (Phase 6 Complete)**
+Current Version: **v1.2.1-sigma (Semantic Inference Stack Complete)**
 
 ## 🏛 Manifesto
 
@@ -25,6 +25,12 @@ This document is the authoritative source for the project's numerical philosophy
 - **Explicit Memory Model**: Arena-based allocation with predictable lifetimes and no garbage collection.
 - **Auditable Execution**: Full tracing of every kernel dispatch, memory allocation, and deployment decision.
 - **Semantic Truth**: All SIMD kernels are validated against bit-exact C++ reference implementations.
+
+### Composed Semantic Operations
+- **LayerNorm**: Stable, broadcast-aware normalization.
+- **LogSoftmax**: Numerically stable log-probability computation.
+- **StableSoftmax**: Robust probability distribution (recommended over naïve Softmax).
+- **CrossEntropy**: Inference-only evaluation metric.
 
 ## 🛠 Architecture
 
@@ -52,7 +58,8 @@ VECTORIA is built in strict layers:
 - `Add`, `Sub`, `Mul`, `Div`: Elementwise & Vector Broadcast
 - `ReLU`: Rectified Linear Unit
 - `ReduceSum`, `ReduceMax`: Last-axis reductions
-- `Softmax`: High-stability composed implementation
+- `Softmax`: High-stability composed implementation (LogSoftmax + Exp)
+- `LayerNorm`, `CrossEntropy`: High-level semantic blocks
 
 ## 📦 Installation & Usage
 
