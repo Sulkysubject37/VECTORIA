@@ -33,6 +33,7 @@ typealias GraphAddOpAddFn = @convention(c) (GraphHandle?, Int32, Int32) -> Int32
 typealias GraphAddOpMulFn = @convention(c) (GraphHandle?, Int32, Int32) -> Int32
 typealias GraphAddOpReduceSumFn = @convention(c) (GraphHandle?, Int32) -> Int32
 typealias GraphAddSoftmaxFn = @convention(c) (GraphHandle?, Int32) -> Int32
+typealias GraphAddSoftmaxStableFn = @convention(c) (GraphHandle?, Int32) -> Int32
 typealias GraphAddLogSoftmaxFn = @convention(c) (GraphHandle?, Int32) -> Int32
 typealias GraphAddLayerNormFn = @convention(c) (GraphHandle?, Int32, Int32, Int32) -> Int32
 typealias GraphSetOutputFn = @convention(c) (GraphHandle?, Int32) -> Void
@@ -58,6 +59,7 @@ public class VectoriaRuntime {
     private let graphAddOpMul: GraphAddOpMulFn
     private let graphAddOpReduceSum: GraphAddOpReduceSumFn
     private let graphAddSoftmax: GraphAddSoftmaxFn
+    private let graphAddSoftmaxStable: GraphAddSoftmaxStableFn
     private let graphAddLogSoftmax: GraphAddLogSoftmaxFn
     private let graphAddLayerNorm: GraphAddLayerNormFn
     private let graphSetOutput: GraphSetOutputFn
@@ -91,6 +93,7 @@ public class VectoriaRuntime {
         graphAddOpMul = load("vectoria_graph_add_op_mul")
         graphAddOpReduceSum = load("vectoria_graph_add_op_reduce_sum")
         graphAddSoftmax = load("vectoria_graph_add_softmax")
+        graphAddSoftmaxStable = load("vectoria_graph_add_softmax_stable")
         graphAddLogSoftmax = load("vectoria_graph_add_logsoftmax")
         graphAddLayerNorm = load("vectoria_graph_add_layernorm")
         graphSetOutput = load("vectoria_graph_set_output")
@@ -143,6 +146,10 @@ public class VectoriaRuntime {
 
     internal func addSoftmax(_ handle: GraphHandle?, input: Int32) -> Int32 {
         return graphAddSoftmax(handle, input)
+    }
+
+    internal func addSoftmaxStable(_ handle: GraphHandle?, input: Int32) -> Int32 {
+        return graphAddSoftmaxStable(handle, input)
     }
 
     internal func addLogSoftmax(_ handle: GraphHandle?, input: Int32) -> Int32 {
@@ -249,6 +256,10 @@ public class VectoriaGraph {
 
     public func addSoftmax(input: Int32) -> Int32 {
         return runtime.addSoftmax(handle, input: input)
+    }
+
+    public func addSoftmaxStable(input: Int32) -> Int32 {
+        return runtime.addSoftmaxStable(handle, input: input)
     }
 
     public func addLogSoftmax(input: Int32) -> Int32 {
