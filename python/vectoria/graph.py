@@ -130,6 +130,14 @@ class Graph:
         dtype_val = node_data.get('dtype') or node_data.get('output_dtype')
         return self.add_op("Softmax", [input_node], shape, DType(dtype_val))
 
+    def add_layernorm(self, input_node: Node, gamma_node: Node, beta_node: Node) -> Node:
+        # Shape/DType preserved
+        idx = input_node.id
+        node_data = self.nodes[idx]
+        shape = node_data.get('shape') or node_data.get('output_shape')
+        dtype_val = node_data.get('dtype') or node_data.get('output_dtype')
+        return self.add_op("LayerNorm", [input_node, gamma_node, beta_node], shape, DType(dtype_val))
+
     def set_output(self, node: Node):
         self._check_frozen()
         self.outputs.append(node.id)

@@ -33,6 +33,7 @@ typealias GraphAddOpAddFn = @convention(c) (GraphHandle?, Int32, Int32) -> Int32
 typealias GraphAddOpMulFn = @convention(c) (GraphHandle?, Int32, Int32) -> Int32
 typealias GraphAddOpReduceSumFn = @convention(c) (GraphHandle?, Int32) -> Int32
 typealias GraphAddSoftmaxFn = @convention(c) (GraphHandle?, Int32) -> Int32
+typealias GraphAddLayerNormFn = @convention(c) (GraphHandle?, Int32, Int32, Int32) -> Int32
 typealias GraphSetOutputFn = @convention(c) (GraphHandle?, Int32) -> Void
 typealias GraphExportCoreMLFn = @convention(c) (GraphHandle?, UnsafePointer<Int8>) -> Int32
 typealias EngineCreateWithPolicyFn = @convention(c) (GraphHandle?, Int32) -> EngineHandle?
@@ -56,6 +57,7 @@ public class VectoriaRuntime {
     private let graphAddOpMul: GraphAddOpMulFn
     private let graphAddOpReduceSum: GraphAddOpReduceSumFn
     private let graphAddSoftmax: GraphAddSoftmaxFn
+    private let graphAddLayerNorm: GraphAddLayerNormFn
     private let graphSetOutput: GraphSetOutputFn
     private let graphExportCoreML: GraphExportCoreMLFn
     private let engineCreateWithPolicy: EngineCreateWithPolicyFn
@@ -87,6 +89,7 @@ public class VectoriaRuntime {
         graphAddOpMul = load("vectoria_graph_add_op_mul")
         graphAddOpReduceSum = load("vectoria_graph_add_op_reduce_sum")
         graphAddSoftmax = load("vectoria_graph_add_softmax")
+        graphAddLayerNorm = load("vectoria_graph_add_layernorm")
         graphSetOutput = load("vectoria_graph_set_output")
         graphExportCoreML = load("vectoria_export_coreml")
         engineCreateWithPolicy = load("vectoria_engine_create_with_policy")
@@ -137,6 +140,10 @@ public class VectoriaRuntime {
 
     internal func addSoftmax(_ handle: GraphHandle?, input: Int32) -> Int32 {
         return graphAddSoftmax(handle, input)
+    }
+
+    internal func addLayerNorm(_ handle: GraphHandle?, input: Int32, gamma: Int32, beta: Int32) -> Int32 {
+        return graphAddLayerNorm(handle, input, gamma, beta)
     }
     
     internal func setOutput(_ handle: GraphHandle?, nodeId: Int32) {
@@ -235,6 +242,10 @@ public class VectoriaGraph {
 
     public func addSoftmax(input: Int32) -> Int32 {
         return runtime.addSoftmax(handle, input: input)
+    }
+
+    public func addLayerNorm(input: Int32, gamma: Int32, beta: Int32) -> Int32 {
+        return runtime.addLayerNorm(handle, input: input, gamma: gamma, beta: beta)
     }
     
     public func setOutput(nodeId: Int32) {

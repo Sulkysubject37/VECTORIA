@@ -3,6 +3,7 @@
 #include "vectoria/engine.hpp"
 #include "vectoria/capabilities.hpp"
 #include "vectoria/graph_ops.hpp"
+#include "vectoria/graph/layernorm.hpp"
 #include "vectoria/lowering/coreml.hpp"
 #include <vector>
 #include <cstring>
@@ -230,6 +231,11 @@ int vectoria_graph_add_softmax(vectoria_graph_t g, int input) {
     auto* graph = static_cast<ir::Graph*>(g);
     // Use the composed graph op
     return vectoria::graph::add_softmax_composed(*graph, input);
+}
+
+int vectoria_graph_add_layernorm(vectoria_graph_t g, int input, int gamma, int beta) {
+    auto* graph = static_cast<ir::Graph*>(g);
+    return vectoria::graph::add_layernorm_composed(*graph, input, gamma, beta);
 }
 
 void vectoria_graph_set_output(vectoria_graph_t g, int node_id) {
