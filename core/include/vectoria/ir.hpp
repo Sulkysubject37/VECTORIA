@@ -31,7 +31,8 @@ enum class OpType : uint16_t {
     Exp,
     Sub,
     Div,
-    Sqrt
+    Sqrt,
+    Log
 };
 
 struct NodeId {

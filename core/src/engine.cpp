@@ -96,6 +96,7 @@ void Engine::compile() {
                     case ir::OpType::ReduceSum:
                     case ir::OpType::ReduceMax:
                     case ir::OpType::Sqrt:
+                    case ir::OpType::Log:
                         supported = true;
                         break;
                     case ir::OpType::Exp:
@@ -489,6 +490,16 @@ void Engine::execute() {
                 ir::TensorShape s = get_shape(idx_in);
                 size_t count = 1; for(auto d : s.dims) count *= d;
                 kernels::reference::sqrt_f32(in_ptr, out_ptr, count);
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference | Inputs: [...]");
+            }
+            else if (op->op == ir::OpType::Log) {
+                if (op->inputs.size() != 1) throw std::runtime_error("Log requires 1 input");
+                size_t idx_in = op->inputs[0].index;
+                const float* in_ptr = static_cast<const float*>(node_buffers_[idx_in]);
+                float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
+                ir::TensorShape s = get_shape(idx_in);
+                size_t count = 1; for(auto d : s.dims) count *= d;
+                kernels::reference::log_f32(in_ptr, out_ptr, count);
                 tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference | Inputs: [...]");
             }
             else if (op->op == ir::OpType::Sub) {

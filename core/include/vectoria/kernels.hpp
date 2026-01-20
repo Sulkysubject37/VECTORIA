@@ -187,6 +187,15 @@ VectoriaStatus sqrt_f32(
     size_t count
 );
 
+/**
+ * Element-wise Log: Out = log(A)
+ */
+VectoriaStatus log_f32(
+    const float* input,
+    float* output,
+    size_t count
+);
+
 } // namespace reference
 } // namespace kernels
 } // namespace vectoria
