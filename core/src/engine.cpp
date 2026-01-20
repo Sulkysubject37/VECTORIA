@@ -97,6 +97,8 @@ void Engine::compile() {
                     case ir::OpType::ReduceMax:
                     case ir::OpType::Sqrt:
                     case ir::OpType::Log:
+                    case ir::OpType::Transpose:
+                    case ir::OpType::Reshape:
                         supported = true;
                         break;
                     case ir::OpType::Exp:
@@ -585,6 +587,31 @@ void Engine::execute() {
                     }
                 }
                 tracer_.log(trace::EventType::KernelDispatch, node_idx, (executed ? "SIMD" : "Reference") + std::string(" | Inputs: [...]"));
+            }
+            else if (op->op == ir::OpType::Reshape) {
+                if (op->inputs.size() != 1) throw std::runtime_error("Reshape requires 1 input");
+                size_t idx_in = op->inputs[0].index;
+                const float* in_ptr = static_cast<const float*>(node_buffers_[idx_in]);
+                float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
+                
+                ir::TensorShape s = get_shape(idx_in);
+                size_t count = 1; for(auto d : s.dims) count *= d;
+                
+                // Pure copy for reference determinism (no aliasing)
+                std::memcpy(out_ptr, in_ptr, count * sizeof(float));
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference (Copy) | Inputs: [...]");
+            }
+            else if (op->op == ir::OpType::Transpose) {
+                if (op->inputs.size() != 1) throw std::runtime_error("Transpose requires 1 input");
+                size_t idx_in = op->inputs[0].index;
+                const float* in_ptr = static_cast<const float*>(node_buffers_[idx_in]);
+                float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
+                
+                ir::TensorShape s = get_shape(idx_in);
+                const auto& perm = op->int_params;
+                
+                kernels::reference::transpose_f32(in_ptr, out_ptr, s.dims, perm);
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference | Inputs: [...]");
             }
         }
         tracer_.log(trace::EventType::NodeExecutionEnd, node_idx);

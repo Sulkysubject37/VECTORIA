@@ -196,6 +196,16 @@ VectoriaStatus log_f32(
     size_t count
 );
 
+/**
+ * Transpose (Reference): Out[new_indices] = In[old_indices]
+ */
+VectoriaStatus transpose_f32(
+    const float* input,
+    float* output,
+    const std::vector<int64_t>& input_shape,
+    const std::vector<int64_t>& perm
+);
+
 } // namespace reference
 } // namespace kernels
 } // namespace vectoria
