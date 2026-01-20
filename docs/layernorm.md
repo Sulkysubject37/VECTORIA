@@ -9,10 +9,14 @@ Layer Normalization (LayerNorm) is defined over the **last axis** of the input t
 
 Given input tensor $x$ of shape $[..., D]$:
 
-1.  **Mean:** $\mu = \frac{1}{D} \sum_{i=0}^{D-1} x_i$
-2.  **Variance:** $\sigma^2 = \frac{1}{D} \sum_{i=0}^{D-1} (x_i - \mu)^2$
-3.  **Normalization:** $\hat{x} = \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}}$
-4.  **Affine Transform:** $y = \hat{x} \cdot \gamma + \beta$
+1.  **Mean:**
+    $$ \mu = \frac{1}{D} \sum_{i=0}^{D-1} x_i $$
+2.  **Variance:**
+    $$ \sigma^2 = \frac{1}{D} \sum_{i=0}^{D-1} (x_i - \mu)^2 $$
+3.  **Normalization:**
+    $$ \hat{x} = \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}} $$
+4.  **Affine Transform:**
+    $$ y = \hat{x} \cdot \gamma + \beta $$
 
 Where:
 *   The reduction axis is strictly the last dimension ($D$).
