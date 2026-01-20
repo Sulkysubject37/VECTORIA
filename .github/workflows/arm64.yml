@@ -62,6 +62,13 @@ jobs:
             core/tests/test_determinism_stress.cpp -o test_determinism_stress
           ./test_determinism_stress > validation_determinism.log
 
+      - name: Build and Run LayerNorm Tests
+        run: |
+          g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/arm64/*.S \
+            core/tests/test_layernorm.cpp -o test_layernorm
+          ./test_layernorm
+
       - name: Upload Validation Logs
         uses: actions/upload-artifact@v4
         with:

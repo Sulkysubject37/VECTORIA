@@ -86,6 +86,21 @@ jobs:
             core/tests/test_determinism_stress.cpp -o test_determinism_stress
           ./test_determinism_stress > validation_determinism.log
 
+      - name: Build and Run LayerNorm Tests
+        run: |
+          OPTS=""
+          SRC_FILES="core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp"
+          ASM_FILES=""
+          if [ "${{ env.AVX2_SUPPORTED }}" = "true" ]; then
+            OPTS="-DVECTORIA_USE_ASM"
+            ASM_FILES="asm/x86_64/*.S"
+          fi
+          
+          g++ -std=c++17 -O3 $OPTS -Icore/include \
+            $SRC_FILES $ASM_FILES \
+            core/tests/test_layernorm.cpp -o test_layernorm
+          ./test_layernorm
+
       - name: Upload Validation Logs
         uses: actions/upload-artifact@v4
         with:
