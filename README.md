@@ -12,6 +12,11 @@ It prioritizes **correctness over peak throughput** and **inspectability over ma
 
 Current Version: **v.1.1.2-delta (Phase 6 Complete)**
 
+## 🏛 Manifesto
+
+For a formal definition of "truth," "determinism," and our constitutional guarantees, see [TRUTH.md](TRUTH.md).
+This document is the authoritative source for the project's numerical philosophy and non-negotiable boundaries.
+
 ## 🚀 Key Features
 
 - **Strict Determinism**: Bitwise identical results across repeated runs on the same hardware.
