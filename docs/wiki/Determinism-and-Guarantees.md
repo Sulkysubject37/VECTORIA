@@ -1,5 +1,7 @@
 # Determinism and Guarantees
 
+> **Note:** Formal determinism guarantees are defined in [TRUTH.md](../../TRUTH.md) (authoritative).
+
 **Purpose:** Defines the hard boundaries of what is and isn't guaranteed regarding reproducibility.
 
 VECTORIA distinguishes between **Architectural Determinism** and **Bitwise Reproducibility**.
