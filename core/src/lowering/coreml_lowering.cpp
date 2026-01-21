@@ -113,6 +113,32 @@ void export_to_coreml(const ir::Graph& graph, const std::string& output_path) {
                 case ir::OpType::Exp:
                     mil_file << "exp(x=" << inputs[0] << ");\n";
                     break;
+                case ir::OpType::Sqrt:
+                    mil_file << "sqrt(x=" << inputs[0] << ");\n";
+                    break;
+                case ir::OpType::Log:
+                    mil_file << "log(x=" << inputs[0] << ");\n";
+                    break;
+                case ir::OpType::Transpose:
+                    {
+                        mil_file << "transpose(x=" << inputs[0] << ", perm=[";
+                        for (size_t p = 0; p < op->int_params.size(); ++p) {
+                            mil_file << op->int_params[p];
+                            if (p < op->int_params.size() - 1) mil_file << ", ";
+                        }
+                        mil_file << "]);\n";
+                    }
+                    break;
+                case ir::OpType::Reshape:
+                    {
+                        mil_file << "reshape(x=" << inputs[0] << ", shape=[";
+                        for (size_t s = 0; s < op->output_shape.dims.size(); ++s) {
+                            mil_file << op->output_shape.dims[s];
+                            if (s < op->output_shape.dims.size() - 1) mil_file << ", ";
+                        }
+                        mil_file << "]);\n";
+                    }
+                    break;
                 case ir::OpType::BiasAdd:
                     // Map to add
                     mil_file << "add(x=" << inputs[0] << ", y=" << inputs[1] << ");\n";
