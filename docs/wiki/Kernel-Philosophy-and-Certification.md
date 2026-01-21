@@ -28,7 +28,7 @@ VECTORIA uses a tiered system to manage the trade-off between portability and pe
 
 The `Engine` attempts to use the most efficient kernel available. If a SIMD kernel fails or is unavailable for the current architecture, it **silently falls back** to the Reference kernel to ensure execution continuity.
 
-## Current Support Matrix (v1.2.1-sigma)
+## Current Support Matrix (v1.3.0-stable)
 
 | Op | Reference | ARM64 (NEON) | x86_64 (AVX2) |
 |----|:---------:|:------------:|:-------------:|

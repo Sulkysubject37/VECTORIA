@@ -42,7 +42,8 @@ These operations do not exist as monolithic kernels but are expanded into audita
 *   **Multi-Head Attention (MHA)**: Composed of Projections, Transpositions, and Scaled Dot-Product blocks.
 *   **Transformer Encoder Block**: Composed of MHA, FFN, and Residual connections.
 
-This approach ensures that even the most complex Transformer-grade architectures remain fully traceable and numerically deterministic.
+### Semantic Freeze
+The semantic surface of these operations is **frozen**. VECTORIA guarantees that the expansion logic and numerical expectations for these blocks will remain stable. Any future optimizations (e.g., kernel fusion) must prove bitwise equivalence to these frozen reference expansions. Refer to [TRUTH.md](../TRUTH.md) for the governing principles of numerical truth in the system.
 
 ## Determinism
 By ensuring the graph is immutable and the execution schedule is derived through a fixed algorithm, VECTORIA guarantees that for a given input and set of parameters, the execution path and memory layout remain constant across runs on the same hardware.

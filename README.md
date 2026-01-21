@@ -10,7 +10,15 @@ VECTORIA is a deterministic, cross-platform computational kernel framework desig
 
 It prioritizes **correctness over peak throughput** and **inspectability over magic**.
 
-Current Version: **v1.2.1-sigma (Semantic Inference Stack Complete)**
+Current Version: **v1.3.0-stable (Semantic Surface Frozen)**
+
+## 🛡️ Semantic Freeze & Stability
+
+As of version v1.3.0-stable, the semantic surface of VECTORIA is considered **frozen**. 
+The mathematical definitions of all operations (Primitive and Composed) are locked to ensure absolute reproducibility for downstream applications. 
+Future additions or changes to these semantics will require explicit, versioned opt-in to prevent silent numerical drift.
+
+All execution behavior is governed by [TRUTH.md](TRUTH.md).
 
 ## 🏛 Manifesto
 
