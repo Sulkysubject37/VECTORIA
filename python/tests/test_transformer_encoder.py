@@ -55,7 +55,7 @@ def test_encoder_correctness():
     rt.load_graph(g)
 
     # Init data
-    vals = {node.id: np.random.randn(*node['shape']).astype(np.float32) for node in g.nodes if node['type'] in ["Input", "Parameter"]}
+    vals = {node['id']: np.random.randn(*node['shape']).astype(np.float32) for node in g.nodes if node['type'] in ["Input", "Parameter"]}
     for nid, val in vals.items():
         rt.set_input(nid, val.flatten().tolist())
 
