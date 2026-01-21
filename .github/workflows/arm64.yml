@@ -111,12 +111,12 @@ jobs:
             core/tests/test_concatenation.cpp -o test_concatenation
           ./test_concatenation
 
-      - name: Build and Run Multi-Head Attention Tests
+      - name: Build and Run Transformer Encoder Tests
         run: |
           g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
             core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/arm64/*.S \
-            core/tests/test_multi_head_attention.cpp -o test_mha
-          ./test_mha
+            core/tests/test_transformer_encoder.cpp -o test_encoder
+          ./test_encoder
 
       - name: Upload Validation Logs
         uses: actions/upload-artifact@v4
