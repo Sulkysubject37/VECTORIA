@@ -54,3 +54,4 @@ These operations manipulate tensor shape and layout without performing arithmeti
 
 - **Transpose**: Reorders axes using a permutation vector. Implemented via deterministic index mapping in the reference backend.
 - **Reshape**: Reinterprets the linear memory buffer with a new shape. Reference implementation performs a strict copy to enforce ownership boundaries.
+- **Concat**: Joins multiple tensors along a specified axis. Implemented as a sequential copy in the reference backend. Essential for Multi-Head Attention composition.
