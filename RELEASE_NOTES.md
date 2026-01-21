@@ -21,7 +21,7 @@ This is a stabilization release that formalizes the semantic surface of VECTORIA
 
 *   **Documentation Unification**: Repository-wide audit to ensure consistent terminology and mathematical formatting (LaTeX).
 *   **CI Reproducibility**: Hardened documentation for CI validation paths and reproducibility checklists.
-*   **No Code Changes**: This release introduces no new numerical kernels or performance shortcuts, preserving the proven stability of the `v1.2.1` core.
+*   **No Code Changes**: This release introduces no new numerical kernels or performance shortcuts, preserving the proven stability of the `v1.2.1` and `v1.3.0` semantic baseline.
 
 ## ⚠️ Notes
 

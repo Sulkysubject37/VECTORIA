@@ -1,7 +1,7 @@
 # TRUTH.md — Determinism & Numerical Truth in VECTORIA
 
 **Version:** 1.0.0 (Normative)  
-**Applicable to:** VECTORIA v1.1.2-delta and later  
+**Applicable to:** VECTORIA v1.3.0-stable and later  
 
 ---
 
