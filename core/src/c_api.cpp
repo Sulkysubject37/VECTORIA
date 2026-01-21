@@ -278,6 +278,11 @@ int vectoria_graph_add_attention(vectoria_graph_t g, int q, int k, int v) {
     return vectoria::graph::add_attention_composed(*graph, q, k, v);
 }
 
+int vectoria_graph_add_multi_head_attention(vectoria_graph_t g, int x, int wq, int wk, int wv, int wo, int num_heads) {
+    auto* graph = static_cast<ir::Graph*>(g);
+    return vectoria::graph::add_multi_head_attention_composed(*graph, x, wq, wk, wv, wo, num_heads);
+}
+
 int vectoria_graph_add_layernorm(vectoria_graph_t g, int input, int gamma, int beta) {
     auto* graph = static_cast<ir::Graph*>(g);
     return vectoria::graph::add_layernorm_composed(*graph, input, gamma, beta);
