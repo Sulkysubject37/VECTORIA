@@ -8,6 +8,8 @@
 #include "vectoria/graph/stable_softmax.hpp"
 #include "vectoria/graph/crossentropy.hpp"
 #include "vectoria/graph/attention.hpp"
+#include "vectoria/graph/multi_head_attention.hpp"
+#include "vectoria/graph/transformer_encoder.hpp"
 #include "vectoria/graph/transpose.hpp"
 #include "vectoria/graph/reshape.hpp"
 #include "vectoria/lowering/coreml.hpp"
@@ -281,6 +283,20 @@ int vectoria_graph_add_attention(vectoria_graph_t g, int q, int k, int v) {
 int vectoria_graph_add_multi_head_attention(vectoria_graph_t g, int x, int wq, int wk, int wv, int wo, int num_heads) {
     auto* graph = static_cast<ir::Graph*>(g);
     return vectoria::graph::add_multi_head_attention_composed(*graph, x, wq, wk, wv, wo, num_heads);
+}
+
+int vectoria_graph_add_transformer_encoder(
+    vectoria_graph_t g, int x,
+    int wq, int wk, int wv, int wo, int num_heads,
+    int gamma1, int beta1,
+    int w1, int b1, int w2, int b2,
+    int gamma2, int beta2
+) {
+    auto* graph = static_cast<ir::Graph*>(g);
+    return vectoria::graph::add_transformer_encoder_composed(
+        *graph, x, wq, wk, wv, wo, num_heads, 
+        gamma1, beta1, w1, b1, w2, b2, gamma2, beta2
+    );
 }
 
 int vectoria_graph_add_layernorm(vectoria_graph_t g, int input, int gamma, int beta) {

@@ -31,6 +31,13 @@ int vectoria_graph_add_logsoftmax(vectoria_graph_t g, int input);
 int vectoria_graph_add_crossentropy(vectoria_graph_t g, int logits, int target);
 int vectoria_graph_add_attention(vectoria_graph_t g, int q, int k, int v);
 int vectoria_graph_add_multi_head_attention(vectoria_graph_t g, int x, int wq, int wk, int wv, int wo, int num_heads);
+int vectoria_graph_add_transformer_encoder(
+    vectoria_graph_t g, int x,
+    int wq, int wk, int wv, int wo, int num_heads,
+    int gamma1, int beta1,
+    int w1, int b1, int w2, int b2,
+    int gamma2, int beta2
+);
 int vectoria_graph_add_layernorm(vectoria_graph_t g, int input, int gamma, int beta);
 
 void vectoria_graph_set_output(vectoria_graph_t g, int node_id);
