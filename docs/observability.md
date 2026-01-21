@@ -30,3 +30,15 @@ trace = runtime.get_trace()
 for event in trace:
     print(event)
 ```
+
+## Canonical Walkthrough: Transformer Encoder
+When executing a Transformer Encoder Block, the trace provides a full audit of the semantic expansion. This eliminates "hidden" computation common in other frameworks.
+
+### Key Trace Markers:
+1.  **Projections**: Multiple `KernelDispatch: Reference | Inputs: [X, W]` events for Query, Key, and Value.
+2.  **Head Splitting**: `KernelDispatch: Reference | Inputs: [...]` for `Reshape` and `Transpose`.
+3.  **Attention Core**: A sequence of `MatMul` (Scores), `Mul` (Scaling), `LogSoftmax` (Expanded), and `MatMul` (Context) events.
+4.  **FFN Expansion**: `MatMul` → `BiasAdd` → `Relu` → `MatMul` → `BiasAdd`.
+5.  **Residual Identifiers**: `Add` operations where one input is the block input or a previous sub-block output.
+
+Each event includes a nanosecond-precision timestamp, allowing for precise tracking of the topological execution.
