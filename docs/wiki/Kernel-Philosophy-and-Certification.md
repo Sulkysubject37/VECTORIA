@@ -54,8 +54,9 @@ Phase 7 introduced a suite of high-level operations built entirely from the refe
 *   **LogSoftmax**: Numerically stable implementation using the log-sum-exp trick.
 *   **StableSoftmax**: Defined as `Exp(LogSoftmax(x))` to prevent overflow.
 *   **CrossEntropy**: Inference-only evaluation metric.
+*   **Attention (Scaled Dot-Product)**: Semantic expansion for Transformer-style attention.
 
-*Note: `Exp`, `Sqrt`, `Log`, `Transpose`, `Reshape`, `Softmax` (composed), `LayerNorm` (composed), `LogSoftmax` (composed), `StableSoftmax` (composed), and `CrossEntropy` (composed) currently rely on Reference implementations.*
+*Note: `Exp`, `Sqrt`, `Log`, `Transpose`, `Reshape`, `Softmax` (composed), `LayerNorm` (composed), `LogSoftmax` (composed), `StableSoftmax` (composed), `CrossEntropy` (composed), and `Attention` (composed) currently rely on Reference implementations.*
 
 ## References
 
