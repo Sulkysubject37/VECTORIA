@@ -111,6 +111,13 @@ jobs:
             core/tests/test_concatenation.cpp -o test_concatenation
           ./test_concatenation
 
+      - name: Build and Run Multi-Head Attention Tests
+        run: |
+          g++ -std=c++17 -O3 -DVECTORIA_USE_ASM -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp asm/arm64/*.S \
+            core/tests/test_multi_head_attention.cpp -o test_mha
+          ./test_mha
+
       - name: Upload Validation Logs
         uses: actions/upload-artifact@v4
         with:
