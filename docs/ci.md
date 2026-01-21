@@ -22,6 +22,11 @@ Every commit triggers the following suites on both validated architectures:
 - `test_multi_op`: Verifies composite graph execution.
 - `test_graph_equivalence`: Ensures Reference/SIMD parity.
 - `test_determinism_stress`: Asserts bitwise reproducibility over 50 iterations.
+- **High-Level Semantic Suites**:
+    - `test_layernorm`: Statistical property validation.
+    - `test_attention`: Numerical equivalence for Scaled Dot-Product.
+    - `test_multi_head_attention`: Shape and logic validation for MHA.
+    - `test_transformer_encoder`: End-to-end integration proof.
 
 ## Validation Logs
 Logs from correctness tests are preserved as CI artifacts. These logs are part of the scientific provenance of every VECTORIA release.

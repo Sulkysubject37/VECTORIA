@@ -31,6 +31,8 @@ This document is the authoritative source for the project's numerical philosophy
 - **LogSoftmax**: Numerically stable log-probability computation.
 - **StableSoftmax**: Robust probability distribution (recommended over naïve Softmax).
 - **CrossEntropy**: Inference-only evaluation metric.
+- **Attention**: Scaled dot-product semantic expansion.
+- **TransformerEncoder**: Full encoder block including MHA and FFN.
 
 ## 🛠 Architecture
 
@@ -60,6 +62,7 @@ VECTORIA is built in strict layers:
 - `ReduceSum`, `ReduceMax`: Last-axis reductions
 - `Softmax`: High-stability composed implementation (LogSoftmax + Exp)
 - `LayerNorm`, `CrossEntropy`: High-level semantic blocks
+- `Attention`, `TransformerEncoder`: Transformer-grade semantic units
 
 ## 📦 Installation & Usage
 

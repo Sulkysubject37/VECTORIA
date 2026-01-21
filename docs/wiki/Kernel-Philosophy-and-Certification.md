@@ -58,8 +58,9 @@ Phase 7 introduced a suite of high-level operations built entirely from the refe
 *   **CrossEntropy**: Inference-only evaluation metric.
 *   **Attention (Scaled Dot-Product)**: Semantic expansion for Transformer-style attention. **This is not a fused kernel;** it expands into explicit `MatMul` and `StableSoftmax` nodes.
 *   **MultiHeadAttention**: High-level semantic composition for multi-head subspaces.
+*   **TransformerEncoderBlock**: The highest level of semantic composition, integrating MHA and FFN blocks with residual connections.
 
-*Note: `Exp`, `Sqrt`, `Log`, `Transpose`, `Reshape`, `Concat`, `Slice`, `Softmax` (composed), `LayerNorm` (composed), `LogSoftmax` (composed), `StableSoftmax` (composed), `CrossEntropy` (composed), `Attention` (composed), and `MultiHeadAttention` (composed) currently rely on Reference implementations.*
+*Note: `Exp`, `Sqrt`, `Log`, `Transpose`, `Reshape`, `Concat`, `Slice`, `Softmax` (composed), `LayerNorm` (composed), `LogSoftmax` (composed), `StableSoftmax` (composed), `CrossEntropy` (composed), `Attention` (composed), `MultiHeadAttention` (composed), and `TransformerEncoderBlock` (composed) currently rely on Reference implementations.*
 
 ## References
 

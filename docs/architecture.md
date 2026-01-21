@@ -30,8 +30,19 @@ VECTORIA enforces explicit kernel selection via `EngineConfig`. No implicit "aut
 
 - **Assembly**: SIMD-optimized kernels (GEMM, activations) for specific architectures.
 - **C++ (Core)**: The backbone of the framework.
+- **Lowering**: Support for exporting semantic graphs to CoreML (.mlpackage) with MIL validation.
 - **Python**: Frontend.
 - **Swift**: Bindings.
+
+## Semantic Composition (High-Level Ops)
+While the core engine dispatches primitive kernels (MatMul, Add, etc.), VECTORIA enables the expression of complex high-level operations through **Pure Semantic Composition**. 
+
+These operations do not exist as monolithic kernels but are expanded into auditable subgraphs of primitives during graph construction:
+*   **LayerNorm**: Composed of Reductions and element-wise math.
+*   **Multi-Head Attention (MHA)**: Composed of Projections, Transpositions, and Scaled Dot-Product blocks.
+*   **Transformer Encoder Block**: Composed of MHA, FFN, and Residual connections.
+
+This approach ensures that even the most complex Transformer-grade architectures remain fully traceable and numerically deterministic.
 
 ## Determinism
 By ensuring the graph is immutable and the execution schedule is derived through a fixed algorithm, VECTORIA guarantees that for a given input and set of parameters, the execution path and memory layout remain constant across runs on the same hardware.
