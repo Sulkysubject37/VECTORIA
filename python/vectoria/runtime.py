@@ -73,6 +73,15 @@ if _lib:
     _lib.vectoria_graph_add_multi_head_attention.argtypes = [c_graph_t, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int]
     _lib.vectoria_graph_add_multi_head_attention.restype = ctypes.c_int
 
+    _lib.vectoria_graph_add_transformer_encoder.argtypes = [
+        c_graph_t, ctypes.c_int, # x
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, # wq, wk, wv, wo, heads
+        ctypes.c_int, ctypes.c_int, # ln1
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, # ffn
+        ctypes.c_int, ctypes.c_int  # ln2
+    ]
+    _lib.vectoria_graph_add_transformer_encoder.restype = ctypes.c_int
+
     _lib.vectoria_graph_add_layernorm.argtypes = [c_graph_t, ctypes.c_int, ctypes.c_int, ctypes.c_int]
     _lib.vectoria_graph_add_layernorm.restype = ctypes.c_int
 
@@ -204,6 +213,16 @@ class Runtime:
                     wo = self._node_map[node['inputs'][4]]
                     num_heads = node['num_heads']
                     cid = _lib.vectoria_graph_add_multi_head_attention(self._graph_handle, x, wq, wk, wv, wo, num_heads)
+                elif op_type == "TransformerEncoder":
+                    inputs = [self._node_map[i] for i in node['inputs']]
+                    num_heads = node['num_heads']
+                    cid = _lib.vectoria_graph_add_transformer_encoder(
+                        self._graph_handle, inputs[0], 
+                        inputs[1], inputs[2], inputs[3], inputs[4], num_heads,
+                        inputs[5], inputs[6],
+                        inputs[7], inputs[8], inputs[9], inputs[10],
+                        inputs[11], inputs[12]
+                    )
                 elif op_type == "LayerNorm":
                     inp0 = self._node_map[node['inputs'][0]]
                     gamma = self._node_map[node['inputs'][1]]

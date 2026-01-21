@@ -41,6 +41,7 @@ typealias GraphAddLogSoftmaxFn = @convention(c) (GraphHandle?, Int32) -> Int32
 typealias GraphAddCrossEntropyFn = @convention(c) (GraphHandle?, Int32, Int32) -> Int32
 typealias GraphAddAttentionFn = @convention(c) (GraphHandle?, Int32, Int32, Int32) -> Int32
 typealias GraphAddMultiHeadAttentionFn = @convention(c) (GraphHandle?, Int32, Int32, Int32, Int32, Int32, Int32) -> Int32
+typealias GraphAddTransformerEncoderFn = @convention(c) (GraphHandle?, Int32, Int32, Int32, Int32, Int32, Int32, Int32, Int32, Int32, Int32, Int32, Int32, Int32, Int32) -> Int32
 typealias GraphAddLayerNormFn = @convention(c) (GraphHandle?, Int32, Int32, Int32) -> Int32
 typealias GraphSetOutputFn = @convention(c) (GraphHandle?, Int32) -> Void
 typealias GraphExportCoreMLFn = @convention(c) (GraphHandle?, UnsafePointer<Int8>) -> Int32
@@ -73,6 +74,7 @@ public class VectoriaRuntime {
     private let graphAddCrossEntropy: GraphAddCrossEntropyFn
     private let graphAddAttention: GraphAddAttentionFn
     private let graphAddMultiHeadAttention: GraphAddMultiHeadAttentionFn
+    private let graphAddTransformerEncoder: GraphAddTransformerEncoderFn
     private let graphAddLayerNorm: GraphAddLayerNormFn
     private let graphSetOutput: GraphSetOutputFn
     private let graphExportCoreML: GraphExportCoreMLFn
@@ -113,6 +115,7 @@ public class VectoriaRuntime {
         graphAddCrossEntropy = load("vectoria_graph_add_crossentropy")
         graphAddAttention = load("vectoria_graph_add_attention")
         graphAddMultiHeadAttention = load("vectoria_graph_add_multi_head_attention")
+        graphAddTransformerEncoder = load("vectoria_graph_add_transformer_encoder")
         graphAddLayerNorm = load("vectoria_graph_add_layernorm")
         graphSetOutput = load("vectoria_graph_set_output")
         graphExportCoreML = load("vectoria_export_coreml")
@@ -199,6 +202,12 @@ public class VectoriaRuntime {
 
     internal func addMultiHeadAttention(_ handle: GraphHandle?, x: Int32, wq: Int32, wk: Int32, wv: Int32, wo: Int32, numHeads: Int32) -> Int32 {
         return graphAddMultiHeadAttention(handle, x, wq, wk, wv, wo, numHeads)
+    }
+
+    internal func addTransformerEncoder(_ handle: GraphHandle?, x: Int32, wq: Int32, wk: Int32, wv: Int32, wo: Int32, numHeads: Int32,
+                                        gamma1: Int32, beta1: Int32, w1: Int32, b1: Int32, w2: Int32, b2: Int32,
+                                        gamma2: Int32, beta2: Int32) -> Int32 {
+        return graphAddTransformerEncoder(handle, x, wq, wk, wv, wo, numHeads, gamma1, beta1, w1, b1, w2, b2, gamma2, beta2)
     }
 
     internal func addLayerNorm(_ handle: GraphHandle?, input: Int32, gamma: Int32, beta: Int32) -> Int32 {
@@ -333,6 +342,14 @@ public class VectoriaGraph {
 
     public func addMultiHeadAttention(x: Int32, wq: Int32, wk: Int32, wv: Int32, wo: Int32, numHeads: Int32) -> Int32 {
         return runtime.addMultiHeadAttention(handle, x: x, wq: wq, wk: wk, wv: wv, wo: wo, numHeads: numHeads)
+    }
+
+    public func addTransformerEncoder(x: Int32, wq: Int32, wk: Int32, wv: Int32, wo: Int32, numHeads: Int32,
+                                      gamma1: Int32, beta1: Int32, w1: Int32, b1: Int32, w2: Int32, b2: Int32,
+                                      gamma2: Int32, beta2: Int32) -> Int32 {
+        return runtime.addTransformerEncoder(handle, x: x, wq: wq, wk: wk, wv: wv, wo: wo, numHeads: numHeads,
+                                             gamma1: gamma1, beta1: beta1, w1: w1, b1: b1, w2: w2, b2: b2,
+                                             gamma2: gamma2, beta2: beta2)
     }
 
     public func addLayerNorm(input: Int32, gamma: Int32, beta: Int32) -> Int32 {

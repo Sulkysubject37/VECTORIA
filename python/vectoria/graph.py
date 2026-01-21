@@ -271,6 +271,28 @@ class Graph:
         self.ops.append(node_data)
         return Node(node_id)
 
+    def add_transformer_encoder(self, x: Node, wq: Node, wk: Node, wv: Node, wo: Node, num_heads: int, 
+                                gamma1: Node, beta1: Node, w1: Node, b1: Node, w2: Node, b2: Node, 
+                                gamma2: Node, beta2: Node) -> Node:
+        idx = x.id
+        node_data = self.nodes[idx]
+        shape = node_data.get('shape') or node_data.get('output_shape')
+        dtype_val = node_data.get('dtype') or node_data.get('output_dtype')
+        
+        node_id = len(self.nodes)
+        node_data = {
+            "type": "Op",
+            "id": node_id,
+            "op": "TransformerEncoder",
+            "inputs": [x.id, wq.id, wk.id, wv.id, wo.id, gamma1.id, beta1.id, w1.id, b1.id, w2.id, b2.id, gamma2.id, beta2.id],
+            "output_shape": list(shape),
+            "output_dtype": dtype_val,
+            "num_heads": num_heads
+        }
+        self.nodes.append(node_data)
+        self.ops.append(node_data)
+        return Node(node_id)
+
     def add_layernorm(self, input_node: Node, gamma_node: Node, beta_node: Node) -> Node:
         # Shape/DType preserved
         idx = input_node.id
