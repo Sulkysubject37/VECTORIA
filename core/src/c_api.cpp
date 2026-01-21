@@ -7,6 +7,8 @@
 #include "vectoria/graph/logsoftmax.hpp"
 #include "vectoria/graph/stable_softmax.hpp"
 #include "vectoria/graph/crossentropy.hpp"
+#include "vectoria/graph/transpose.hpp"
+#include "vectoria/graph/reshape.hpp"
 #include "vectoria/lowering/coreml.hpp"
 #include <vector>
 #include <cstring>

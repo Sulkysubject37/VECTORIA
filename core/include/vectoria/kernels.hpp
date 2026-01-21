@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vectoria/kernel_abi.hpp"
+#include <vector>
 
 namespace vectoria {
 namespace kernels {
