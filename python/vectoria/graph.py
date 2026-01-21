@@ -169,6 +169,36 @@ class Graph:
         self.ops.append(node_data)
         return Node(node_id)
 
+    def add_concat(self, input_nodes: List[Node], axis: int) -> Node:
+        # Validate rank and compatible dimensions (naive)
+        first_node = self.nodes[input_nodes[0].id]
+        first_shape = first_node.get('shape') or first_node.get('output_shape')
+        dtype_val = first_node.get('dtype') or first_node.get('output_dtype')
+        
+        new_shape = list(first_shape)
+        total_dim = 0
+        for n in input_nodes:
+            curr_node = self.nodes[n.id]
+            curr_shape = curr_node.get('shape') or curr_node.get('output_shape')
+            total_dim += curr_shape[axis]
+        
+        new_shape[axis] = total_dim
+        
+        node_id = len(self.nodes)
+        input_ids = [n.id for n in input_nodes]
+        node_data = {
+            "type": "Op",
+            "id": node_id,
+            "op": "Concat",
+            "inputs": input_ids,
+            "output_shape": new_shape,
+            "output_dtype": dtype_val,
+            "axis": axis
+        }
+        self.nodes.append(node_data)
+        self.ops.append(node_data)
+        return Node(node_id)
+
     def add_softmax(self, input_node: Node) -> Node:
         # Shape/DType preserved
         idx = input_node.id

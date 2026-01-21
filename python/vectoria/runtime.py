@@ -52,6 +52,9 @@ if _lib:
     _lib.vectoria_graph_add_op_reshape.argtypes = [c_graph_t, ctypes.c_int, ctypes.POINTER(ctypes.c_int64), ctypes.c_int]
     _lib.vectoria_graph_add_op_reshape.restype = ctypes.c_int
 
+    _lib.vectoria_graph_add_op_concat.argtypes = [c_graph_t, ctypes.POINTER(ctypes.c_int), ctypes.c_int, ctypes.c_int64]
+    _lib.vectoria_graph_add_op_concat.restype = ctypes.c_int
+
     _lib.vectoria_graph_add_softmax.argtypes = [c_graph_t, ctypes.c_int]
     _lib.vectoria_graph_add_softmax.restype = ctypes.c_int
 
@@ -167,6 +170,11 @@ class Runtime:
                     shape = node['output_shape']
                     c_shape = (ctypes.c_int64 * len(shape))(*shape)
                     cid = _lib.vectoria_graph_add_op_reshape(self._graph_handle, inp0, c_shape, len(shape))
+                elif op_type == "Concat":
+                    inputs = [self._node_map[i] for i in node['inputs']]
+                    c_inputs = (ctypes.c_int * len(inputs))(*inputs)
+                    axis = node['axis']
+                    cid = _lib.vectoria_graph_add_op_concat(self._graph_handle, c_inputs, len(inputs), axis)
                 elif op_type == "Softmax":
                     inp0 = self._node_map[node['inputs'][0]]
                     cid = _lib.vectoria_graph_add_softmax(self._graph_handle, inp0)

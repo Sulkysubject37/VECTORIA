@@ -24,6 +24,7 @@ int vectoria_graph_add_op_mul(vectoria_graph_t g, int input_a, int input_b);
 int vectoria_graph_add_op_reduce_sum(vectoria_graph_t g, int input);
 int vectoria_graph_add_op_transpose(vectoria_graph_t g, int input, const int64_t* perm, int rank);
 int vectoria_graph_add_op_reshape(vectoria_graph_t g, int input, const int64_t* new_shape, int rank);
+int vectoria_graph_add_op_concat(vectoria_graph_t g, const int* inputs, int num_inputs, int64_t axis);
 int vectoria_graph_add_softmax(vectoria_graph_t g, int input);
 int vectoria_graph_add_softmax_stable(vectoria_graph_t g, int input);
 int vectoria_graph_add_logsoftmax(vectoria_graph_t g, int input);

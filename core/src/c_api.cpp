@@ -246,6 +246,12 @@ int vectoria_graph_add_op_reshape(vectoria_graph_t g, int input, const int64_t* 
     return vectoria::graph::add_reshape(*graph, input, s);
 }
 
+int vectoria_graph_add_op_concat(vectoria_graph_t g, const int* inputs, int num_inputs, int64_t axis) {
+    auto* graph = static_cast<ir::Graph*>(g);
+    std::vector<int> ins(inputs, inputs + num_inputs);
+    return vectoria::graph::add_concat(*graph, ins, axis);
+}
+
 int vectoria_graph_add_softmax(vectoria_graph_t g, int input) {
     auto* graph = static_cast<ir::Graph*>(g);
     // Use the composed graph op

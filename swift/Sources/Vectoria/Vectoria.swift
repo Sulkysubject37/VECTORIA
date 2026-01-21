@@ -34,6 +34,7 @@ typealias GraphAddOpMulFn = @convention(c) (GraphHandle?, Int32, Int32) -> Int32
 typealias GraphAddOpReduceSumFn = @convention(c) (GraphHandle?, Int32) -> Int32
 typealias GraphAddOpTransposeFn = @convention(c) (GraphHandle?, Int32, UnsafePointer<Int64>, Int32) -> Int32
 typealias GraphAddOpReshapeFn = @convention(c) (GraphHandle?, Int32, UnsafePointer<Int64>, Int32) -> Int32
+typealias GraphAddOpConcatFn = @convention(c) (GraphHandle?, UnsafePointer<Int32>, Int32, Int64) -> Int32
 typealias GraphAddSoftmaxFn = @convention(c) (GraphHandle?, Int32) -> Int32
 typealias GraphAddSoftmaxStableFn = @convention(c) (GraphHandle?, Int32) -> Int32
 typealias GraphAddLogSoftmaxFn = @convention(c) (GraphHandle?, Int32) -> Int32
@@ -64,6 +65,7 @@ public class VectoriaRuntime {
     private let graphAddOpReduceSum: GraphAddOpReduceSumFn
     private let graphAddOpTranspose: GraphAddOpTransposeFn
     private let graphAddOpReshape: GraphAddOpReshapeFn
+    private let graphAddOpConcat: GraphAddOpConcatFn
     private let graphAddSoftmax: GraphAddSoftmaxFn
     private let graphAddSoftmaxStable: GraphAddSoftmaxStableFn
     private let graphAddLogSoftmax: GraphAddLogSoftmaxFn
@@ -102,6 +104,7 @@ public class VectoriaRuntime {
         graphAddOpReduceSum = load("vectoria_graph_add_op_reduce_sum")
         graphAddOpTranspose = load("vectoria_graph_add_op_transpose")
         graphAddOpReshape = load("vectoria_graph_add_op_reshape")
+        graphAddOpConcat = load("vectoria_graph_add_op_concat")
         graphAddSoftmax = load("vectoria_graph_add_softmax")
         graphAddSoftmaxStable = load("vectoria_graph_add_softmax_stable")
         graphAddLogSoftmax = load("vectoria_graph_add_logsoftmax")
@@ -164,6 +167,11 @@ public class VectoriaRuntime {
     internal func addOpReshape(_ handle: GraphHandle?, input: Int32, shape: [Int64]) -> Int32 {
         var cShape = shape
         return graphAddOpReshape(handle, input, &cShape, Int32(shape.count))
+    }
+
+    internal func addOpConcat(_ handle: GraphHandle?, inputs: [Int32], axis: Int64) -> Int32 {
+        var cInputs = inputs
+        return graphAddOpConcat(handle, &cInputs, Int32(inputs.count), axis)
     }
 
     internal func addSoftmax(_ handle: GraphHandle?, input: Int32) -> Int32 {
@@ -290,6 +298,10 @@ public class VectoriaGraph {
 
     public func addReshape(input: Int32, shape: [Int64]) -> Int32 {
         return runtime.addOpReshape(handle, input: input, shape: shape)
+    }
+
+    public func addConcat(inputs: [Int32], axis: Int64) -> Int32 {
+        return runtime.addOpConcat(handle, inputs: inputs, axis: axis)
     }
 
     public func addSoftmax(input: Int32) -> Int32 {
