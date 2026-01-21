@@ -250,6 +250,27 @@ class Graph:
         out_shape = [q_shape[0], v_shape[1]]
         return self.add_op("Attention", [q, k, v], out_shape, DType(dtype_val))
 
+    def add_multi_head_attention(self, x: Node, wq: Node, wk: Node, wv: Node, wo: Node, num_heads: int) -> Node:
+        idx = x.id
+        node_data = self.nodes[idx]
+        shape = node_data.get('shape') or node_data.get('output_shape')
+        dtype_val = node_data.get('dtype') or node_data.get('output_dtype')
+        
+        # MHA preserves input shape [T, d_model]
+        node_id = len(self.nodes)
+        node_data = {
+            "type": "Op",
+            "id": node_id,
+            "op": "MultiHeadAttention",
+            "inputs": [x.id, wq.id, wk.id, wv.id, wo.id],
+            "output_shape": list(shape),
+            "output_dtype": dtype_val,
+            "num_heads": num_heads
+        }
+        self.nodes.append(node_data)
+        self.ops.append(node_data)
+        return Node(node_id)
+
     def add_layernorm(self, input_node: Node, gamma_node: Node, beta_node: Node) -> Node:
         # Shape/DType preserved
         idx = input_node.id
