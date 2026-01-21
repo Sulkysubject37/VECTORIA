@@ -28,6 +28,7 @@ void validate_for_deployment(const ir::Graph& graph) {
                 case ir::OpType::Transpose:
                 case ir::OpType::Reshape:
                 case ir::OpType::Concat:
+                case ir::OpType::Slice:
                     // Basic ops are supported structurally
                     break;
                 

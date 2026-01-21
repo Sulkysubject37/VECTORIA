@@ -100,6 +100,7 @@ void Engine::compile() {
                     case ir::OpType::Transpose:
                     case ir::OpType::Reshape:
                     case ir::OpType::Concat:
+                    case ir::OpType::Slice:
                         supported = true;
                         break;
                     case ir::OpType::Exp:
@@ -630,6 +631,20 @@ void Engine::execute() {
                 
                 std::string mode = "Reference | Axis: " + std::to_string(axis);
                 tracer_.log(trace::EventType::KernelDispatch, node_idx, mode);
+            }
+            else if (op->op == ir::OpType::Slice) {
+                if (op->inputs.size() != 1) throw std::runtime_error("Slice requires 1 input");
+                size_t idx_in = op->inputs[0].index;
+                const float* in_ptr = static_cast<const float*>(node_buffers_[idx_in]);
+                float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
+                
+                ir::TensorShape s = get_shape(idx_in);
+                int64_t axis = op->int_params[0];
+                int64_t start = op->int_params[1];
+                int64_t end = op->int_params[2];
+                
+                kernels::reference::slice_f32(in_ptr, out_ptr, s.dims, axis, start, end);
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference | Axis: " + std::to_string(axis));
             }
         }
         tracer_.log(trace::EventType::NodeExecutionEnd, node_idx);

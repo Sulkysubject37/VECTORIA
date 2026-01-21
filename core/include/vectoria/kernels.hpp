@@ -217,6 +217,18 @@ VectoriaStatus concat_f32(
     int64_t axis
 );
 
+/**
+ * Slice (Reference): Out = In[indices...]
+ */
+VectoriaStatus slice_f32(
+    const float* input,
+    float* output,
+    const std::vector<int64_t>& input_shape,
+    int64_t axis,
+    int64_t start,
+    int64_t end
+);
+
 } // namespace reference
 } // namespace kernels
 } // namespace vectoria

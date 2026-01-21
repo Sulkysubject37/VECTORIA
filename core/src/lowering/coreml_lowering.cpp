@@ -149,6 +149,12 @@ void export_to_coreml(const ir::Graph& graph, const std::string& output_path) {
                         mil_file << "], axis=" << op->int_params[0] << ");\n";
                     }
                     break;
+                case ir::OpType::Slice:
+                    {
+                        mil_file << "slice(x=" << inputs[0] << ", axis=" << op->int_params[0] 
+                                 << ", start=" << op->int_params[1] << ", end=" << op->int_params[2] << ");\n";
+                    }
+                    break;
                 case ir::OpType::BiasAdd:
                     // Map to add
                     mil_file << "add(x=" << inputs[0] << ", y=" << inputs[1] << ");\n";
