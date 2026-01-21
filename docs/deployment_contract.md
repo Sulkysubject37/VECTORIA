@@ -9,12 +9,12 @@ Research mode prioritizes flexibility and inspectability. Deployment mode priori
 When `EngineConfig.mode` is set to `Deployment`:
 
 1.  **Restricted Op Set**: Only the following operations are allowed:
-    *   `MatMul`
-    *   `BiasAdd`
-    *   `ReLU`
+    *   `MatMul`, `BiasAdd`, `ReLU`
     *   `Add`, `Mul`, `Sub`, `Div`
     *   `ReduceSum`, `ReduceMax` (Last axis only)
-    *   `Exp` (As part of Softmax)
+    *   `Exp`, `Log`, `Sqrt`
+    *   `Transpose`, `Reshape`, `Concat`, `Slice`
+    *   Composed high-level ops (`LayerNorm`, `Softmax`, `Attention`, etc.)
 
 2.  **Explicit Failure**: The engine will throw an exception during `compile()` if an unsupported operation is encountered. No silent fallback or omission is permitted.
 

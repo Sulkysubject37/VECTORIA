@@ -12,15 +12,19 @@ Composed operations are used to express complex mathematical functions without b
 ## Supported Composed Operations
 
 ### Softmax (Last Axis)
+Softmax is implemented as an explicit expansion into 5 primitive operations (`ReduceMax`, `Sub`, `Exp`, `ReduceSum`, `Div`).
 
-Softmax is implemented as an explicit expansion into 5 primitive operations.
+### Stable Softmax
+Reuses `LogSoftmax` logic to prevent exponential overflow. Structure: `Exp(LogSoftmax(x))`.
 
-**Semantic Expansion:**
-1. `max_x = ReduceMax(x, axis=-1)` (Numerical stability)
-2. `x_shifted = Sub(x, max_x)`
-3. `exp_x = Exp(x_shifted)`
-4. `sum_exp = ReduceSum(exp_x, axis=-1)`
-5. `output = Div(exp_x, sum_exp)`
+### LayerNorm
+Performs variance-based normalization. Expanded into `ReduceMean`, `Sub`, `Mul`, `Sqrt`, `Add`, `Div`.
+
+### Multi-Head Attention
+Decomposes into projection matrices, head-splitting (`Reshape`+`Transpose`+`Slice`), and scaled dot-product blocks.
+
+### Transformer Encoder
+The top-level semantic unit integrating MHA, FFN, and Residuals.
 
 **Why Composed?**
 While many frameworks provide a fused Softmax kernel for performance, VECTORIA prioritizes **numerical inspectability**. By expanding Softmax, a user can verify the intermediate stability shift (Sub) and the normalization step (Div) directly from the execution trace.

@@ -9,7 +9,7 @@ VECTORIA employs a strict **Compile-Schedule-Execute** lifecycle. Once a graph i
 The graph is defined using immutable structures:
 *   **Graph:** A collection of `Node`s and `NodeId` outputs.
 *   **Node:** A variant of `InputNode`, `ParameterNode`, or `OpNode`.
-*   **OpType:** A strictly typed enum (e.g., `MatMul`, `Add`, `Relu`).
+*   **OpType:** A strictly typed enum (e.g., `MatMul`, `Add`, `Relu`, `Transpose`, `Concat`, `Attention`).
 
 Once constructed, the `Graph` object is treated as a read-only specification by the Engine.
 

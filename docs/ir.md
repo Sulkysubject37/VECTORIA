@@ -13,10 +13,11 @@
 4. **No Control Flow**: The IR is a Directed Acyclic Graph (DAG) without loops or conditional branching.
 
 ## Operations
-- `MatMul(A, B)`: Matrix Multiplication.
-- `BiasAdd(In, Bias)`: Broadcast addition of bias vector.
-- `Relu(In)`: Rectified Linear Unit.
-- `Softmax(In)`: Softmax (Plan).
+VECTORIA IR supports a strictly defined set of operations:
+- **Numerical**: `MatMul`, `Add`, `Sub`, `Mul`, `Div`, `ReLU`, `Exp`, `Log`, `Sqrt`.
+- **Reductions**: `ReduceSum`, `ReduceMax` (Last-axis).
+- **Structural**: `Transpose`, `Reshape`, `Concat`, `Slice`.
+- **Composed**: `LayerNorm`, `Softmax`, `Attention`, `MHA`, `TransformerEncoder`.
 
 ## Buffer Ownership
 The IR nodes do not own the raw data buffers. `ParameterNode` contains a `buffer_id` which the `MemoryModel` resolves to physical memory. `InputNode` buffers are provided at execution time.

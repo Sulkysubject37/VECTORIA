@@ -28,6 +28,6 @@ for event in trace:
 ```
 
 ## Limitations
-- **No NumPy**: We avoid strict dependencies for now.
-- **Op Support**: `MatMul`, `BiasAdd`, and `ReLU` are supported.
+- **No NumPy**: We avoid strict dependencies in the core runtime (though `numpy` is used in the test suite).
+- **Op Support**: All IR operations (MatMul, Add, Mul, Div, Exp, Log, Sqrt, Reductions, Transpose, Reshape, Concat, Slice) and Composed blocks (LayerNorm, MHA, Encoder) are exposed.
 - **Manual Mapping**: The bridge manually reconstructs the graph.

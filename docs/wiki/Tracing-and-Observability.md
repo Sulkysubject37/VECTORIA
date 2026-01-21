@@ -17,6 +17,13 @@ The `Tracer` captures a linear log of events (`trace::EventType`) during executi
 *   **Timestamps:** Nanosecond-precision duration (wall clock).
 *   **Inputs:** Node IDs participating in the operation.
 
+## Canonical Walkthrough: Transformer Encoder
+Executing a Transformer Encoder block reveals the full semantic expansion in the trace:
+1.  **Projections**: `KernelDispatch` for Query, Key, and Value MatMuls.
+2.  **Attention Core**: Sequential events for `MatMul` (Scores), `Mul` (Scale), `StableSoftmax`, and `MatMul` (Context).
+3.  **FFN**: Trace shows the `MatMul` → `BiasAdd` → `ReLU` → `MatMul` → `BiasAdd` chain.
+4.  **Residual connections**: `Add` events clearly linking block inputs to sub-block outputs.
+
 ## What is NOT Logged
 
 *   **Tensor Values:** To prevent performance degradation and log bloat, actual numerical data is never written to the trace.

@@ -10,11 +10,9 @@ We treat deployment not as a "feature" but as a **contract**. If you set the exe
 
 ## Supported Operations
 The following kernels are certified for CoreML export:
-*   `MatMul`
-*   `Add`, `Sub`, `Mul`, `Div` (Elementwise & Broadcast)
-*   `ReLU`
-*   `ReduceSum`, `ReduceMax` (Last axis)
-*   `Softmax` (Exported as a composed subgraph of primitives, or fused if structurally identical)
+*   **Numerical**: `MatMul`, `Add`, `Sub`, `Mul`, `Div`, `ReLU`, `ReduceSum`, `ReduceMax`, `Sqrt`, `Log`.
+*   **Structural**: `Transpose`, `Reshape`, `Concat`, `Slice`.
+*   **Semantic**: `Softmax`, `LayerNorm`, `Attention`, `MHA`, `EncoderBlock` (via expansion).
 
 ## Export Process
 ### C++

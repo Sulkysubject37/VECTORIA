@@ -13,10 +13,12 @@ When `ExecutionMode::Deployment` is active:
 ## Supported Operations
 
 The following operations are validated for CoreML export:
-*   **Arithmetic:** `Add`, `Sub`, `Mul`, `Div`
-*   **Linear Algebra:** `MatMul`, `BiasAdd`
-*   **Activation:** `Relu`, `Softmax` (via `Exp`)
-*   **Reduction:** `ReduceSum`, `ReduceMax`
+*   **Arithmetic**: `Add`, `Sub`, `Mul`, `Div`, `Exp`, `Log`, `Sqrt`
+*   **Linear Algebra**: `MatMul`, `BiasAdd`
+*   **Activation**: `Relu`, `Softmax`, `StableSoftmax`, `LogSoftmax`
+*   **Reduction**: `ReduceSum`, `ReduceMax`
+*   **Structural**: `Transpose`, `Reshape`, `Concat`, `Slice`
+*   **Transformer Blocks**: `Attention`, `MultiHeadAttention`, `TransformerEncoder` (via semantic expansion)
 
 ## Lowering to MIL
 

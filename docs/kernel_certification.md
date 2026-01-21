@@ -51,8 +51,12 @@ To promote a kernel from Reference to Validated SIMD:
 | **Mul** | ✅ | ✅ | ✅ |
 | **Sub** | ✅ | ✅ | ✅ |
 | **Div** | ✅ | ✅ | ✅ |
-| **ReduceSum** | ✅ | ✅ | ✅ |
-| **ReduceMax** | ✅ | ✅ | ✅ |
 | **Exp** | ✅ | ❌ | ❌ |
+| **Log** | ✅ | ❌ | ❌ |
+| **Sqrt** | ✅ | ❌ | ❌ |
+| **Transpose** | ✅ | ❌ | ❌ |
+| **Reshape** | ✅ | ❌ | ❌ |
+| **Concat** | ✅ | ❌ | ❌ |
+| **Slice** | ✅ | ❌ | ❌ |
 
-*Note: SIMD coverage reflects Validated [Production] tier. Reference kernels are always available as bit-exact fallbacks.*
+*Note: SIMD coverage reflects Validated [Production] tier. Structural and newer math primitives rely on Reference implementations.*
