@@ -206,6 +206,20 @@ class Graph:
             
         return self.add_op("CrossEntropy", [logits_node, target_node], new_shape, DType(dtype_val))
 
+    def add_attention(self, q: Node, k: Node, v: Node) -> Node:
+        # [T, dk] * [T, dk] -> [T, dv]
+        idx = q.id
+        node_data = self.nodes[idx]
+        q_shape = node_data.get('shape') or node_data.get('output_shape')
+        v_idx = v.id
+        v_node = self.nodes[v_idx]
+        v_shape = v_node.get('shape') or v_node.get('output_shape')
+        dtype_val = node_data.get('dtype') or node_data.get('output_dtype')
+        
+        # Output shape is [T, dv]
+        out_shape = [q_shape[0], v_shape[1]]
+        return self.add_op("Attention", [q, k, v], out_shape, DType(dtype_val))
+
     def add_layernorm(self, input_node: Node, gamma_node: Node, beta_node: Node) -> Node:
         # Shape/DType preserved
         idx = input_node.id

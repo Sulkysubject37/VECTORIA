@@ -64,6 +64,9 @@ if _lib:
     _lib.vectoria_graph_add_crossentropy.argtypes = [c_graph_t, ctypes.c_int, ctypes.c_int]
     _lib.vectoria_graph_add_crossentropy.restype = ctypes.c_int
 
+    _lib.vectoria_graph_add_attention.argtypes = [c_graph_t, ctypes.c_int, ctypes.c_int, ctypes.c_int]
+    _lib.vectoria_graph_add_attention.restype = ctypes.c_int
+
     _lib.vectoria_graph_add_layernorm.argtypes = [c_graph_t, ctypes.c_int, ctypes.c_int, ctypes.c_int]
     _lib.vectoria_graph_add_layernorm.restype = ctypes.c_int
 
@@ -177,6 +180,11 @@ class Runtime:
                     inp0 = self._node_map[node['inputs'][0]]
                     inp1 = self._node_map[node['inputs'][1]]
                     cid = _lib.vectoria_graph_add_crossentropy(self._graph_handle, inp0, inp1)
+                elif op_type == "Attention":
+                    q = self._node_map[node['inputs'][0]]
+                    k = self._node_map[node['inputs'][1]]
+                    v = self._node_map[node['inputs'][2]]
+                    cid = _lib.vectoria_graph_add_attention(self._graph_handle, q, k, v)
                 elif op_type == "LayerNorm":
                     inp0 = self._node_map[node['inputs'][0]]
                     gamma = self._node_map[node['inputs'][1]]
