@@ -6,9 +6,11 @@
 #include "vectoria/graph/stable_softmax.hpp"
 #include "vectoria/graph/crossentropy.hpp"
 #include "vectoria/graph/attention.hpp"
+#include "vectoria/graph/multi_head_attention.hpp"
 #include "vectoria/graph/transpose.hpp"
 #include "vectoria/graph/reshape.hpp"
 #include "vectoria/graph/concatenation.hpp"
+#include "vectoria/graph/slice.hpp"
 
 namespace vectoria {
 namespace graph {
