@@ -5,6 +5,7 @@
 #include "vectoria/graph/logsoftmax.hpp"
 #include "vectoria/graph/stable_softmax.hpp"
 #include "vectoria/graph/crossentropy.hpp"
+#include "vectoria/graph/attention.hpp"
 
 namespace vectoria {
 namespace graph {

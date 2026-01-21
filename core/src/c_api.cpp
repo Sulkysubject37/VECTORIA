@@ -7,6 +7,7 @@
 #include "vectoria/graph/logsoftmax.hpp"
 #include "vectoria/graph/stable_softmax.hpp"
 #include "vectoria/graph/crossentropy.hpp"
+#include "vectoria/graph/attention.hpp"
 #include "vectoria/graph/transpose.hpp"
 #include "vectoria/graph/reshape.hpp"
 #include "vectoria/lowering/coreml.hpp"
@@ -264,6 +265,11 @@ int vectoria_graph_add_logsoftmax(vectoria_graph_t g, int input) {
 int vectoria_graph_add_crossentropy(vectoria_graph_t g, int logits, int target) {
     auto* graph = static_cast<ir::Graph*>(g);
     return vectoria::graph::add_crossentropy_composed(*graph, logits, target);
+}
+
+int vectoria_graph_add_attention(vectoria_graph_t g, int q, int k, int v) {
+    auto* graph = static_cast<ir::Graph*>(g);
+    return vectoria::graph::add_attention_composed(*graph, q, k, v);
 }
 
 int vectoria_graph_add_layernorm(vectoria_graph_t g, int input, int gamma, int beta) {
