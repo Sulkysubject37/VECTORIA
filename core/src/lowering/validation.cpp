@@ -23,6 +23,10 @@ void validate_for_deployment(const ir::Graph& graph) {
                 case ir::OpType::Sub:
                 case ir::OpType::Div:
                 case ir::OpType::Exp:
+                case ir::OpType::Sqrt:
+                case ir::OpType::Log:
+                case ir::OpType::Transpose:
+                case ir::OpType::Reshape:
                     // Basic ops are supported structurally
                     break;
                 
