@@ -1,36 +1,29 @@
-# Release v1.2.1-sigma
+# Release v1.3.0-stable
 
-**Semantic Inference Stack Complete**
+**Semantic Surface Frozen | Documentation & Reproducibility Consolidated**
 
-This release marks the completion of Phase 7, introducing a full suite of numerically stable, composed operations for inference and evaluation. It consolidates the project's documentation and formalizes the mathematical definitions of the new high-level operators.
+This is a stabilization release that formalizes the semantic surface of VECTORIA following the completion of the Phase 8 Transformer stack. As of this release, the mathematical definitions and expansion logic for all operations are frozen to ensure a reliable foundation for downstream integration.
 
-## 🌟 New Features (Semantic Stack)
+## 🛡️ Semantic Freeze
 
-These operations are implemented as **Composed Graphs** using the validated Reference kernels. They prioritize numerical correctness, determinism, and traceability over fused performance.
+*   The expansion logic for high-level operations (`LayerNorm`, `Attention`, `MHA`, `EncoderBlock`) is locked.
+*   Numerical behavior is governed by the constitutional [TRUTH.md](TRUTH.md).
+*   Any future performance optimizations (e.g., kernel fusion) must prove bitwise identity to the frozen reference expansions.
 
-*   **Layer Normalization (`LayerNorm`)**:
-    *   Broadcast-aware normalization over the last axis.
-    *   Supports learnable $\gamma$ and $\beta$.
-*   **LogSoftmax**:
-    *   Numerically stable implementation using the $\log(\sum \exp(x - \max(x)))$ trick.
-    *   Prevents underflow/overflow for extreme input values.
-*   **Stable Softmax**:
-    *   Defined as $\exp(\text{LogSoftmax}(x))$.
-    *   Recommended over the naïve Softmax implementation for all production use cases.
-*   **CrossEntropy (Inference-Only)**:
-    *   Computes $-\sum (t \cdot \log(\text{softmax}(x)))$.
-    *   Strictly for evaluation (no gradients).
+## 🌟 Capabilities (v1.3.0)
 
-## 🛠 Core Improvements
+*   **Complete Transformer Stack**: Supports full Transformer Encoder Blocks using purely semantic, composed graphs.
+*   **Structural Integrity**: Full support for `Transpose`, `Reshape`, `Concat`, and `Slice` operations with explicit IR nodes.
+*   **Numerical Stability**: Numerically robust `LogSoftmax` and `StableSoftmax` implementations integrated by default.
+*   **Auditability**: Canonical tracing walkthroughs ensure that the execution of complex blocks is fully transparent.
 
-*   **New Primitives**: Added `Sqrt`, `Log` to the IR and Reference backend.
-*   **Broadcasting**: Enhanced `Mul` and `Add` kernels to support scalar and row-vector broadcasting needed for the semantic stack.
-*   **Documentation**:
-    *   Added **TRUTH.md**: The authoritative manifesto on numerical determinism.
-    *   Standardized mathematical notation across all specs.
+## 🛠 Hardening & Documentation
+
+*   **Documentation Unification**: Repository-wide audit to ensure consistent terminology and mathematical formatting (LaTeX).
+*   **CI Reproducibility**: Hardened documentation for CI validation paths and reproducibility checklists.
+*   **No Code Changes**: This release introduces no new numerical kernels or performance shortcuts, preserving the proven stability of the `v1.2.1` core.
 
 ## ⚠️ Notes
 
-*   **No SIMD Changes**: This release does not introduce new SIMD kernels. The new operations run on the Reference backend (scalar C++).
-*   **No Training**: VECTORIA remains an inference-forward engine.
-*   **Determinism**: All new operations fully respect the project's strict determinism guarantees.
+*   **Inference-Only**: VECTORIA remains an inference-forward framework.
+*   **Single-Threaded**: The core engine remains strictly serial to preserve bitwise determinism.
