@@ -47,6 +47,7 @@ High-level operations are implemented by expanding into subgraphs of the kernels
 - **StableSoftmax**: `Exp(LogSoftmax(x))`. Recommended over `Softmax` for numerical stability. Reference-only.
 - **CrossEntropy (Inference-Only)**: `Sum(-Target * LogSoftmax(Logits))`. Evaluation metric. Reference-only.
 - **Attention (Scaled Dot-Product)**: Semantic expansion using `MatMul`, `Transpose`, `Mul`, and `StableSoftmax`. Not a fused kernel. Reference-only.
+- **MultiHeadAttention**: High-level semantic composition using projections, head-splitting (`Reshape`+`Transpose`+`Slice`), per-head `Attention`, and final projection. Not a fused kernel. Reference-only.
 
 ## Structural Operations (Reference-Only)
 

@@ -11,7 +11,7 @@ Unlike general-purpose machine learning frameworks, VECTORIA prioritizes **corre
 ### Core Tenets
 
 *   **Strict Determinism:** Execution results are bitwise identical across repeated runs on the same hardware.
-*   **Semantic Inference Stack:** Includes stable implementations of LayerNorm, Softmax, CrossEntropy, and Semantic Attention, validated against reference math.
+*   **Semantic Inference Stack:** Includes stable implementations of LayerNorm, Softmax, CrossEntropy, Attention, and Multi-Head Attention, validated against reference math.
 *   **Semantic Truth:** The C++ Reference implementation defines the mathematical truth. SIMD kernels (ARM64 NEON, x86_64 AVX2) are validated against this truth.
 *   **Explicit Control:** Memory is managed via a static arena. There is no garbage collection, no hidden threads, and no dynamic graph mutation during execution.
 *   **Auditable:** Every decision—from kernel dispatch to memory allocation—is traceable.

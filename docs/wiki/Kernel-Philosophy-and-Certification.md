@@ -46,6 +46,7 @@ The `Engine` attempts to use the most efficient kernel available. If a SIMD kern
 | Transpose | ✅ | ❌ | ❌ |
 | Reshape | ✅ | ❌ | ❌ |
 | Concat | ✅ | ❌ | ❌ |
+| Slice | ✅ | ❌ | ❌ |
 
 ## Composed Semantic Operations (Reference-Only)
 
@@ -56,8 +57,9 @@ Phase 7 introduced a suite of high-level operations built entirely from the refe
 *   **StableSoftmax**: Defined as `Exp(LogSoftmax(x))` to prevent overflow.
 *   **CrossEntropy**: Inference-only evaluation metric.
 *   **Attention (Scaled Dot-Product)**: Semantic expansion for Transformer-style attention. **This is not a fused kernel;** it expands into explicit `MatMul` and `StableSoftmax` nodes.
+*   **MultiHeadAttention**: High-level semantic composition for multi-head subspaces.
 
-*Note: `Exp`, `Sqrt`, `Log`, `Transpose`, `Reshape`, `Concat`, `Softmax` (composed), `LayerNorm` (composed), `LogSoftmax` (composed), `StableSoftmax` (composed), `CrossEntropy` (composed), and `Attention` (composed) currently rely on Reference implementations.*
+*Note: `Exp`, `Sqrt`, `Log`, `Transpose`, `Reshape`, `Concat`, `Slice`, `Softmax` (composed), `LayerNorm` (composed), `LogSoftmax` (composed), `StableSoftmax` (composed), `CrossEntropy` (composed), `Attention` (composed), and `MultiHeadAttention` (composed) currently rely on Reference implementations.*
 
 ## References
 
