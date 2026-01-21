@@ -99,6 +99,7 @@ void Engine::compile() {
                     case ir::OpType::Log:
                     case ir::OpType::Transpose:
                     case ir::OpType::Reshape:
+                    case ir::OpType::Concat:
                         supported = true;
                         break;
                     case ir::OpType::Exp:
@@ -612,6 +613,23 @@ void Engine::execute() {
                 
                 kernels::reference::transpose_f32(in_ptr, out_ptr, s.dims, perm);
                 tracer_.log(trace::EventType::KernelDispatch, node_idx, "Reference | Inputs: [...]");
+            }
+            else if (op->op == ir::OpType::Concat) {
+                std::vector<const float*> input_ptrs;
+                std::vector<std::vector<int64_t>> input_shapes;
+                
+                for(auto inp : op->inputs) {
+                    input_ptrs.push_back(static_cast<const float*>(node_buffers_[inp.index]));
+                    input_shapes.push_back(get_shape(inp.index).dims);
+                }
+                
+                float* out_ptr = static_cast<float*>(node_buffers_[node_idx]);
+                int64_t axis = op->int_params[0];
+                
+                kernels::reference::concat_f32(input_ptrs, out_ptr, input_shapes, axis);
+                
+                std::string mode = "Reference | Axis: " + std::to_string(axis);
+                tracer_.log(trace::EventType::KernelDispatch, node_idx, mode);
             }
         }
         tracer_.log(trace::EventType::NodeExecutionEnd, node_idx);

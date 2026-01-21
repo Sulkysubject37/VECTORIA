@@ -207,6 +207,16 @@ VectoriaStatus transpose_f32(
     const std::vector<int64_t>& perm
 );
 
+/**
+ * Concatenate (Reference): Out = Concat(Inputs, axis)
+ */
+VectoriaStatus concat_f32(
+    const std::vector<const float*>& inputs,
+    float* output,
+    const std::vector<std::vector<int64_t>>& input_shapes,
+    int64_t axis
+);
+
 } // namespace reference
 } // namespace kernels
 } // namespace vectoria

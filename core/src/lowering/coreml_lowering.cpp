@@ -139,6 +139,16 @@ void export_to_coreml(const ir::Graph& graph, const std::string& output_path) {
                         mil_file << "]);\n";
                     }
                     break;
+                case ir::OpType::Concat:
+                    {
+                        mil_file << "concat(values=[";
+                        for (size_t j = 0; j < inputs.size(); ++j) {
+                            mil_file << inputs[j];
+                            if (j < inputs.size() - 1) mil_file << ", ";
+                        }
+                        mil_file << "], axis=" << op->int_params[0] << ");\n";
+                    }
+                    break;
                 case ir::OpType::BiasAdd:
                     // Map to add
                     mil_file << "add(x=" << inputs[0] << ", y=" << inputs[1] << ");\n";
