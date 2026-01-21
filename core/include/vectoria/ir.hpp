@@ -34,7 +34,8 @@ enum class OpType : uint16_t {
     Sqrt,
     Log,
     Transpose,
-    Reshape
+    Reshape,
+    Concat
 };
 
 struct NodeId {
