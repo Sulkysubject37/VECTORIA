@@ -136,6 +136,13 @@ jobs:
             core/tests/test_attention.cpp -o test_attention
           ./test_attention
 
+      - name: Build and Run Concatenation Tests
+        run: |
+          g++ -std=c++17 -O3 -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp \
+            core/tests/test_concatenation.cpp -o test_concatenation
+          ./test_concatenation
+
       - name: Upload Validation Logs
         uses: actions/upload-artifact@v4
         with:
