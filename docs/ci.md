@@ -18,15 +18,15 @@ CI is split into architecture-specific workflows to reflect the reality of hardw
 
 ## Tests Executed on CI
 Every commit triggers the following suites on both validated architectures:
-- `test_gemm_simd`: Compares SIMD kernels against Reference.
-- `test_multi_op`: Verifies composite graph execution.
-- `test_graph_equivalence`: Ensures Reference/SIMD parity.
+- `test_gemm_simd`: Compares SIMD kernels against bit-exact Reference.
+- `test_multi_op`: Verifies composite graph execution and deterministic scheduling.
+- `test_graph_equivalence`: Ensures Reference/SIMD parity within validated tolerance.
 - `test_determinism_stress`: Asserts bitwise reproducibility over 50 iterations.
-- **High-Level Semantic Suites**:
-    - `test_layernorm`: Statistical property validation.
-    - `test_attention`: Numerical equivalence for Scaled Dot-Product.
-    - `test_multi_head_attention`: Shape and logic validation for MHA.
-    - `test_transformer_encoder`: End-to-end integration proof.
+- **High-Level Semantic Suites (Reference-Only)**:
+    - `test_layernorm`: Statistical property and broadcast validation.
+    - `test_attention`: Numerical equivalence for Scaled Dot-Product expansion.
+    - `test_multi_head_attention`: Structural splitting and join validation.
+    - `test_transformer_encoder`: Full block integration proof.
 
 ## Validation Logs
 Logs from correctness tests are preserved as CI artifacts. These logs are part of the scientific provenance of every VECTORIA release.
