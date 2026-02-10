@@ -10,11 +10,11 @@ VECTORIA is a deterministic, cross-platform computational kernel framework desig
 
 It prioritizes **correctness over peak throughput** and **inspectability over magic**.
 
-Current Version: **v1.3.0-stable (Semantic Surface Frozen)**
+Current Version: **v1.3.1-stable (Semantic Surface Frozen)**
 
 ## 🛡️ Semantic Freeze & Stability
 
-As of version v1.3.0-stable, the semantic surface of VECTORIA is considered **frozen**. 
+As of version v1.3.1-stable, the semantic surface of VECTORIA is considered **frozen**. 
 The mathematical definitions of all operations (Primitive and Composed) are locked to ensure absolute reproducibility for downstream applications. 
 Future additions or changes to these semantics will require explicit, versioned opt-in to prevent silent numerical drift.
 
@@ -74,25 +74,32 @@ VECTORIA is built in strict layers:
 
 ## 📦 Installation & Usage
 
+### Python (v1.3.1)
+```bash
+pip install vectoria
+```
+Includes `vectoria-trace` CLI for introspection.
+
+### Swift
+Add `https://github.com/Sulkysubject37/VECTORIA.git` to your SPM dependencies.
+
 ### Prerequisites
 - C++17 Compiler (GCC/Clang)
 - Python 3.8+ (for bindings)
 - Swift 5.5+ (for Apple platforms)
 
-### Building
+### Building from Source
 ```bash
 # Standard Build
 g++ -std=c++17 -shared -fPIC -Icore/include \
-    core/src/*.cpp core/src/kernels/*.cpp \
+    core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp \
     -o libvectoria.dylib
 
 # Build with SIMD Optimizations (ARM64/AVX2)
 # Ensure correct assembly file for your architecture
-# ARM64: asm/arm64/gemm_neon.S
-# x86_64: asm/x86_64/gemm_avx2.S
 g++ -std=c++17 -shared -fPIC -DVECTORIA_USE_ASM -Icore/include \
-    core/src/*.cpp core/src/kernels/*.cpp asm/arm64/gemm_neon.S \
-    -o libvectoria.dylib
+    core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp \
+    asm/arm64/gemm_neon.S -o libvectoria.dylib
 ```
 
 ### Python Example

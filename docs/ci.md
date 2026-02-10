@@ -32,6 +32,10 @@ Every commit triggers the following suites on both validated architectures:
 Standalone tooling is validated on every commit to ensure that introspection capabilities remain consistent with the frozen semantic surface.
 - `tooling`: Runs schema validation, trace analysis, and determinism diffing on simulated execution traces.
 
+## Packaging Validation
+The distribution pipeline is validated to ensure that prebuilt binaries and Python/Swift packages are correctly formed and installable.
+- `packaging`: Builds and installs the Python wheel, verifying the `vectoria-trace` CLI functionality.
+
 ## Supported Validation Platforms
 CI explicitly proves correctness on:
 - **macOS (Latest)**: ARM64 NEON backend + CoreML lowering.

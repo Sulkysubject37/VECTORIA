@@ -1,0 +1,43 @@
+name: Packaging Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  python-packaging:
+    name: Build and Validate Python Wheel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Build Native Library
+        run: |
+          g++ -std=c++17 -shared -fPIC -Icore/include 
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp 
+            -o python/vectoria/libvectoria.so
+
+      - name: Build Wheel
+        run: |
+          pip install build
+          python3 -m build
+
+      - name: Install Wheel
+        run: |
+          pip install dist/*.whl
+
+      - name: Validate Installation and CLI
+        run: |
+          # Verify CLI tool is in path
+          vectoria-trace --help
+          
+          # Run a minimal trace analysis test
+          echo '[{"type": "GraphCompilation", "timestamp_ns": 0, "node_id": -1, "details": "Start"}]' > test.json
+          vectoria-trace analyze test.json

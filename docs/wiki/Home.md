@@ -32,5 +32,8 @@ Unlike general-purpose machine learning frameworks, VECTORIA prioritizes **corre
 
 *   [TRUTH.md (Authoritative Manifesto)](../../TRUTH.md)
 *   [README.md](../../README.md)
+*   [Getting Started](Getting-Started.md)
+*   [Installation](Installation.md)
+*   [Verifying Determinism](Verifying-Determinism.md)
 *   [Tooling & Introspection](Tooling-and-Introspection.md)
 *   [docs/kernel_certification.md](../kernel_certification.md)
