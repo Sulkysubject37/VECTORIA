@@ -120,12 +120,10 @@ for event in rt.get_trace():
     print(event)
 ```
 
-### Supported Operations (All Bindings)
-- `MatMul`: Matrix Multiplication (FP32)
-- `BiasAdd`: Broadcast vector addition
-- `ReLU`: Rectified Linear Unit
-
+### Tooling & Introspection
 - [**Official Wiki**](https://github.com/Sulkysubject37/VECTORIA/wiki) - The authoritative guide on execution, kernels, and determinism.
+- [Trace Analysis & Tooling](docs/tooling.md)
+- [Trace Schema](docs/trace_schema.md)
 - [Intermediate Representation (IR)](docs/ir.md)
 - [Memory Model](docs/memory_model.md)
 - [Architecture & ABI](docs/architecture.md)
