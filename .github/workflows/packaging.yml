@@ -20,8 +20,8 @@ jobs:
 
       - name: Build Native Library
         run: |
-          g++ -std=c++17 -shared -fPIC -Icore/include 
-            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp 
+          g++ -std=c++17 -shared -fPIC -Icore/include \
+            core/src/*.cpp core/src/kernels/*.cpp core/src/graph/*.cpp core/src/lowering/*.cpp \
             -o python/vectoria/libvectoria.so
 
       - name: Build Wheel
