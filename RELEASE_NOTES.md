@@ -1,29 +1,32 @@
-# Release v1.3.0-stable
+# Release v1.3.1: Tooling & Distribution
 
-**Semantic Surface Frozen | Documentation & Reproducibility Consolidated**
+**Standalone Introspection | Cross-Platform Packaging | Installation UX**
 
-This is a stabilization release that formalizes the semantic surface of VECTORIA following the completion of the Phase 8 Transformer stack. As of this release, the mathematical definitions and expansion logic for all operations are frozen to ensure a reliable foundation for downstream integration.
+This release marks the completion of the Tooling and Distribution phase. It introduces a comprehensive suite for execution trace analysis, visualization, and cross-platform packaging, significantly reducing the friction for installation and numerical verification.
 
-## 🛡️ Semantic Freeze
+## 🔍 Tooling & Introspection
 
-*   The expansion logic for high-level operations (`LayerNorm`, `Attention`, `MHA`, `EncoderBlock`) is locked.
-*   Numerical behavior is governed by the constitutional [TRUTH.md](TRUTH.md).
-*   Any future performance optimizations (e.g., kernel fusion) must prove bitwise identity to the frozen reference expansions.
+*   **Trace Analysis**: New standalone tools (`trace_analyzer.py`) to compute execution order, kernel breakdown, and memory footprints.
+*   **Determinism Verification**: Introduced `trace_diff.py` for bitwise comparison of execution traces, enabling automated determinism checks.
+*   **Visual Execution Flow**: Support for generating SVG timelines and DOT graphs from any VECTORIA trace.
+*   **Trace CLI**: Unified `vectoria-trace` command-line utility for all introspection tasks.
 
-## 🌟 Capabilities (v1.3.0)
+## 📦 Distribution & Packaging
 
-*   **Complete Transformer Stack**: Supports full Transformer Encoder Blocks using purely semantic, composed graphs.
-*   **Structural Integrity**: Full support for `Transpose`, `Reshape`, `Concat`, and `Slice` operations with explicit IR nodes.
-*   **Numerical Stability**: Numerically robust `LogSoftmax` and `StableSoftmax` implementations integrated by default.
-*   **Auditability**: Canonical tracing walkthroughs ensure that the execution of complex blocks is fully transparent.
+*   **Python Wheel**: Official pip-installable package supporting automated dependency management and CLI integration.
+*   **Swift Package Manager**: Finalized SPM support with a new `VectoriaExample` executable target.
+*   **Prebuilt Binaries**: Released certified `libvectoria.dylib` for macOS (ARM64) with cryptographic checksums.
+*   **Portable Native Loading**: Dynamic library loading logic updated to support both packaged and developer environments.
 
-## 🛠 Hardening & Documentation
+## 🛠 CI/CD & Documentation
 
-*   **Documentation Unification**: Repository-wide audit to ensure consistent terminology and mathematical formatting (LaTeX).
-*   **CI Reproducibility**: Hardened documentation for CI validation paths and reproducibility checklists.
-*   **No Code Changes**: This release introduces no new numerical kernels or performance shortcuts, preserving the proven stability of the `v1.2.1` and `v1.3.0` semantic baseline.
+*   **Cross-Platform CI**: New validation workflows for Ubuntu and macOS to ensure packaging and tooling integrity.
+*   **Comprehensive Docs**: New Installation, Getting Started, and Determinism Verification guides integrated into the Wiki and repository.
+*   **Semantic Integrity**: No modifications to core kernels or execution semantics. This release observes the v1.3.0-stable freeze.
 
-## ⚠️ Notes
+## 🚀 Getting Started
 
-*   **Inference-Only**: VECTORIA remains an inference-forward framework.
-*   **Single-Threaded**: The core engine remains strictly serial to preserve bitwise determinism.
+```bash
+pip install vectoria
+vectoria-trace --help
+```
