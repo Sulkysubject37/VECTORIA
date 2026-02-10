@@ -5,13 +5,33 @@ from typing import List
 from .graph import Graph, DType
 
 # Load Library
-_lib_path = os.path.abspath("libvectoria.dylib")
-try:
-    _lib = ctypes.CDLL(_lib_path)
-except OSError:
-    # Fallback for when running from a different directory or if not built yet
-    _lib = None
-    print("Warning: libvectoria.dylib not found. Runtime execution disabled.")
+_pkg_dir = os.path.dirname(__file__)
+_lib_found = False
+_lib = None
+
+for _lib_name in ["libvectoria.dylib", "libvectoria.so"]:
+    _candidate_path = os.path.join(_pkg_dir, _lib_name)
+    if os.path.exists(_candidate_path):
+        try:
+            _lib = ctypes.CDLL(_candidate_path)
+            _lib_found = True
+            break
+        except OSError:
+            continue
+
+# Fallback to CWD for development
+if not _lib_found:
+    for _lib_name in ["libvectoria.dylib", "libvectoria.so"]:
+        if os.path.exists(_lib_name):
+            try:
+                _lib = ctypes.CDLL(os.path.abspath(_lib_name))
+                _lib_found = True
+                break
+            except OSError:
+                continue
+
+if not _lib_found:
+    print("Warning: libvectoria native library not found. Runtime execution disabled.")
 
 if _lib:
     # Types
