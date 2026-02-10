@@ -1,0 +1,60 @@
+name: Tooling Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  tooling:
+    name: Tooling Validation (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Create Sample Trace
+        run: |
+          echo '[
+            {"type": "GraphCompilation", "timestamp_ns": 0, "node_id": -1, "details": "Start | Mode: Research"},
+            {"type": "MemoryAllocation", "timestamp_ns": 100, "node_id": 0, "details": "1024 bytes"},
+            {"type": "MemoryAllocation", "timestamp_ns": 200, "node_id": 1, "details": "1024 bytes"},
+            {"type": "MemoryAllocation", "timestamp_ns": 300, "node_id": 2, "details": "1024 bytes"},
+            {"type": "GraphCompilation", "timestamp_ns": 400, "node_id": -1, "details": "End"},
+            {"type": "NodeExecutionStart", "timestamp_ns": 1000, "node_id": 2, "details": ""},
+            {"type": "KernelDispatch", "timestamp_ns": 1100, "node_id": 2, "details": "SIMD [ARM64] | Inputs: [0, 1]"},
+            {"type": "NodeExecutionEnd", "timestamp_ns": 1200, "node_id": 2, "details": ""}
+          ]' > sample_trace.json
+
+      - name: Run Trace Analysis
+        run: python3 tools/trace/trace_analyzer.py sample_trace.json
+
+      - name: Run Trace Diff (Pass)
+        run: python3 tools/trace/trace_diff.py sample_trace.json sample_trace.json
+
+      - name: Run Trace Diff (Fail)
+        run: |
+          echo '[{"type": "GraphCompilation", "timestamp_ns": 0, "node_id": -1, "details": "Start"}]' > altered_trace.json
+          if python3 tools/trace/trace_diff.py sample_trace.json altered_trace.json; then
+            echo "Trace diff should have failed"
+            exit 1
+          else
+            echo "Trace diff failed as expected"
+          fi
+
+      - name: Generate Visualization Artifacts
+        run: python3 tools/trace/trace_viz.py sample_trace.json ci_artifact_${{ matrix.os }}
+
+      - name: Upload Visualizations
+        uses: actions/upload-artifact@v4
+        with:
+          name: tooling-visualizations-${{ matrix.os }}
+          path: ci_artifact_${{ matrix.os }}_*

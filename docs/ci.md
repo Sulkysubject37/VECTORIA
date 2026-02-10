@@ -28,6 +28,10 @@ Every commit triggers the following suites on both validated architectures:
     - `test_multi_head_attention`: Structural splitting and join validation.
     - `test_transformer_encoder`: Full block integration proof.
 
+## Tooling Validation
+Standalone tooling is validated on every commit to ensure that introspection capabilities remain consistent with the frozen semantic surface.
+- `tooling`: Runs schema validation, trace analysis, and determinism diffing on simulated execution traces.
+
 ## Supported Validation Platforms
 CI explicitly proves correctness on:
 - **macOS (Latest)**: ARM64 NEON backend + CoreML lowering.
