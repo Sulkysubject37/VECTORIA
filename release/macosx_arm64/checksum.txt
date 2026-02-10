@@ -1,0 +1,1 @@
+b227bbe5160a512262c7cf74f2f5098e33422a4ac3a5cb2253c108415ba396a8  release/macosx_arm64/libvectoria.dylib

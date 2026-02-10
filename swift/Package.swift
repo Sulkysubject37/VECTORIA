@@ -10,11 +10,18 @@ let package = Package(
         .library(
             name: "Vectoria",
             targets: ["Vectoria"]),
+        .executable(
+            name: "VectoriaExample",
+            targets: ["VectoriaExample"])
     ],
     targets: [
         .target(
             name: "Vectoria",
             dependencies: []),
+        .executableTarget(
+            name: "VectoriaExample",
+            dependencies: ["Vectoria"],
+            path: "Sources/VectoriaExample"),
         .testTarget(
             name: "VectoriaTests",
             dependencies: ["Vectoria"]),
