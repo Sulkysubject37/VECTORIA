@@ -1,3 +1,25 @@
+# Release v1.3.2-stable: JOSS Submission Preparation
+
+**Sanitized Release | Numerical Constitutionalism | Hardened Documentation**
+
+This is a maintenance release focused on hygiene, documentation alignment, and version finalization in preparation for the official JOSS (Journal of Open Source Software) submission. No modifications were made to computational kernels or execution semantics.
+
+## 🛡️ Numerical Constitutionalism
+
+*   **Auditability**: Formalized the "Numerical Constitution" in documentation, ensuring all optimized kernels are strictly tethered to the bit-exact Scalar C++ Reference Implementation.
+*   **Determinism Boundaries**: Refined language regarding intra-platform determinism and bounded cross-architecture drift.
+
+## 🛠 Maintenance & Hygiene
+
+*   **Comment Sanitation**: Removed redundant AI-style commentary and speculative internal roadmap references from the core engine.
+*   **Documentation Alignment**: Standardized terminology across the repository, Wiki, and JOSS manuscript.
+*   **Version Synchronization**: Aligned versioning across Python, Swift, and C++ layers.
+
+## 📦 Distribution
+
+*   **Prebuilt Binaries**: Certified macOS ARM64 and Linux x86_64 binaries updated with v1.3.2-stable metadata.
+*   **Package Integrity**: Validated pip-installable wheel and Swift Package Manager compatibility.
+
 # Release v1.3.1: Tooling & Distribution
 
 **Standalone Introspection | Cross-Platform Packaging | Installation UX**

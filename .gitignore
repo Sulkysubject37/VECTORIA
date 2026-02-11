@@ -6,3 +6,4 @@ __pycache__/
 libvectoria.dylib
 swift/libvectoria.dylib
 swift/.build/
+manuscript/

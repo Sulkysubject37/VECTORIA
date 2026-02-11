@@ -10,11 +10,11 @@ VECTORIA is a deterministic, cross-platform computational kernel framework desig
 
 It prioritizes **correctness over peak throughput** and **inspectability over magic**.
 
-Current Version: **v1.3.1-stable (Semantic Surface Frozen)**
+Current Version: **v1.3.2-stable (Semantic Surface Frozen)**
 
 ## 🛡️ Semantic Freeze & Stability
 
-As of version v1.3.1-stable, the semantic surface of VECTORIA is considered **frozen**. 
+As of version v1.3.2-stable, the semantic surface of VECTORIA is considered **frozen**. 
 The mathematical definitions of all operations (Primitive and Composed) are locked to ensure absolute reproducibility for downstream applications. 
 Future additions or changes to these semantics will require explicit, versioned opt-in to prevent silent numerical drift.
 
@@ -74,7 +74,7 @@ VECTORIA is built in strict layers:
 
 ## 📦 Installation & Usage
 
-### Python (v1.3.1)
+### Python (v1.3.2)
 ```bash
 pip install vectoria
 ```
