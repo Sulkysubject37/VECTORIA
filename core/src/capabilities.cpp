@@ -23,8 +23,6 @@ SystemCapabilities get_system_capabilities() {
     caps.simd_compiled = false;
 #endif
 
-    // For now, we assume host support if compiled, 
-    // but a real implementation would check CPUID/hwcaps.
     caps.simd_supported_on_host = caps.simd_compiled;
 
     caps.available_kernels.push_back("Reference");

@@ -101,18 +101,7 @@ void Engine::compile() {
                     case ir::OpType::Reshape:
                     case ir::OpType::Concat:
                     case ir::OpType::Slice:
-                        supported = true;
-                        break;
                     case ir::OpType::Exp:
-                        // Exp is supported in CoreML but Phase 6 spec didn't explicitly list it?
-                        // "Supported Op Set: MatMul, Add, Sub, Mul, Div, ReduceSum, ReduceMax, ReLU, Softmax"
-                        // Softmax uses Exp internally.
-                        // If graph has Exp, can we export it?
-                        // Phase 6 spec says "If any other op appears -> export MUST fail".
-                        // BUT Softmax is composed of Exp.
-                        // If Softmax is composed, the IR contains Exp.
-                        // So Exp MUST be supported for Softmax to work.
-                        // I will allow Exp.
                         supported = true;
                         break;
                     default:

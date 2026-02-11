@@ -34,7 +34,7 @@ Vectoria does **NOT** use Kahan summation or compensated algorithms in the defau
 
 ## Concurrency
 VECTORIA currently executes **sequentially** on a single thread. 
-- If threading is introduced in Phase 3, strict rules will be applied to maintain determinism (e.g., deterministic work stealing or static partitioning).
+- If threading is introduced, strict rules will be applied to maintain determinism (e.g., deterministic work stealing or static partitioning).
 
 ## Stress Testing
 The suite includes `core/tests/test_determinism_stress.cpp`, which performs repeated executions of complex multi-op graphs.

@@ -11,7 +11,7 @@ VECTORIA traces are represented as a JSON list of event objects.
 
 ## Event Type Details
 
-- **GraphCompilation**: Contains mode and phase info.
+- **GraphCompilation**: Contains execution mode and configuration metadata.
 - **MemoryAllocation**: Contains allocation size in bytes.
 - **NodeExecutionStart/End**: Boundary markers for node processing.
 - **KernelDispatch**: Contains the kernel policy used (Reference vs. SIMD) and input node IDs.

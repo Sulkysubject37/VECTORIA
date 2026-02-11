@@ -32,7 +32,7 @@ Where:
     3.  `Mul` by scalar constant $1/\sqrt{d_k}$ to get Scaled Scores.
     4.  `StableSoftmax` (LogSoftmax + Exp) applied to Scaled Scores.
     5.  `MatMul` of the attention weights and $V$ to get Output $O$ (Shape $[T, d_v]$).
-*   **Broadcasting:** Currently strictly defined for matching sequence lengths $T$ (single block). Batching semantics are out of scope for this phase.
+*   **Broadcasting:** Currently strictly defined for matching sequence lengths $T$ (single block). Batching semantics are not implemented in the current specification.
 
 ## Determinism
 
