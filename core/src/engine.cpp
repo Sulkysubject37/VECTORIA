@@ -80,10 +80,8 @@ void Engine::compile() {
     }
 
     if (config_.mode == ExecutionMode::Deployment) {
-        // Strict check: Only supported ops allowed
         for (const auto& node : graph_.nodes) {
             if (auto* op = std::get_if<ir::OpNode>(&node.data)) {
-                // List of supported ops for CoreML lowering
                 bool supported = false;
                 switch (op->op) {
                     case ir::OpType::MatMul:
@@ -198,7 +196,7 @@ void Engine::execute() {
                 ir::TensorShape shape_b = get_shape(input_b_idx);
 
                 if (shape_a.dims.size() != 2 || shape_b.dims.size() != 2) {
-                     throw std::runtime_error("MatMul supports only 2D tensors for now");
+                     throw std::runtime_error("MatMul supports only 2D tensors");
                 }
 
                 size_t m = shape_a.dims[0];
@@ -266,7 +264,7 @@ void Engine::execute() {
                 size_t m = shape_in.dims[0];
                 size_t n = shape_in.dims[1];
                 
-                // Dispatch (Reference only for now)
+                // Dispatch Reference
                 kernels::reference::bias_add_f32(in_ptr, bias_ptr, out_ptr, m, n);
                 
                 std::string mode = "Reference | Inputs: [" + std::to_string(input_idx) + ", " + std::to_string(bias_idx) + "]";

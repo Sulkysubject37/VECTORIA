@@ -100,7 +100,6 @@ int vectoria_graph_add_op_matmul(vectoria_graph_t g, int input_a, int input_b) {
     auto shape_a = get_shape(input_a);
     auto shape_b = get_shape(input_b);
     
-    // Basic shape inference
     if (shape_a.dims.size() >= 2 && shape_b.dims.size() >= 2) {
         node.output_shape.dims = {shape_a.dims[0], shape_b.dims[1]};
     }
@@ -170,7 +169,6 @@ int vectoria_graph_add_op_add(vectoria_graph_t g, int input_a, int input_b) {
         return {};
     };
 
-    // Auto-infer shape: assume inputs are same shape
     node.output_shape = get_shape(input_a);
     node.output_dtype = ir::DataType::Float32;
 

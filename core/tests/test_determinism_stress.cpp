@@ -63,26 +63,19 @@ void stress_test_determinism() {
     rng.fill(b1_ptr, 8);
     rng.fill(b2_ptr, 8);
     
-    // First run to get "Golden" result
     engine.execute();
     float* out_ptr = (float*)engine.get_buffer(relu2);
     std::vector<float> golden(out_ptr, out_ptr + 64);
     
-    // Calculate events per execution
     auto total_initial_events = engine.get_tracer().get_events().size();
-    // Assuming compile() happened once. 
-    // We want to know how many events one execute() adds.
-    // Let's run a second time to measure the delta.
     engine.execute();
     auto events_per_execute = engine.get_tracer().get_events().size() - total_initial_events;
 
-    // Repeated runs
     for (int i = 0; i < 50; ++i) {
         auto before_count = engine.get_tracer().get_events().size();
         engine.execute();
         auto after_count = engine.get_tracer().get_events().size();
         
-        // Assert bitwise identical output
         for (size_t j = 0; j < 64; ++j) {
             if (out_ptr[j] != golden[j]) {
                 std::cerr << "Determinism FAIL at iteration " << i << " index " << j << std::endl;
@@ -90,7 +83,6 @@ void stress_test_determinism() {
             }
         }
         
-        // Assert identical trace delta
         if ((after_count - before_count) != events_per_execute) {
             std::cerr << "Trace inconsistency at iteration " << i << " (expected " << events_per_execute << " new events, got " << (after_count - before_count) << ")" << std::endl;
             exit(1);

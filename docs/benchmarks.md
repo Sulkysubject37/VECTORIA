@@ -7,7 +7,7 @@ VECTORIA does not publish "fastest in the world" charts. We measure performance 
 
 ## Reproducibility
 Benchmarks must be reproducible on local developer machines.
-- **Fixed Inputs**: Matrix sizes are hardcoded.
+- **Fixed Inputs**: Matrix sizes are pre-defined for consistency.
 - **Fixed Iterations**: Loop counts are static.
 - **Single Threaded**: Currently, all benchmarks run on a single core to reduce variance.
 

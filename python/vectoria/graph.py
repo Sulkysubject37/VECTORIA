@@ -129,12 +129,6 @@ class Graph:
         dtype_val = node_data.get('dtype') or node_data.get('output_dtype')
         
         new_shape = [shape[p] for p in perm]
-        # We need to pass perm as attribute somehow.
-        # Graph class supports arbitrary serialization via add_op?
-        # Current add_op only takes inputs/output_shape.
-        # We need to enhance Graph or just store it in Python and pass to C++ runtime differently.
-        # The runtime `load_graph` iterates nodes. We should store `perm` in the node data.
-        
         node_id = len(self.nodes)
         input_ids = [input_node.id]
         node_data = {
@@ -170,7 +164,7 @@ class Graph:
         return Node(node_id)
 
     def add_concat(self, input_nodes: List[Node], axis: int) -> Node:
-        # Validate rank and compatible dimensions (naive)
+        # Validate rank and compatible dimensions
         first_node = self.nodes[input_nodes[0].id]
         first_shape = first_node.get('shape') or first_node.get('output_shape')
         dtype_val = first_node.get('dtype') or first_node.get('output_dtype')
@@ -224,7 +218,7 @@ class Graph:
         return self.add_op("LogSoftmax", [input_node], shape, DType(dtype_val))
 
     def add_crossentropy(self, logits_node: Node, target_node: Node) -> Node:
-        # Returns [Outer] (reduced last dim)
+        # Returns [Outer]
         idx = logits_node.id
         node_data = self.nodes[idx]
         shape = node_data.get('shape') or node_data.get('output_shape')
@@ -311,7 +305,7 @@ class Graph:
         In a real scenario, this would serialize to C++ IR.
         """
         self._frozen = True
-        # Basic validation: ensure all outputs exist
+        # Validation: ensures all output exist
         for out_id in self.outputs:
             if out_id >= len(self.nodes):
                 raise ValueError(f"Output node {out_id} does not exist")

@@ -15,7 +15,7 @@ class TraceAnalyzer:
         memory = {}
         node_types = {}
         
-        # Track active nodes for timing
+
         starts = {}
         timings = {}
 
@@ -64,8 +64,8 @@ class TraceAnalyzer:
         return summary
 
     def _summarize_composed_ops(self, order: List[int]) -> Dict[str, Any]:
-        # Without graph IR, we can't be sure about expansions.
-        # But we can provide a summary of the sequence.
+
+
         return {
             "total_nodes_executed": len(order),
             "unique_nodes": len(set(order))
@@ -74,13 +74,11 @@ class TraceAnalyzer:
 if __name__ == "__main__":
     import sys
     import os
-    # Add parent dir to path to allow relative import if needed, 
-    # but we want it to be standalone-ish.
-    # We can just import TraceReader if we assume it's in the same dir.
+
     try:
         from trace_reader import TraceReader
     except ImportError:
-        # Fallback for different execution contexts
+
         import sys
         sys.path.append(os.path.dirname(__file__))
         from trace_reader import TraceReader
