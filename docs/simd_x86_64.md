@@ -1,6 +1,6 @@
 # x86_64 SIMD Strategy
 
-**Status**: Implementation Strategy (Deferred)
+**Status**: Planning Phase (Deferred)
 
 This document outlines the strategy for implementing x86_64 optimizations in VECTORIA.
 

@@ -63,7 +63,7 @@ int vectoria_graph_add_input(vectoria_graph_t g, const char* name, const int64_t
     ir::InputNode node;
     node.name = name;
     node.shape.dims.assign(shape, shape + rank);
-    node.dtype = static_cast<ir::DataType>(dtype);
+    node.dtype = static_cast<ir::DataType>(dtype); // Careful with mapping!
 
     size_t id = graph->nodes.size();
     graph->nodes.push_back({ {id}, node });
@@ -76,7 +76,7 @@ int vectoria_graph_add_parameter(vectoria_graph_t g, const char* name, const int
     node.name = name;
     node.shape.dims.assign(shape, shape + rank);
     node.dtype = static_cast<ir::DataType>(dtype);
-    node.buffer_id = 0;
+    node.buffer_id = 0; // Placeholder
 
     size_t id = graph->nodes.size();
     graph->nodes.push_back({ {id}, node });
@@ -89,6 +89,14 @@ int vectoria_graph_add_op_matmul(vectoria_graph_t g, int input_a, int input_b) {
     node.op = ir::OpType::MatMul;
     node.inputs = { {static_cast<size_t>(input_a)}, {static_cast<size_t>(input_b)} };
     
+    // Auto-infer output shape for convenience in C API
+    // This duplicates logic in Python/Engine, but C API needs to construct valid IR.
+    // Ideally IR construction is robust.
+    // For now, minimal inference: [M, K] x [K, N] -> [M, N]
+    // We need to look up inputs.
+    // Using unchecked access for speed in minimal impl.
+    // Real implementation would be safer.
+    
     auto get_shape = [&](size_t idx) -> ir::TensorShape {
         const auto& n = graph->nodes[idx];
         if (auto* i = std::get_if<ir::InputNode>(&n.data)) return i->shape;
@@ -100,11 +108,12 @@ int vectoria_graph_add_op_matmul(vectoria_graph_t g, int input_a, int input_b) {
     auto shape_a = get_shape(input_a);
     auto shape_b = get_shape(input_b);
     
+    // Basic shape inference
     if (shape_a.dims.size() >= 2 && shape_b.dims.size() >= 2) {
         node.output_shape.dims = {shape_a.dims[0], shape_b.dims[1]};
     }
     
-    node.output_dtype = ir::DataType::Float32;
+    node.output_dtype = ir::DataType::Float32; // Hardcoded for this phase
 
     size_t id = graph->nodes.size();
     graph->nodes.push_back({ {id}, node });
@@ -169,6 +178,7 @@ int vectoria_graph_add_op_add(vectoria_graph_t g, int input_a, int input_b) {
         return {};
     };
 
+    // Auto-infer shape: assume inputs are same shape
     node.output_shape = get_shape(input_a);
     node.output_dtype = ir::DataType::Float32;
 

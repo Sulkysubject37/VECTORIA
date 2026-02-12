@@ -50,7 +50,7 @@ The `Engine` attempts to use the most efficient kernel available. If a SIMD kern
 
 ## Composed Semantic Operations (Reference-Only)
 
-VECTORIA includes a suite of high-level operations built entirely from the reference primitives above. These operations prioritize numerical stability and semantic correctness over fused performance.
+Phase 7 introduced a suite of high-level operations built entirely from the reference primitives above. These operations prioritize numerical stability and semantic correctness over fused performance.
 
 *   **LayerNorm**: Broadcast-aware normalization using `Mean` and `Variance` composition.
 *   **LogSoftmax**: Numerically stable implementation using the log-sum-exp trick.

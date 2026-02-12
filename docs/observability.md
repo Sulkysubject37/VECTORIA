@@ -12,7 +12,7 @@ VECTORIA provides built-in tracing to inspect execution behavior.
 
 | Event Type | Description | Details Field |
 |------------|-------------|---------------|
-| `GraphCompilation` | Engine compilation stage | "Start \| Mode: [Research/Deployment]" / "End" |
+| `GraphCompilation` | Engine compilation phase | "Start \| Mode: [Research/Deployment]" / "End" |
 | `MemoryAllocation` | Buffer allocation for a node | Size in bytes |
 | `NodeExecutionStart` | Execution begins for a node | - |
 | `KernelDispatch` | Kernel selection & deps | "Reference" or "SIMD [Arch]" | Inputs: [id, id] |

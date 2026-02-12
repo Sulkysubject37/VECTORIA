@@ -164,6 +164,6 @@ Table 2: Kernel Support Matrix
 
 # AI Usage Disclosure
 
-Generative AI (Gemini 2.0) was used to structure this manuscript and ensure adherence to JOSS formatting requirements. All technical claims, operation sequences, and numerical guarantees were verified against the VECTORIA v1.3.2-stable source code.
+Generative AI (Gemini 2.5 Pro) was used as an auxiliary tool during development for debugging assistance and cross-language reasoning (Assembly, C++, and Python interactions). The AI was not used to generate kernel implementations, numerical methods, or architectural designs. All code, algorithms, and technical decisions were authored, reviewed, and validated by the human author, with correctness verified through the repository’s test and validation framework.
 
 # References

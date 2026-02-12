@@ -12,8 +12,7 @@ class TraceDiff:
 
         if len(trace1) != len(trace2):
             differences.append(f"Trace length mismatch: {len(trace1)} vs {len(trace2)} events")
-            
-            # Continue to compare
+            # Continue to compare as many as possible
         
         limit = min(len(trace1), len(trace2))
         for i in range(limit):
@@ -33,7 +32,7 @@ class TraceDiff:
                     differences.append(f"Event {i}: Allocation size mismatch ('{e1['details']}' != '{e2['details']}')")
 
             if e1["type"] == "KernelDispatch":
-                # Check the dispatch string (e.g. "SIMD" vs "Reference")
+                # We check the dispatch string (e.g. "SIMD" vs "Reference")
                 if e1["details"] != e2["details"]:
                     differences.append(f"Event {i}: Kernel dispatch mismatch ('{e1['details']}' != '{e2['details']}')")
 

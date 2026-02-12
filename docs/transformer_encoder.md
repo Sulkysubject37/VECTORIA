@@ -41,7 +41,7 @@ The block is expanded into an explicit graph of primitive and composed operation
 
 ## Relationship to TRUTH.md
 
-The Transformer Encoder Block is a primary semantic unit of composition in VECTORIA. It demonstrates that complex, state-of-the-art architectures can be modeled without resorting to "magic" black-box kernels. Every floating-point operation is part of an auditable topological sort.
+The Transformer Encoder Block is the pinnacle of Phase 8 composition. It demonstrates that complex, state-of-the-art architectures can be modeled without resorting to "magic" black-box kernels. Every floating-point operation is part of an auditable topological sort.
 
 ## Non-Goals
 
